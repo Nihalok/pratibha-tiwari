@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;1,9..144,400&family=Outfit:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&family=Mrs+Saint+Delafield&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;1,9..144,400&family=Outfit:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&family=Mrs+Saint+Delafield&display=swap&display=swap');
 @import "tailwindcss";
 
 html.lenis, html.lenis body {
@@ -137,7 +137,7 @@ h1, h2, h3, h4 {
 .editorial-card {
   background-color: #ffffff;
   border: 1px solid rgba(184, 151, 74, 0.1);
-  transition: all 0.7s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
   box-shadow: 0 8px 30px -10px rgba(184, 151, 74, 0.12);
 }
 
@@ -180,4 +180,9 @@ h1, h2, h3, h4 {
 .reveal-mask {
   -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
   mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+}
+
+/* GPU acceleration for composited layers */
+.will-change-transform {
+  will-change: transform;
 }

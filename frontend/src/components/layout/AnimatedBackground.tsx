@@ -3,58 +3,46 @@ import { motion } from 'motion/react';
 
 export default function AnimatedBackground() {
   return (
-    <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none bg-[#F0F9FF]">
-      {/* Soft Ambient Gradients - Saturated for maximum visibility */}
+    <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none bg-[#F0F9FF]" style={{ contain: 'strict' }}>
+      {/* Soft Ambient Gradients */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,#BAE6FD_0%,transparent_80%)] opacity-90" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,#FCE7F3_0%,transparent_70%)] opacity-80" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_80%,#7DD3FC_0%,transparent_80%)] " />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_80%,#7DD3FC_0%,transparent_80%)]" />
 
-      {/* Main Fluid Blooms (Simplified) */}
+      {/* Main Fluid Blooms — slowed down for lower CPU usage */}
       <motion.div
         animate={{
-          scale: [1, 1.1, 1],
-          x: [0, 30, 0],
+          scale: [1, 1.08, 1],
+          x: [0, 25, 0],
         }}
-        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 30, repeat: Infinity, ease: "easeInOut" }}
         className="absolute -top-[15%] -left-[10%] w-[90vw] h-[90vw] rounded-full bg-[#7DD3FC]/20 blur-[80px] will-change-transform"
       />
       
       <motion.div
         animate={{
-          scale: [1.1, 1, 1.1],
-          x: [0, -40, 0],
+          scale: [1.08, 1, 1.08],
+          x: [0, -30, 0],
         }}
-        transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 36, repeat: Infinity, ease: "easeInOut" }}
         className="absolute top-[10%] -right-[20%] w-[85vw] h-[85vw] rounded-full bg-[#FBCFE8]/20 blur-[90px] will-change-transform"
       />
 
       <motion.div
         animate={{
-          scale: [1, 1.15, 1],
-          opacity: [0.2, 0.4, 0.2],
+          scale: [1, 1.12, 1],
+          opacity: [0.15, 0.3, 0.15],
         }}
-        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
         className="absolute bottom-1/4 left-1/4 w-[60vw] h-[60vw] rounded-full bg-[#0EA5E9]/10 blur-[70px] will-change-transform"
       />
 
-      {/* Organic Wave Overlays - Simplified */}
+      {/* Organic Wave Overlay */}
       <div className="absolute inset-0 opacity-[0.3]">
         <svg viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
           <path
             d="M-100,200 C200,100 450,500 750,200 C1050,-100 1250,300 1350,200 L1350,1100 L-100,1100 Z"
             fill="#F1F5F9"
-          />
-        </svg>
-      </div>
-
-      {/* Floating Contours - Hidden for Performance */}
-      <div className="hidden absolute inset-0 opacity-[0.1]">
-        <svg viewBox="0 0 1000 1000" className="w-full h-full">
-          <motion.path
-            d="M-50,100 Q350,0 650,300 T1150,100"
-            stroke="#1E293B"
-            strokeWidth="1.5"
-            fill="none"
           />
         </svg>
       </div>
@@ -68,7 +56,7 @@ export default function AnimatedBackground() {
         }}
       />
       
-      {/* Noise and Texture Overlays - Optimized with inline SVG noise */}
+      {/* Noise Texture */}
       <div 
         className="absolute inset-0 opacity-[0.02] pointer-events-none" 
         style={{
