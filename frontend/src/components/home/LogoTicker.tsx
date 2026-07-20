@@ -110,11 +110,9 @@ export default function LogoTicker() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <span className="font-mono text-[15px] md:text-xs uppercase tracking-[0.6em] text-gold font-bold block mb-4">
-            Academic & Professional Recognitions
-          </span>
+
           <h2 className="text-4xl md:text-6xl font-serif text-primary leading-tight">
-            Trust <span className="italic font-normal">Anchors</span>
+            Trust <span >Academic & Professional Recognitions</span>
           </h2>
           <p className="text-slate-800 text-sm md:text-base mt-4 max-w-xl mx-auto font-normal tracking-wide">
             An Alumna and Featured Voice Across Leading Platforms
