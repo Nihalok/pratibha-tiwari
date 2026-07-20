@@ -25,16 +25,16 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-primary text-white pt-20 pb-10 mt-20">
-      <div className="max-w-7xl mx-auto px-6">
+    <footer className="bg-primary text-white pt-16 sm:pt-20 pb-10 mt-16 sm:mt-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
 
         {/* ROW 2: Columns */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
-          <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-12 mb-12 sm:mb-16 text-center md:text-left">
+          <div className="space-y-6 flex flex-col items-center md:items-start">
             <BrandLogo 
               isLight 
               showTagline 
-              className="items-start text-left scale-90 origin-left" 
+              className="scale-90 origin-center md:origin-left" 
               onClick={(e) => {
                 if (location.pathname === '/') {
                   e.preventDefault();
@@ -42,21 +42,21 @@ export default function Footer() {
                 }
               }}
             />
-            <p className="text-white leading-relaxed">
+            <p className="text-white leading-relaxed text-sm sm:text-base max-w-sm">
               Empowering people through communication, confidence, and leadership. Based in Abu Dhabi, UAE.
             </p>
-            <div className="flex space-x-4">
-              <a href="https://www.instagram.com/coachpratibha/" target="_blank" rel="noreferrer" className="hover:text-secondary transition-colors"><Instagram size={20} /></a>
-              <a href="https://www.facebook.com/lifecoachpratibha" target="_blank" rel="noreferrer" className="hover:text-secondary transition-colors"><Facebook size={20} /></a>
-              <a href="https://www.linkedin.com/in/coachpratibhatiwari/" target="_blank" rel="noreferrer" className="hover:text-secondary transition-colors"><Linkedin size={20} /></a>
-              <a href="https://www.youtube.com/channel/UC6FaarE5WYbyY6S5P7OPJxQ" target="_blank" rel="noreferrer" className="hover:text-secondary transition-colors"><Youtube size={20} /></a>
-              <a href="https://podcasters.spotify.com/pod/show/pratibha-tiwari8" target="_blank" rel="noreferrer" className="hover:text-secondary transition-colors"><Music size={20} /></a>
+            <div className="flex justify-center md:justify-start space-x-4">
+              <a href="https://www.instagram.com/coachpratibha/" target="_blank" rel="noreferrer" className="hover:text-secondary transition-colors p-1"><Instagram size={20} /></a>
+              <a href="https://www.facebook.com/lifecoachpratibha" target="_blank" rel="noreferrer" className="hover:text-secondary transition-colors p-1"><Facebook size={20} /></a>
+              <a href="https://www.linkedin.com/in/coachpratibhatiwari/" target="_blank" rel="noreferrer" className="hover:text-secondary transition-colors p-1"><Linkedin size={20} /></a>
+              <a href="https://www.youtube.com/channel/UC6FaarE5WYbyY6S5P7OPJxQ" target="_blank" rel="noreferrer" className="hover:text-secondary transition-colors p-1"><Youtube size={20} /></a>
+              <a href="https://podcasters.spotify.com/pod/show/pratibha-tiwari8" target="_blank" rel="noreferrer" className="hover:text-secondary transition-colors p-1"><Music size={20} /></a>
             </div>
           </div>
 
           <div>
-            <h5 className="font-mono text-xs uppercase tracking-widest text-secondary mb-6">Navigation</h5>
-            <ul className="space-y-4 text-white text-sm">
+            <h5 className="font-mono text-xs uppercase tracking-widest text-secondary mb-4 sm:mb-6">Navigation</h5>
+            <ul className="space-y-3 sm:space-y-4 text-white text-sm">
               <li><Link to="/" className="hover:text-white transition-colors">Home</Link></li>
               <li><Link to="/about" className="hover:text-white transition-colors">About Story</Link></li>
               <li><Link to="/services" className="hover:text-white transition-colors">Pathways & Programs</Link></li>
@@ -66,8 +66,8 @@ export default function Footer() {
           </div>
 
           <div>
-            <h5 className="font-mono text-xs uppercase tracking-widest text-secondary mb-6">Programs</h5>
-            <ul className="space-y-4 text-white text-sm">
+            <h5 className="font-mono text-xs uppercase tracking-widest text-secondary mb-4 sm:mb-6">Programs</h5>
+            <ul className="space-y-3 sm:space-y-4 text-white text-sm">
               <li><Link to="/services#executive-coaching" onClick={() => handleLinkClick('executive-coaching')} className="hover:text-white transition-colors">Executive Coaching</Link></li>
               <li><Link to="/services#corporate-training" onClick={() => handleLinkClick('corporate-training')} className="hover:text-white transition-colors">Corporate Training</Link></li>
               <li><Link to="/services#career-shaping" onClick={() => handleLinkClick('career-shaping')} className="hover:text-white transition-colors">Career Shaping</Link></li>
@@ -77,8 +77,8 @@ export default function Footer() {
           </div>
 
           <div>
-            <h5 className="font-mono text-xs uppercase tracking-widest text-secondary mb-6">Contact Hub</h5>
-            <ul className="space-y-4 text-white text-sm">
+            <h5 className="font-mono text-xs uppercase tracking-widest text-secondary mb-4 sm:mb-6">Contact Hub</h5>
+            <ul className="space-y-3 sm:space-y-4 text-white text-sm">
               <li>Abu Dhabi, UAE</li>
               <li>Global Digital Delivery</li>
               <li><a href="https://calendly.com/dsdtrainings/30min" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Book a Session</a></li>
@@ -87,11 +87,11 @@ export default function Footer() {
         </div>
 
         {/* ROW 3: Legal */}
-        <div className="border-t border-white/10 pt-10 flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-white text-sm">
+        <div className="border-t border-white/10 pt-8 sm:pt-10 flex flex-col md:flex-row justify-between items-center gap-4 sm:gap-6 text-center md:text-left">
+          <p className="text-white text-xs sm:text-sm">
             © 2026 Pratibha Tiwari · Design Super Destiny. All Rights Reserved.
           </p>
-          <div className="flex space-x-8 text-white text-sm">
+          <div className="flex space-x-6 sm:space-x-8 text-white text-xs sm:text-sm">
             <Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
             <Link to="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
           </div>

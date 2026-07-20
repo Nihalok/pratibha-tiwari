@@ -144,7 +144,7 @@ export default function Services() {
         title="Services & Programs"
         description="Explore Pratibha Tiwari's four pillars of impact: AI Leadership, Executive Coaching, Career Shaping, and Corporate Training."
       />
-      <div className="max-w-7xl mx-auto px-6 mb-24 md:mb-32 pt-32 md:pt-48 relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-16 sm:mb-24 md:mb-32 pt-28 sm:pt-32 md:pt-48 relative text-center md:text-left">
         <div className="absolute top-0 right-0 w-96 h-96 bg-gold/5 blur-[120px] rounded-full -z-10" />
         <div className="absolute -top-20 -left-20 w-72 h-72 bg-primary/5 blur-[100px] rounded-full -z-10" />
 
@@ -152,29 +152,30 @@ export default function Services() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="space-y-8"
+          className="space-y-6 sm:space-y-8"
         >
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-px bg-gold/40" />
-            <span className="font-mono text-[10px] uppercase tracking-[0.6em] text-gold font-bold">Expertise & Strategic Impact</span>
+          <div className="flex items-center justify-center md:justify-start space-x-4">
+            <div className="w-8 sm:w-12 h-px bg-gold/40" />
+            <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.4em] sm:tracking-[0.6em] text-gold font-bold">Expertise & Strategic Impact</span>
+            <div className="w-8 sm:w-12 h-px bg-gold/40 md:hidden" />
           </div>
-          <h1 className="text-4xl sm:text-6xl md:text-9xl font-serif text-primary leading-[0.9] max-w-5xl italic font-light tracking-tighter">
+          <h1 className="text-3xl sm:text-6xl md:text-8xl lg:text-9xl font-serif text-primary leading-[1.0] sm:leading-[0.9] max-w-5xl mx-auto md:mx-0 italic font-light tracking-tighter">
             Four Pillars of <span className="text-gold font-normal not-italic drop-shadow-sm">Excellence</span>
           </h1>
-          <div className="grid md:grid-cols-2 gap-6 sm:gap-12 pt-4 sm:pt-8">
-            <p className="text-base sm:text-xl md:text-2xl text-mist leading-relaxed font-normal">
+          <div className="grid md:grid-cols-2 gap-6 sm:gap-12 pt-2 sm:pt-8 items-center">
+            <p className="text-sm sm:text-xl md:text-2xl text-mist leading-relaxed font-normal max-w-xl mx-auto md:mx-0">
               Exceptional leadership is a composition of distinct dimensions. My programs are designed to bridge the gap between current potential and future-ready mastery.
             </p>
-            <div className="flex items-end justify-start md:justify-end">
-              <div className="px-6 py-3 rounded-full border border-gold/20 bg-white/50 backdrop-blur-md shadow-sm">
-                <span className="text-[10px] font-mono uppercase tracking-widest text-secondary font-bold">Scroll to Explore Pillars</span>
+            <div className="flex items-center justify-center md:justify-end pt-2 sm:pt-0">
+              <div className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-full border border-gold/20 bg-white/50 backdrop-blur-md shadow-sm">
+                <span className="text-[9px] sm:text-[10px] font-mono uppercase tracking-widest text-secondary font-bold">Scroll to Explore Pillars</span>
               </div>
             </div>
           </div>
         </motion.div>
       </div>
 
-      <div className="space-y-20 sm:space-y-32 md:space-y-48 mb-40">
+      <div className="space-y-16 sm:space-y-32 md:space-y-48 mb-24 sm:mb-40">
         {programs.map((p, i) => (
           <section
             key={p.id}
@@ -184,15 +185,15 @@ export default function Services() {
             <div className="grid lg:grid-cols-2 gap-8 lg:gap-20 items-center">
               {/* Left Side: Content & Problem/Solution Card */}
               <div className={`space-y-6 sm:space-y-8 ${i % 2 === 1 ? 'lg:order-2' : ''}`}>
-                <div className="space-y-4 sm:space-y-6">
-                  <div className="flex items-center space-x-4 sm:space-x-6">
+                <div className="space-y-4 sm:space-y-6 text-center md:text-left">
+                  <div className="flex items-center justify-center md:justify-start space-x-4 sm:space-x-6">
                     <div className="p-3 sm:p-4 bg-white rounded-2xl text-secondary shadow-lg shadow-gold/5 ring-1 ring-gold/10">
                       {p.icon}
                     </div>
-                    <div className="h-px bg-gold/20 flex-grow" />
+                    <div className="h-px bg-gold/20 flex-grow hidden md:block" />
                   </div>
                   <div className="space-y-1.5 sm:space-y-2">
-                    <span className="font-mono text-[10px] uppercase tracking-[0.6em] text-gold font-bold">{p.label}</span>
+                    <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.4em] sm:tracking-[0.6em] text-gold font-bold">{p.label}</span>
                     <h2 className="text-2xl sm:text-3xl md:text-5xl font-serif text-primary leading-tight italic font-light">{p.title}</h2>
                   </div>
                 </div>
@@ -234,12 +235,12 @@ export default function Services() {
                   </div>
                 </motion.div>
 
-                <div className="pt-2 sm:pt-4 space-y-3 sm:space-y-4">
-                  <div className="flex items-center space-x-4">
-                    <div className="text-[10px] font-mono uppercase tracking-[0.4em] text-secondary font-black bg-white/80 px-4 py-2 rounded-full border border-gold/10 shadow-sm">Format & Access</div>
-                    <div className="h-px bg-gold/20 flex-grow" />
+                <div className="pt-2 sm:pt-4 space-y-3 sm:space-y-4 text-center md:text-left">
+                  <div className="flex items-center justify-center md:justify-start space-x-4">
+                    <div className="text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.3em] sm:tracking-[0.4em] text-secondary font-black bg-white/80 px-4 py-2 rounded-full border border-gold/10 shadow-sm">Format & Access</div>
+                    <div className="h-px bg-gold/20 flex-grow hidden md:block" />
                   </div>
-                  <div className="text-primary font-medium text-base sm:text-lg italic font-serif leading-relaxed px-2">{p.format}</div>
+                  <div className="text-primary font-medium text-sm sm:text-lg italic font-serif leading-relaxed px-2">{p.format}</div>
                 </div>
               </div>
 
@@ -382,13 +383,13 @@ export default function Services() {
       </div>
 
       {/* Enterprise CTA */}
-      <section className="bg-white py-32 border-y border-gold/10">
-        <div className="max-w-4xl mx-auto px-6 text-center space-y-12">
-          <h2 className="text-3xl md:text-5xl font-serif text-primary">Purchasing for an Enterprise?</h2>
-          <p className="text-xl text-mist leading-relaxed font-normal">
+      <section className="bg-white py-16 sm:py-24 md:py-32 border-y border-gold/10">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center space-y-6 sm:space-y-12">
+          <h2 className="text-2xl sm:text-3xl md:text-5xl font-serif text-primary">Purchasing for an Enterprise?</h2>
+          <p className="text-base sm:text-xl text-mist leading-relaxed font-normal max-w-2xl mx-auto">
             We offer custom corporate licensing, bulk program access, and volume bookings for training cohorts across the UAE and globally.
           </p>
-          <Link to="/contact" className="inline-block bg-primary text-white px-12 py-5 rounded-full font-bold uppercase tracking-widest text-xs hover:bg-gold hover:text-primary transition-all shadow-2xl">
+          <Link to="/contact" className="inline-block bg-primary text-white px-8 sm:px-12 py-4 sm:py-5 rounded-full font-bold uppercase tracking-widest text-[10px] sm:text-xs hover:bg-gold hover:text-primary transition-all shadow-2xl">
             Contact Enterprise Team
           </Link>
         </div>
