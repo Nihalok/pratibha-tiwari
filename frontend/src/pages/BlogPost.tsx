@@ -44,7 +44,7 @@ export default function BlogPost() {
 
   useEffect(() => {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 1500);
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
 
     const fetchPostAndRelated = async () => {
       try {
@@ -77,9 +77,19 @@ export default function BlogPost() {
               .slice(0, 3);
             setRelatedPosts(related);
           }
+        } else {
+          // If backend returns non-ok status, search static posts again as fallback
+          const fallback = staticBlogPosts.find(p => p.slug?.toLowerCase() === slug?.toLowerCase());
+          if (fallback) {
+            setPost(fallback);
+          }
         }
       } catch (_error) {
-        // Silently fall through — not-found state will be shown
+        // Silently fall through to static fallback if available
+        const fallback = staticBlogPosts.find(p => p.slug?.toLowerCase() === slug?.toLowerCase());
+        if (fallback) {
+          setPost(fallback);
+        }
       } finally {
         clearTimeout(timeoutId);
         setLoading(false);

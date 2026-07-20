@@ -92,7 +92,7 @@ export default function LatestBlogFeed() {
 
   useEffect(() => {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 1200);
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
 
     const fetchLatestPosts = async () => {
       try {

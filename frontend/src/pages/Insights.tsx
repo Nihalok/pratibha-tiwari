@@ -29,7 +29,7 @@ export default function Insights() {
 
   useEffect(() => {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 1500);
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
 
     const fetchPosts = async () => {
       try {
@@ -153,13 +153,15 @@ export default function Insights() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 }}
-                  className="group relative h-[420px] rounded-[40px] overflow-hidden border border-gold/10 flex flex-col shadow-sm hover:shadow-2xl transition-all duration-700 bg-white"
+                  className="group relative h-[420px] rounded-[40px] overflow-hidden border border-gold/10 flex flex-col shadow-sm hover:shadow-xl transition-all duration-300 bg-white"
                 >
                   <div className="absolute inset-0 z-0">
                     <img 
                       src={item.image} 
                       alt={item.title} 
-                      className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110" 
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-white via-white/95 to-white/40 group-hover:via-white/90 transition-colors duration-500" />
                   </div>
@@ -167,7 +169,7 @@ export default function Insights() {
                   <div className="relative z-10 p-10 flex flex-col h-full justify-between">
                     <div className="space-y-4">
                       <div className="flex justify-between items-start">
-                        <div className="w-12 h-12 rounded-2xl bg-primary/5 flex items-center justify-center group-hover:bg-gold group-hover:text-primary transition-all duration-500 border border-gold/10">
+                        <div className="w-12 h-12 rounded-2xl bg-primary/5 flex items-center justify-center group-hover:bg-gold group-hover:text-primary transition-all duration-300 border border-gold/10">
                           {item.icon}
                         </div>
                         <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-gold font-bold bg-gold/5 px-3 py-1.5 rounded-full">{item.tag}</span>
@@ -224,7 +226,25 @@ export default function Insights() {
             </a>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-8 md:gap-12 relative z-10">
+          {/* Mobile Swipe Hint */}
+          <div className="flex md:hidden items-center justify-between pb-4 relative z-10">
+            <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-secondary font-bold flex items-center gap-1.5">
+              <span>Swipe to explore podcasts</span>
+              <ArrowRight size={12} className="animate-pulse text-secondary" />
+            </span>
+            <span className="text-[10px] font-mono text-mist font-bold">(3 Sessions)</span>
+          </div>
+
+          <Swiper
+            spaceBetween={16}
+            slidesPerView={1.15}
+            breakpoints={{
+              640: { slidesPerView: 1.5, spaceBetween: 24 },
+              768: { slidesPerView: 2, spaceBetween: 32 },
+              1024: { slidesPerView: 3, spaceBetween: 40 }
+            }}
+            className="podcast-swiper !pb-10 relative z-10"
+          >
             {[
               { 
                 id: 1, 
@@ -253,21 +273,14 @@ export default function Insights() {
                 yOffset: "translate-y-0",
                 embedUrl: "https://podcasters.spotify.com/pod/show/pratibha-tiwari8/embed/episodes/Importance-of-Motivation-for-Success-e1c692j" 
               },
-            ].map((ep, i) => (
-              <motion.div 
-                key={ep.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.2 }}
-                className={`relative group transition-all duration-700 ${ep.yOffset}`}
-              >
-                <div className={`h-full ${ep.color} border border-gold/10 rounded-[40px] md:rounded-[60px] p-8 md:p-12 shadow-xl group-hover:shadow-2xl group-hover:-translate-y-4 transition-all duration-500 relative overflow-hidden z-10`}>
+            ].map((ep) => (
+              <SwiperSlide key={ep.id} className="h-auto">
+                <div className={`h-full ${ep.color} border border-gold/10 rounded-[36px] md:rounded-[60px] p-6 sm:p-8 md:p-12 shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-transform duration-300 relative overflow-hidden z-10 flex flex-col justify-between ${ep.yOffset}`}>
                   <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-20 transition-opacity">
                     <Mic2 size={120} className="text-primary rotate-12" />
                   </div>
 
-                  <div className="relative z-10 flex flex-col h-full space-y-10">
+                  <div className="relative z-10 flex flex-col h-full space-y-8 sm:space-y-10">
                     <div className="flex justify-between items-start">
                       <div className="space-y-2">
                         <div className="flex items-center space-x-3">
@@ -279,27 +292,28 @@ export default function Insights() {
                           <span>{ep.duration} Session</span>
                         </div>
                       </div>
-                      <div className="w-12 h-12 rounded-2xl bg-primary/5 flex items-center justify-center group-hover:bg-secondary group-hover:text-white transition-all duration-500">
+                      <div className="w-12 h-12 rounded-2xl bg-primary/5 flex items-center justify-center group-hover:bg-secondary group-hover:text-white transition-colors duration-300">
                         <Play size={20} fill="currentColor" />
                       </div>
                     </div>
 
-                    <h4 className="text-2xl md:text-3xl font-serif text-primary italic leading-tight group-hover:text-secondary transition-colors">
+                    <h4 className="text-xl sm:text-2xl md:text-3xl font-serif text-primary italic leading-tight group-hover:text-secondary transition-colors">
                       "{ep.title}"
                     </h4>
 
-                    <div className="rounded-3xl overflow-hidden bg-white/50 backdrop-blur-sm border border-gold/5 shadow-inner p-4">
+                    <div className="rounded-3xl overflow-hidden bg-white/50 backdrop-blur-sm border border-gold/5 shadow-inner p-3 sm:p-4">
                       <iframe 
                         src={ep.embedUrl} 
                         height="102px" 
                         width="100%" 
                         frameBorder="0" 
                         scrolling="no"
+                        loading="lazy"
                         className="w-full opacity-90 group-hover:opacity-100 transition-opacity"
                       />
                     </div>
 
-                    <div className="pt-6 mt-auto">
+                    <div className="pt-4 sm:pt-6 mt-auto">
                       <div className="flex items-center justify-between">
                         <div className="flex -space-x-2">
                           {[1,2,3].map(n => (
@@ -319,9 +333,9 @@ export default function Insights() {
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </SwiperSlide>
             ))}
-          </div>
+          </Swiper>
         </div>
 
         {/* Blog Grid */}
@@ -342,9 +356,9 @@ export default function Insights() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="w-full sm:w-auto flex items-center space-x-2">
                 <select 
-                  className="bg-white border border-gold/10 rounded-full px-8 py-5 focus:outline-none focus:border-secondary text-[10px] font-bold uppercase tracking-widest text-primary appearance-none cursor-pointer pr-12 shadow-sm"
+                  className="w-full bg-white border border-gold/10 rounded-full px-8 py-5 focus:outline-none focus:border-secondary text-[10px] font-bold uppercase tracking-widest text-primary appearance-none cursor-pointer pr-12 shadow-sm"
                   value={activeCategory}
                   onChange={(e) => setActiveCategory(e.target.value)}
                   style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0\' height=\'24\' width=\'24\' stroke=\'currentColor\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M19 9l-7 7-7-7\'%3E%3C/path%3E%3C/svg%3E")', backgroundPosition: 'right 1.5rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.2em' }}
@@ -366,12 +380,26 @@ export default function Insights() {
               <p className="text-mist font-serif italic text-xl">Curating wisdom for the visionary...</p>
             </div>
           ) : (
-            <div className="relative group/swiper">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="relative group/swiper"
+            >
+              {/* Mobile Swipe Hint */}
+              <div className="flex md:hidden items-center justify-between pb-4">
+                <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-gold font-bold flex items-center gap-1.5">
+                  <span>Swipe to explore insights</span>
+                  <ArrowRight size={12} className="animate-pulse text-gold" />
+                </span>
+                <span className="text-[10px] font-mono text-mist font-bold">({filteredPosts.length} Articles)</span>
+              </div>
+
               <Swiper
                 modules={[Navigation, Pagination]}
                 onSwiper={(swiper) => (swiperRef.current = swiper)}
-                spaceBetween={40}
-                slidesPerView={1}
+                spaceBetween={16}
+                slidesPerView={1.15}
                 breakpoints={{
                   640: { slidesPerView: 1.5, spaceBetween: 24 },
                   768: { slidesPerView: 2, spaceBetween: 32 },
@@ -379,20 +407,14 @@ export default function Insights() {
                 }}
                 className="insights-swiper !pb-10"
               >
-                {filteredPosts.map((post, i) => (
-                  <SwiperSlide key={post._id || post.id} className="h-auto">
-                    <motion.article 
-                       initial={{ opacity: 0, y: 30 }}
-                       whileInView={{ opacity: 1, y: 0 }}
-                       viewport={{ once: true }}
-                       transition={{ delay: i * 0.1, duration: 0.8 }}
-                       className="group h-full"
-                    >
+                {filteredPosts.map((post) => (
+                  <SwiperSlide key={post._id || post.id || post.slug} className="h-auto">
+                    <article className="group h-full">
                       <Link to={`/insights/${post.slug}`} className="block h-full">
-                        <div className="editorial-card rounded-[40px] md:rounded-[60px] overflow-hidden flex flex-col h-full hover:-translate-y-3 transition-all duration-700 bg-white border border-gold/5 shadow-sm">
+                        <div className="editorial-card rounded-[40px] md:rounded-[60px] overflow-hidden flex flex-col h-full hover:-translate-y-2 transition-transform duration-300 bg-white border border-gold/5 shadow-sm hover:shadow-xl">
                           <div className="aspect-[4/3] overflow-hidden relative">
                              {(post.featuredImage || post.imageUrl) ? (
-                               <img src={post.featuredImage || post.imageUrl} alt={post.title} className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110" />
+                               <img src={post.featuredImage || post.imageUrl} alt={post.title} loading="lazy" decoding="async" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                              ) : (
                                <div className="w-full h-full bg-pearl flex items-center justify-center text-primary">
                                   <div className="text-7xl md:text-[120px] font-serif italic select-none">{(post.category || 'A')[0]}</div>
@@ -419,7 +441,7 @@ export default function Insights() {
                           </div>
                         </div>
                       </Link>
-                    </motion.article>
+                    </article>
                   </SwiperSlide>
                 ))}
               </Swiper>
@@ -443,7 +465,7 @@ export default function Insights() {
                   </button>
                 </div>
               )}
-            </div>
+            </motion.div>
           )}
 
           {!loading && (filteredPosts || []).length === 0 && (

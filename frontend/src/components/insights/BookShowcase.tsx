@@ -101,6 +101,7 @@ function BookItem({ book, index }: BookItemProps) {
   const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [12, -12]), { stiffness: 120, damping: 25 });
 
   const handleMouseMove = (e: React.MouseEvent) => {
+    if (typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches) return;
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width - 0.5;
@@ -110,6 +111,7 @@ function BookItem({ book, index }: BookItemProps) {
   };
 
   const handleMouseLeave = () => {
+    if (typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches) return;
     mouseX.set(0);
     mouseY.set(0);
   };
