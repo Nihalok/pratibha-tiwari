@@ -19,7 +19,7 @@ const ServiceImage = ({ src, alt, priority = false }: { src: string; alt: string
   const [isLoaded, setIsLoaded] = useState(false);
 
   return (
-    <div className="relative w-full h-full bg-pearl/50 overflow-hidden">
+    <div className="absolute inset-0 bg-pearl/50 overflow-hidden">
       {/* Shimmer Placeholder */}
       {!isLoaded && (
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent bg-[length:200%_100%] animate-shimmer" />
@@ -32,12 +32,13 @@ const ServiceImage = ({ src, alt, priority = false }: { src: string; alt: string
         transition={{ duration: 0.8, ease: "easeOut" }}
         onLoad={() => setIsLoaded(true)}
         loading={priority ? "eager" : "lazy"}
-        className="w-full h-full object-cover"
+        className="absolute inset-0 w-full h-full object-cover object-top"
         referrerPolicy="no-referrer"
       />
     </div>
   );
 };
+
 
 const programs = [
   {
@@ -252,7 +253,8 @@ export default function Services() {
                   transition={{ duration: 1 }}
                   className="relative rounded-2xl sm:rounded-3xl lg:rounded-[4rem] overflow-hidden shadow-2xl group border border-gold/5 lg:aspect-[4/5]"
                 >
-                  <div className="h-56 sm:h-72 md:h-80 lg:h-full w-full relative">
+                  {/* Image wrapper — needs explicit height and position:relative so ServiceImage (absolute inset-0) fills it */}
+                  <div className="relative h-64 sm:h-80 md:h-96 lg:h-full w-full">
                     <ServiceImage
                       src={p.image}
                       alt={p.title}

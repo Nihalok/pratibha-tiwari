@@ -58,6 +58,7 @@ const certificates: Certificate[] = [
 
 export default function CertificationsCarousel() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
 
   useEffect(() => {
@@ -75,15 +76,19 @@ export default function CertificationsCarousel() {
   };
 
   const handleDragEnd = (_: any, info: any) => {
-    if (info.offset.x > 100) {
+    setIsDragging(false);
+    if (info.offset.x > 80) {
       handlePrev();
-    } else if (info.offset.x < -100) {
+    } else if (info.offset.x < -80) {
       handleNext();
     }
   };
 
   const handleCardClick = (index: number) => {
-    setActiveIndex(index);
+    // Don't trigger click if it was a drag gesture
+    if (!isDragging) {
+      setActiveIndex(index);
+    }
   };
 
   return (
@@ -121,7 +126,7 @@ export default function CertificationsCarousel() {
             </div>
 
             <div className="relative w-full max-w-7xl h-full flex items-center justify-center">
-              <AnimatePresence mode="popLayout">
+              <AnimatePresence mode="sync">
                 {certificates.map((cert, index) => {
                   const isActive = index === activeIndex;
                   const isPrev = index === (activeIndex - 1 + certificates.length) % certificates.length;
@@ -130,39 +135,40 @@ export default function CertificationsCarousel() {
                   if (!isActive && !isPrev && !isNext) return null;
 
                   let xOffset = 0;
-                  if (isPrev) xOffset = isMobile ? -200 : -450;
-                  if (isNext) xOffset = isMobile ? 200 : 450;
+                  if (isPrev) xOffset = isMobile ? -190 : -430;
+                  if (isNext) xOffset = isMobile ? 190 : 430;
 
                   return (
                     <motion.div
                       key={cert.id}
-                      drag="x"
+                      drag={isMobile ? false : "x"}
                       dragConstraints={{ left: 0, right: 0 }}
+                      dragElastic={0.1}
+                      onDragStart={() => setIsDragging(true)}
                       onDragEnd={handleDragEnd}
-                      layout
-                      initial={{ opacity: 0, x: xOffset * 1.2, scale: 0.7 }}
+                      initial={false}
                       animate={{
                         opacity: isActive ? 1 : 0.25,
                         x: xOffset,
-                        scale: isActive ? 1.02 : 0.75,
-                        y: isActive ? -10 : 0,
+                        scale: isActive ? 1 : 0.75,
+                        y: isActive ? -8 : 0,
                         zIndex: isActive ? 20 : 10,
-                        rotateY: isPrev ? 20 : (isNext ? -20 : 0),
-                        filter: isActive ? 'blur(0px)' : 'blur(4px)',
+                        rotateY: isPrev ? 15 : (isNext ? -15 : 0),
+                        filter: isActive ? 'blur(0px)' : 'blur(3px)',
                       }}
-                      exit={{ opacity: 0, scale: 0.5, x: xOffset * 1.2 }}
                       transition={{
                         type: "spring",
-                        stiffness: 260,
-                        damping: 24,
-                        layout: { duration: 0.5 }
+                        stiffness: 300,
+                        damping: 30,
+                        mass: 0.8,
                       }}
                       onClick={() => handleCardClick(index)}
-                      className="absolute cursor-grab active:cursor-grabbing group"
+                      className={`absolute ${isActive ? 'cursor-default' : 'cursor-pointer'}`}
+                      style={{ touchAction: isMobile ? 'pan-y' : 'none' }}
                     >
                       <div className={`
-                        relative w-[270px] sm:w-[320px] md:w-[600px] aspect-[1.4/1] bg-white rounded-2xl md:rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.1)] md:shadow-[0_30px_70px_rgba(0,0,0,0.12)] transition-all duration-700 flex flex-col items-center justify-center p-2.5 sm:p-4 md:p-6
-                        ${isActive ? 'ring-1 ring-gold/20' : 'grayscale brightness-95 hover:grayscale-0 hover:brightness-100'}
+                        relative w-[270px] sm:w-[320px] md:w-[600px] aspect-[1.4/1] bg-white rounded-2xl md:rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.1)] md:shadow-[0_30px_70px_rgba(0,0,0,0.12)] transition-shadow duration-500 flex flex-col items-center justify-center p-2.5 sm:p-4 md:p-6
+                        ${isActive ? 'ring-1 ring-gold/20' : 'grayscale brightness-95'}
                       `}>
                         <div className="w-full h-full flex items-center justify-center relative">
                           {/* Inner border for the certificate feel */}
