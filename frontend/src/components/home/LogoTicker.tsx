@@ -112,7 +112,7 @@ export default function LogoTicker() {
         >
 
           <h2 className="text-4xl md:text-6xl font-serif text-primary leading-tight">
-            Trust <span >Academic & Professional Recognitions</span>
+            <span className='text-gold' >Academic & Professional Recognitions</span>
           </h2>
           <p className="text-slate-800 text-sm md:text-base mt-4 max-w-xl mx-auto font-normal tracking-wide">
             An Alumna and Featured Voice Across Leading Platforms
