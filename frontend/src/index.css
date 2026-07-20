@@ -1,0 +1,135 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;1,9..144,400&family=Outfit:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&family=Mrs+Saint+Delafield&display=swap');
+@import "tailwindcss";
+
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite linear;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gold/30 rounded-full border-2 border-[#FFF9FA] hover:bg-gold/50 transition-colors;
+}
+
+@theme {
+  --color-primary: #1A3A5C;
+  --color-secondary: #0F172A;
+  --color-accent: #3B82F6;
+  --color-blush: #E0F2FE;
+  --color-sky: #F8FAFC;
+  --color-pearl: #F1F5F9;
+  --color-charcoal: #1C1C2E;
+  --color-mist: #525D71;
+  --color-gold: #B8974A;
+
+  --font-serif: "Fraunces", serif;
+  --font-sans: "Outfit", sans-serif;
+  --font-display: "Fraunces", serif;
+  --font-mono: "JetBrains Mono", monospace;
+  --font-signature: "Mrs Saint Delafield", cursive;
+  
+  --animate-word-reveal: word-reveal 0.5s ease forwards;
+  --animate-marquee: marquee 60s linear infinite;
+}
+
+@keyframes word-reveal {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+body {
+  @apply text-charcoal font-sans font-normal selection:bg-blue-100 selection:text-primary;
+  background-color: #F8FAFC; /* Aligned with AnimatedBackground */
+  position: relative;
+  overflow-x: hidden;
+}
+
+.bg-texture-aware {
+  position: relative;
+}
+
+.bg-texture-aware::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: inherit;
+  z-index: -1;
+}
+
+h1, h2, h3, h4 {
+  @apply font-serif font-light tracking-tight;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.timeline-line {
+  @apply absolute left-1/2 top-0 bottom-0 w-px bg-gold/30 -translate-x-1/2;
+}
+
+.editorial-card {
+  @apply bg-white border border-gold/10 hover:border-gold/30 transition-all duration-700 shadow-[0_8px_30px_-10px_rgba(184,151,74,0.12)] hover:shadow-[0_20px_50px_-15px_rgba(184,151,74,0.2)];
+}
+
+.glass-morphism {
+  @apply bg-white/60 backdrop-blur-xl border border-white/40 shadow-xl;
+}
+
+.text-gradient-gold {
+  @apply bg-gradient-to-tr from-primary via-gold to-primary bg-clip-text text-transparent;
+}
+
+.soft-glow-gold {
+  box-shadow: 0 0 40px -10px rgba(184, 151, 74, 0.2);
+}
+
+.section-spacing {
+  @apply py-32 md:py-48;
+}
+
+.reveal-mask {
+  mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+}
