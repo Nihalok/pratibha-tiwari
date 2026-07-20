@@ -91,9 +91,13 @@ export default function LatestBlogFeed() {
   const [posts, setPosts] = useState<any[]>(staticBlogPosts);
 
   useEffect(() => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 1200);
+
     const fetchLatestPosts = async () => {
       try {
-        const response = await fetch('/api/posts/home');
+        const response = await fetch('/api/posts/home', { signal: controller.signal });
+        clearTimeout(timeoutId);
         if (response.ok) {
           const data = await response.json();
           if (data.data && data.data.length > 0) {
@@ -102,7 +106,7 @@ export default function LatestBlogFeed() {
               slug: data.slug,
               title: data.title,
               excerpt: data.excerpt,
-              imageUrl: data.featuredImage || staticBlogPosts[0].imageUrl,
+              imageUrl: data.featuredImage || staticBlogPosts[0]?.imageUrl,
               category: data.category,
               date: data.createdAt ? new Date(data.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recent',
               readTime: calculateReadTime(data.body)
@@ -118,6 +122,11 @@ export default function LatestBlogFeed() {
     };
 
     fetchLatestPosts();
+
+    return () => {
+      clearTimeout(timeoutId);
+      controller.abort();
+    };
   }, []);
 
   return (

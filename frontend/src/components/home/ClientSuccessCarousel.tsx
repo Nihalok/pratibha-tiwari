@@ -78,7 +78,7 @@ const TestimonialCard = ({ testimonial }: any) => (
     <div className="flex items-center space-x-4 sm:space-x-5 relative z-10">
       <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full overflow-hidden border-2 border-gold/10 group-hover:border-secondary transition-all duration-1000 ring-4 ring-gold/5 group-hover:ring-secondary/5 shrink-0">
         <img 
-          src={testimonial.image || `https://i.pravatar.cc/150?u=${testimonial._id || testimonial.id}`} 
+          src={testimonial.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(testimonial.name || 'Leader')}&background=1A3A5C&color=B8974A&bold=true`} 
           alt={testimonial.name}
           className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110" 
           loading="lazy"
@@ -121,9 +121,13 @@ export default function ClientSuccessCarousel() {
   const [items, setItems] = useState<any[]>(staticTestimonials);
 
   useEffect(() => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 1200);
+
     const fetchTestimonials = async () => {
       try {
-        const response = await fetch('/api/testimonials/home');
+        const response = await fetch('/api/testimonials/home', { signal: controller.signal });
+        clearTimeout(timeoutId);
         if (response.ok) {
           const data = await response.json();
           if (data.data && data.data.length > 0) {
@@ -133,11 +137,16 @@ export default function ClientSuccessCarousel() {
           }
         }
       } catch (_error) {
-        // Silently fall back to static testimonials
+        // Fast fallback to static testimonials
       }
     };
 
     fetchTestimonials();
+
+    return () => {
+      clearTimeout(timeoutId);
+      controller.abort();
+    };
   }, []);
 
   // Use all items for a single marquee row

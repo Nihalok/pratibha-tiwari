@@ -151,6 +151,7 @@ export default function Hero() {
                 alt="Pratibha Tiwari"
                 className="w-full h-auto object-cover relative z-10"
                 loading="eager"
+                fetchPriority="high"
                 decoding="async"
               />
             </div>

@@ -338,7 +338,7 @@ export default function MultimediaShelf() {
                       <div className="flex -space-x-3">
                         {[1,2,3,4,5].map(i => (
                           <div key={i} className="w-10 h-10 rounded-full border-2 border-white overflow-hidden bg-gold/10 shadow-lg relative group/avatar">
-                            <img src={`https://i.pravatar.cc/100?u=user${i + currentIndex * 7}`} alt="" className="w-full h-full object-cover group-hover/avatar:scale-110 transition-all" />
+                            <img src={`https://ui-avatars.com/api/?name=User+${i}&background=1A3A5C&color=B8974A&bold=true`} alt="Reader avatar" className="w-full h-full object-cover group-hover/avatar:scale-110 transition-all" loading="lazy" decoding="async" />
                           </div>
                         ))}
                       </div>
