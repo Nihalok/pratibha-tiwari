@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useLayoutEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Cpu, Heart, Compass, Mic2, ArrowRight, Check } from 'lucide-react';
 import SEO from '../components/layout/SEO';
@@ -127,6 +127,16 @@ const programs = [
 ];
 
 export default function Services() {
+  const { hash } = useLocation();
+
+  // Scroll to top synchronously before paint on mount/refresh
+  // This fixes the lazy-loaded page appearing scrolled to the footer
+  useLayoutEffect(() => {
+    if (!hash) {
+      window.scrollTo(0, 0);
+    }
+  }, [hash]);
+
   return (
     <div className="min-h-screen bg-pearl/20 pb-20">
       <SEO
@@ -234,50 +244,48 @@ export default function Services() {
 
               {/* Right Side: Image & Floating Outcomes Card */}
               <div className={`relative ${i % 2 === 1 ? 'lg:order-1' : ''}`}>
+                {/* Image Section */}
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ duration: 1 }}
-                  className="relative rounded-3xl sm:rounded-[4rem] overflow-hidden shadow-2xl group border border-gold/5 aspect-auto md:aspect-square lg:aspect-[4/5] flex flex-col justify-end"
+                  className="relative rounded-2xl sm:rounded-3xl lg:rounded-[4rem] overflow-hidden shadow-2xl group border border-gold/5 lg:aspect-[4/5]"
                 >
-                  <div className="h-56 sm:h-80 md:h-full w-full relative shrink-0">
+                  <div className="h-56 sm:h-72 md:h-80 lg:h-full w-full relative">
                     <ServiceImage
                       src={p.image}
                       alt={p.title}
                       priority={i === 0}
                     />
-                    <div className="absolute inset-0 bg-slate-900/20 md:bg-slate-900/10 group-hover:bg-transparent transition-colors duration-700 pointer-events-none" />
+                    <div className="absolute inset-0 bg-slate-900/20 lg:bg-slate-900/10 group-hover:bg-transparent transition-colors duration-700 pointer-events-none" />
                   </div>
 
-                  <div className="relative md:absolute inset-0 p-4 sm:p-6 md:p-10 flex flex-col justify-end z-10 -mt-10 md:mt-0">
-                    {/* Floating Premium Card for Outcomes */}
+                  {/* Outcomes Card - floating overlay on desktop only */}
+                  <div className="hidden lg:flex absolute inset-0 p-6 lg:p-10 flex-col justify-end z-10">
                     <motion.div
                       initial={{ opacity: 0, y: 30 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: 0.4, duration: 0.8 }}
-                      className="rounded-2xl sm:rounded-[2.5rem] p-5 sm:p-8 md:p-10 shadow-2xl border border-slate-700/50 relative overflow-hidden group/card"
+                      className="rounded-2xl lg:rounded-[2.5rem] p-6 lg:p-10 shadow-2xl border border-slate-700/50 relative overflow-hidden group/card"
                     >
-                      {/* High-Clarity Background Image */}
                       <div
                         className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover/card:scale-105"
                         style={{ backgroundImage: `url(${p.outcomeBg})` }}
                       />
-                      {/* Premium Dark Gradient Overlay (No Blur) */}
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/90 to-slate-900/40" />
-
                       <div className="absolute top-0 right-0 w-24 h-24 bg-gold/10 blur-3xl rounded-full pointer-events-none" />
 
-                      <div className="space-y-6 sm:space-y-8 relative z-10">
-                        <div className="space-y-2 sm:space-y-3">
+                      <div className="space-y-8 relative z-10">
+                        <div className="space-y-3">
                           <div className="flex items-center gap-3">
                             <div className="w-6 h-px bg-gold" />
-                            <h3 className="text-lg sm:text-xl md:text-2xl font-serif italic text-white font-light drop-shadow-md">Expected Outcomes</h3>
+                            <h3 className="text-xl lg:text-2xl font-serif italic text-white font-light drop-shadow-md">Expected Outcomes</h3>
                           </div>
                         </div>
 
-                        <ul className="grid gap-3 sm:gap-4">
+                        <ul className="grid gap-4">
                           {p.outcomes.map((item, idx) => (
                             <motion.li
                               key={idx}
@@ -290,15 +298,15 @@ export default function Services() {
                               <div className="mt-1 p-1 bg-gold/20 rounded-full mr-3 shrink-0 transition-transform group-hover/item:scale-110 border border-gold/30">
                                 <Check size={10} className="text-gold" />
                               </div>
-                              <span className="text-slate-200 leading-relaxed font-sans text-xs sm:text-sm font-medium drop-shadow-md">{item}</span>
+                              <span className="text-slate-200 leading-relaxed font-sans text-sm font-medium drop-shadow-md">{item}</span>
                             </motion.li>
                           ))}
                         </ul>
 
-                        <div className="pt-2 sm:pt-6">
+                        <div className="pt-6">
                           <Link
                             to="/contact"
-                            className="w-full bg-gold text-slate-900 py-4 sm:py-5 rounded-xl sm:rounded-2xl font-bold uppercase tracking-widest text-[10px] hover:bg-white hover:text-slate-900 transition-all duration-500 flex items-center justify-center group/btn shadow-xl cursor-pointer"
+                            className="w-full bg-gold text-slate-900 py-5 rounded-2xl font-bold uppercase tracking-widest text-[10px] hover:bg-white hover:text-slate-900 transition-all duration-500 flex items-center justify-center group/btn shadow-xl cursor-pointer"
                           >
                             {p.cta || "Inquire About This Pillar"}
                             <ArrowRight className="ml-3 w-4 h-4 transition-transform group-hover/btn:translate-x-2" />
@@ -306,6 +314,59 @@ export default function Services() {
                         </div>
                       </div>
                     </motion.div>
+                  </div>
+                </motion.div>
+
+                {/* Outcomes Card - standalone card on mobile/tablet */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.3, duration: 0.8 }}
+                  className="lg:hidden mt-4 sm:mt-6 rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-2xl border border-slate-700/50 relative overflow-hidden group/card"
+                >
+                  <div
+                    className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover/card:scale-105"
+                    style={{ backgroundImage: `url(${p.outcomeBg})` }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/90 to-slate-900/40" />
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-gold/10 blur-3xl rounded-full pointer-events-none" />
+
+                  <div className="space-y-6 relative z-10">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-3">
+                        <div className="w-6 h-px bg-gold" />
+                        <h3 className="text-lg sm:text-xl font-serif italic text-white font-light drop-shadow-md">Expected Outcomes</h3>
+                      </div>
+                    </div>
+
+                    <ul className="grid gap-3">
+                      {p.outcomes.map((item, idx) => (
+                        <motion.li
+                          key={idx}
+                          initial={{ opacity: 0, x: -10 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: 0.2 + (idx * 0.05) }}
+                          className="flex items-start group/item"
+                        >
+                          <div className="mt-1 p-1 bg-gold/20 rounded-full mr-3 shrink-0 transition-transform group-hover/item:scale-110 border border-gold/30">
+                            <Check size={10} className="text-gold" />
+                          </div>
+                          <span className="text-slate-200 leading-relaxed font-sans text-xs sm:text-sm font-medium drop-shadow-md">{item}</span>
+                        </motion.li>
+                      ))}
+                    </ul>
+
+                    <div className="pt-2">
+                      <Link
+                        to="/contact"
+                        className="w-full bg-gold text-slate-900 py-4 rounded-xl font-bold uppercase tracking-widest text-[10px] hover:bg-white hover:text-slate-900 transition-all duration-500 flex items-center justify-center group/btn shadow-xl cursor-pointer"
+                      >
+                        {p.cta || "Inquire About This Pillar"}
+                        <ArrowRight className="ml-3 w-4 h-4 transition-transform group-hover/btn:translate-x-2" />
+                      </Link>
+                    </div>
                   </div>
                 </motion.div>
 

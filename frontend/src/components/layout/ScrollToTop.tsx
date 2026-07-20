@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useEffect } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 export default function ScrollToTop() {
@@ -17,7 +17,7 @@ export default function ScrollToTop() {
     window.scrollTo(0, 0);
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (hash) {
       const targetId = hash.replace('#', '');
       
