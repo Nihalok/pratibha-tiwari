@@ -202,7 +202,7 @@ export default function Hero() {
                     <path d="M12 21C12 21 21 18 21 12C21 6 12 3 12 3" />
                   </svg>
                 </div>
-                <span className="text-[8px] font-mono uppercase tracking-[0.4em] text-white mb-1 font-black">Certified Mentor</span>
+                <span className="text-[8px] font-mono uppercase tracking-[0.4em] text-white mb-1 font-black"></span>
                 <div className="flex flex-col items-center">
                   <span className="font-signature text-4xl text-gold">Pratibha Tiwari</span>
 

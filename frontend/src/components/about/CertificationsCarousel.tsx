@@ -23,28 +23,28 @@ const certificates: Certificate[] = [
     title: "Professional Certified Coach (PCC)",
     org: "ICF Credentials and Standards",
     image: cert1, // photo_3
-    tag: "ICF Global"
+    tag: ""
   },
   {
     id: 2,
     title: "Certified NLP Trainer",
     org: "International Association of Professional Coaches, Counsellors & Therapists (IAPCCT)",
     image: cert2, // photo_4
-    tag: "NLP"
+    tag: ""
   },
   {
     id: 3,
     title: "Advanced Programme in Technology and AI Leadership",
     org: "Indian Institute of Technology Delhi (Department of Management Studies)",
     image: cert3, // photo_2
-    tag: "AI Leadership"
+    tag: ""
   },
   {
     id: 4,
     title: "Certified Associate Leadership & Executive Coach",
     org: "NLP Coaching Academy (CCE)",
     image: cert4, // photo_1
-    tag: "Leadership"
+    tag: ""
   }
   ,
   {

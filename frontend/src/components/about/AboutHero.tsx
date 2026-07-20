@@ -98,35 +98,35 @@ export default function AboutHero() {
               <div className="absolute inset-0 bg-gradient-to-t from-primary/40 via-transparent to-white/10" />
             </div>
             
-            {/* Floating Achievement Card - Refined */}
+            {/* Floating Achievement Card - Refined & Compact on Mobile */}
             <motion.div 
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.8, duration: 1 }}
-              className="absolute -bottom-16 -right-6 lg:-right-16 z-20 bg-white/95 backdrop-blur-xl p-8 lg:p-10 rounded-[2rem] shadow-[0_40px_80px_-15px_rgba(26,58,92,0.2)] border border-primary/5 min-w-[320px]"
+              className="absolute -bottom-8 right-2 sm:-bottom-12 sm:-right-4 lg:-bottom-16 lg:-right-16 z-20 bg-white/95 backdrop-blur-xl p-4 sm:p-6 lg:p-10 rounded-2xl sm:rounded-3xl lg:rounded-[2.5rem] shadow-[0_20px_50px_-10px_rgba(26,58,92,0.2)] lg:shadow-[0_40px_80px_-15px_rgba(26,58,92,0.2)] border border-primary/10 min-w-[220px] sm:min-w-[280px] lg:min-w-[320px]"
             >
-              <div className="space-y-6">
-                <div className="flex items-center space-x-5">
-                  <div className="w-16 h-16 bg-gold/10 rounded-2xl flex items-center justify-center">
-                    <div className="w-8 h-8 bg-gold rounded-full animate-pulse" />
+              <div className="space-y-3 sm:space-y-6">
+                <div className="flex items-center space-x-3 sm:space-x-5">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-16 lg:h-16 bg-gold/10 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0">
+                    <div className="w-4 h-4 sm:w-6 sm:h-6 lg:w-8 lg:h-8 bg-gold rounded-full animate-pulse" />
                   </div>
                   <div>
-                    <div className="font-serif text-3xl text-primary font-bold italic leading-none">23+ Years</div>
-                    <div className="text-[11px] font-mono uppercase tracking-[0.2em] text-gold mt-2">Global Impact</div>
+                    <div className="font-serif text-lg sm:text-2xl lg:text-3xl text-primary font-bold italic leading-none">23+ Years</div>
+                    <div className="text-[8px] sm:text-[10px] lg:text-[11px] font-mono uppercase tracking-[0.15em] sm:tracking-[0.2em] text-gold mt-1 sm:mt-2">Global Impact</div>
                   </div>
                 </div>
                 
                 <div className="h-px bg-primary/5 w-full" />
                 
-                <div className="grid grid-cols-2 gap-8">
-                  <div className="space-y-1">
-                    <div className="text-2xl font-serif text-primary">4,000+</div>
-                    <div className="text-[9px] font-mono uppercase text-primary tracking-widest">Leaders Coached</div>
+                <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:gap-8">
+                  <div className="space-y-0.5 sm:space-y-1">
+                    <div className="text-base sm:text-xl lg:text-2xl font-serif text-primary font-bold">4,000+</div>
+                    <div className="text-[8px] sm:text-[9px] font-mono uppercase text-primary tracking-wider">Leaders Coached</div>
                   </div>
-                  <div className="space-y-1">
-                    <div className="text-2xl font-serif text-primary">2,700+</div>
-                    <div className="text-[9px] font-mono uppercase text-primary tracking-widest">Coaching Hours</div>
+                  <div className="space-y-0.5 sm:space-y-1">
+                    <div className="text-base sm:text-xl lg:text-2xl font-serif text-primary font-bold">2,700+</div>
+                    <div className="text-[8px] sm:text-[9px] font-mono uppercase text-primary tracking-wider">Coaching Hours</div>
                   </div>
                 </div>
               </div>
