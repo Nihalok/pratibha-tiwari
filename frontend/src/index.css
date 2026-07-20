@@ -33,7 +33,7 @@ html.lenis, html.lenis body {
 html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeSpeed;
+  text-rendering: optimizeLegibility;
   scroll-behavior: smooth;
 }
 
@@ -148,8 +148,8 @@ h1, h2, h3, h4 {
 
 .glass-morphism {
   background-color: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
   border: 1px solid rgba(255, 255, 255, 0.4);
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
 }
@@ -178,6 +178,6 @@ h1, h2, h3, h4 {
 }
 
 .reveal-mask {
-  mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
   -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
 }
