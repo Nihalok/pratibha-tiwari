@@ -24,8 +24,8 @@ import pillar4 from '../../assets/images/keynotes.jpg';
 const pillars = [
   {
     id: '01',
-    title: 'AI Leadership',
-    subtitle: 'Digital Mastery',
+    title: 'AI Leadership & Digital Strategy',
+    subtitle: 'Pillar 1',
     desc: 'Empowering leaders to navigate the AI era with human-centric technological vision.',
     icon: <Cpu className="w-12 h-12" />,
     color: '#1A3A5C', // Primary
@@ -38,8 +38,8 @@ const pillars = [
   },
   {
     id: '02',
-    title: 'Executive Coaching',
-    subtitle: 'NLP Mastery',
+    title: 'Executive Coaching & Emotional Intelligence',
+    subtitle: 'Pillar 2',
     desc: 'Precision mentorship leveraging NLP + EI to build authentic leadership presence.',
     icon: <Heart className="w-12 h-12" />,
     color: '#0F172A', // Secondary
@@ -52,8 +52,8 @@ const pillars = [
   },
   {
     id: '03',
-    title: 'Future ready Career ',
-    subtitle: 'Growth Protocol',
+    title: 'Future-Ready Career Shaping',
+    subtitle: 'Pillar 3',
     desc: 'Audit your professional sustainability and build a blueprint for high-value growth.',
     icon: <Compass className="w-12 h-12" />,
     color: '#B8974A', // Gold
@@ -66,8 +66,8 @@ const pillars = [
   },
   {
     id: '04',
-    title: 'Master Keynotes',
-    subtitle: 'Global Voice',
+    title: 'Corporate Training & Keynotes',
+    subtitle: 'Pillar 4',
     desc: 'High-impact masterclasses backed by 23+ years of real-world corporate success.',
     icon: <Mic2 className="w-12 h-12" />,
     color: '#3B82F6', // Accent
@@ -129,13 +129,19 @@ export default function FourPillars() {
         </AnimatePresence>
       </div>
 
-      {/* Decorative Branding Header */}
-      <div className="absolute top-16 left-6 md:top-32 md:left-12 z-30 pointer-events-none">
+      {/* Section Heading — The Four Pillars of Impact */}
+      <div className="absolute top-[72px] sm:top-20 md:top-10 left-0 right-0 z-30 pointer-events-none px-6 md:px-12">
         <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="flex flex-col"
+          initial={{ opacity: 0, y: -12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: 'easeOut' }}
+          className="flex flex-col items-start"
         >
+          <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.35em] text-gold font-bold mb-1.5">Framework</span>
+          <h2 className="font-serif text-lg sm:text-2xl md:text-3xl lg:text-4xl text-primary leading-tight tracking-tight">
+            The Four Pillars of{' '}
+            <span className="italic text-secondary">Impact</span>
+          </h2>
         </motion.div>
       </div>
 
@@ -169,7 +175,7 @@ export default function FourPillars() {
           <SwiperSlide key={pillar.id} className="w-full h-full">
             <div className="relative w-full h-full flex overflow-hidden">
               {/* Content Layer */}
-              <div className="relative z-10 w-full h-full flex flex-col md:flex-row items-center justify-center px-6 md:px-20 gap-8 md:gap-20 pt-20 md:pt-0">
+              <div className="relative z-10 w-full h-full flex flex-col md:flex-row items-center justify-center px-6 md:px-20 gap-6 md:gap-20 pt-32 sm:pt-36 md:pt-0">
 
                 {/* Visual / Image */}
                 <div className="relative group shrink-0">
@@ -212,13 +218,9 @@ export default function FourPillars() {
                       y: activeIndex === idx ? 0 : 30
                     }}
                     transition={{ delay: 0.5, duration: 0.8 }}
-                    className="text-3xl xs:text-4xl md:text-7xl lg:text-8xl font-serif text-primary leading-[1.1] tracking-tight mb-4 md:mb-8"
+                    className="text-2xl xs:text-3xl md:text-6xl lg:text-7xl font-serif text-primary leading-[1.15] tracking-tight mb-4 md:mb-8"
                   >
-                    {pillar.title.split(' ').map((word, i) => (
-                      <span key={i} className={i === 1 ? "italic text-secondary block md:inline" : ""}>
-                        {word}{" "}
-                      </span>
-                    ))}
+                    {pillar.title}
                   </motion.h3>
 
                   <motion.p
