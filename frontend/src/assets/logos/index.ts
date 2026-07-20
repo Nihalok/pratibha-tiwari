@@ -10,15 +10,15 @@ import icf from './coach-pratibha-accreditation-icf-logo.svg';
 import tedx from './coach-pratibha-speaking-tedx-logo.svg';
 
 import adnoc from './clients/adnoc.png';
-import aldar from './clients/aldar.png';
+import aldar from './clients/Aldar.png';
 import alec from './clients/alec.png';
-import crescent_petroleum from './clients/crescent-petroleum.svg';
+import crescent_petroleum from './clients/Crescent-petroleum.svg';
 import du from './clients/du.png';
-import emaar from './clients/emaar.svg';
+import emaar from './clients/Emaar.svg';
 import enoc from './clients/enoc.png';
-import etisalat from './clients/etisalat.svg';
-import jumeirah from './clients/jumeirah.svg';
-import millennium from './clients/millennium.svg';
+import etisalat from './clients/Etisalat.svg';
+import jumeirah from './clients/Jumeirah.svg';
+import millennium from './clients/Millennium.svg';
 import miral from './clients/miral.png';
 import nmdc from './clients/nmdc.jpeg';
 
