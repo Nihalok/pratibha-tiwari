@@ -12,12 +12,12 @@ import gallery2 from '../../assets/images/2.jpg';
 import gallery3 from '../../assets/images/3.jpg';
 import gallery4 from '../../assets/images/4.jpg';
 import gallery5 from '../../assets/images/5.jpg';
-import gallery6 from '../../assets/images/6.jpg';
-import gallery7 from '../../assets/images/7.jpg';
-import gallery8 from '../../assets/images/8.jpg';
-import gallery9 from '../../assets/images/9.jpg';
-import gallery10 from '../../assets/images/10.jpg';
-import gallery11 from '../../assets/images/11.jpg';
+import gallery6 from '../../assets/images/6.JPG';
+import gallery7 from '../../assets/images/7.JPG';
+import gallery8 from '../../assets/images/8.JPG';
+import gallery9 from '../../assets/images/9.JPG';
+import gallery10 from '../../assets/images/10.JPG';
+import gallery11 from '../../assets/images/11.JPG';
 
 const galleryImages = [
   { id: 1, alt: 'Empowering Moments', src: gallery1 },
