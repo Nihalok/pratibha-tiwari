@@ -138,7 +138,7 @@ export default function FourPillars() {
           className="flex flex-col items-start"
         >
           <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.35em] text-gold font-bold mb-1.5">Framework</span>
-          <h2 className="font-serif text-lg sm:text-2xl md:text-3xl lg:text-4xl text-primary leading-tight tracking-tight">
+          <h2 className="font-serif text-2xl sm:text-3xl md:text-3xl lg:text-4xl text-primary leading-tight tracking-tight">
             The Four Pillars of{' '}
             <span className="italic text-secondary">Impact</span>
           </h2>
@@ -175,7 +175,7 @@ export default function FourPillars() {
           <SwiperSlide key={pillar.id} className="w-full h-full">
             <div className="relative w-full h-full flex overflow-hidden">
               {/* Content Layer */}
-              <div className="relative z-10 w-full h-full flex flex-col md:flex-row items-center justify-center px-6 md:px-20 gap-6 md:gap-20 pt-32 sm:pt-36 md:pt-0">
+              <div className="relative z-10 w-full h-full flex flex-col md:flex-row items-center justify-center px-6 md:px-20 gap-4 md:gap-20 pt-36 sm:pt-40 md:pt-0">
 
                 {/* Visual / Image */}
                 <div className="relative group shrink-0">
@@ -218,7 +218,7 @@ export default function FourPillars() {
                       y: activeIndex === idx ? 0 : 30
                     }}
                     transition={{ delay: 0.5, duration: 0.8 }}
-                    className="text-2xl xs:text-3xl md:text-6xl lg:text-7xl font-serif text-primary leading-[1.15] tracking-tight mb-4 md:mb-8"
+                    className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif text-primary leading-[1.15] tracking-tight mb-3 md:mb-8"
                   >
                     {pillar.title}
                   </motion.h3>
@@ -230,7 +230,7 @@ export default function FourPillars() {
                       y: activeIndex === idx ? 0 : 20
                     }}
                     transition={{ delay: 0.6 }}
-                    className="text-primary text-sm md:text-2xl mb-6 md:mb-12 leading-relaxed font-normal max-w-xl line-clamp-3 md:line-clamp-none"
+                    className="text-primary text-base md:text-2xl mb-5 md:mb-12 leading-relaxed font-normal max-w-xl"
                   >
                     {pillar.desc}
                   </motion.p>
