@@ -202,7 +202,7 @@ export default function AboutHero() {
             <div className="flex -space-x-3">
               {[1, 2, 3, 4].map((i) => (
                 <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-slate-200 overflow-hidden">
-                  <img src={`https://i.pravatar.cc/100?img=${i+10}`} alt="Leader" className="w-full h-full object-cover" />
+                  <img src={`https://ui-avatars.com/api/?name=Leader+${i}&background=1A3A5C&color=B8974A&bold=true`} alt="Leader avatar" className="w-full h-full object-cover" loading="lazy" decoding="async" />
                 </div>
               ))}
               <div className="w-10 h-10 rounded-full border-2 border-white bg-gold/10 flex items-center justify-center text-[10px] font-bold text-gold">

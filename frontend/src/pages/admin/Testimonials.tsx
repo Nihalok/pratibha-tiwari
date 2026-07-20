@@ -541,9 +541,11 @@ export default function Testimonials() {
             <div className="flex items-center space-x-4 relative z-10 pt-4 border-t border-pearl">
               <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-gold/10 group-hover:border-secondary transition-all duration-500 shrink-0">
                 <img 
-                  src={t.image || `https://i.pravatar.cc/150?u=${t._id}`} 
+                  src={t.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(t.name || 'Client')}&background=1A3A5C&color=B8974A&bold=true`} 
                   alt={t.name}
                   className="w-full h-full object-cover" 
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
               <div className="space-y-0.5 min-w-0">

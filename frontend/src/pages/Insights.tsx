@@ -28,9 +28,13 @@ export default function Insights() {
   const [activeCategory, setActiveCategory] = useState('All');
 
   useEffect(() => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 1500);
+
     const fetchPosts = async () => {
       try {
-        const response = await fetch('/api/posts');
+        const response = await fetch('/api/posts', { signal: controller.signal });
+        clearTimeout(timeoutId);
         if (response.ok) {
           const data = await response.json();
           const dbPosts = (data.data || []) as any[];
@@ -55,6 +59,11 @@ export default function Insights() {
     };
 
     fetchPosts();
+
+    return () => {
+      clearTimeout(timeoutId);
+      controller.abort();
+    };
   }, []);
 
   const categories = ['All', ...Array.from(new Set((posts || []).map(p => p.category).filter(Boolean)))];

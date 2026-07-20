@@ -43,13 +43,13 @@ export default function BlogPost() {
   ];
 
   useEffect(() => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 1500);
+
     const fetchPostAndRelated = async () => {
       try {
-        setLoading(true);
-        
-        // 1. Check static posts first
+        // 1. Check static posts first for instant render
         const staticPost = staticBlogPosts.find(p => p.slug === slug);
-        
         if (staticPost) {
           setPost(staticPost);
           const related = staticBlogPosts
@@ -57,18 +57,19 @@ export default function BlogPost() {
             .slice(0, 3);
           setRelatedPosts(related);
           setLoading(false);
+          clearTimeout(timeoutId);
           return;
         }
 
         // 2. Fetch from backend
-        const response = await fetch(`/api/posts/slug/${slug}`);
+        const response = await fetch(`/api/posts/slug/${slug}`, { signal: controller.signal });
         if (response.ok) {
           const data = await response.json();
           const currentPost = data.data;
           setPost(currentPost);
 
           // Fetch related posts from same category via general posts endpoint for now
-          const relatedResponse = await fetch('/api/posts');
+          const relatedResponse = await fetch('/api/posts', { signal: controller.signal });
           if (relatedResponse.ok) {
             const allPostsData = await relatedResponse.json();
             const related = allPostsData.data
@@ -80,11 +81,17 @@ export default function BlogPost() {
       } catch (_error) {
         // Silently fall through — not-found state will be shown
       } finally {
+        clearTimeout(timeoutId);
         setLoading(false);
       }
     };
     fetchPostAndRelated();
     window.scrollTo(0, 0);
+
+    return () => {
+      clearTimeout(timeoutId);
+      controller.abort();
+    };
   }, [slug]);
 
   if (loading) {

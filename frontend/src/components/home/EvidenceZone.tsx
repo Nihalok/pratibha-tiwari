@@ -35,9 +35,13 @@ export default function EvidenceZone() {
   const [current, setCurrent] = useState(0);
 
   useEffect(() => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 1200);
+
     const fetchReal = async () => {
       try {
-        const response = await fetch('/api/testimonials/home');
+        const response = await fetch('/api/testimonials/home', { signal: controller.signal });
+        clearTimeout(timeoutId);
         if (response.ok) {
           const data = await response.json();
           if (data.success && data.data && data.data.length > 0) {
@@ -54,6 +58,11 @@ export default function EvidenceZone() {
       }
     };
     fetchReal();
+
+    return () => {
+      clearTimeout(timeoutId);
+      controller.abort();
+    };
   }, []);
 
   const next = () => setCurrent((prev) => (prev + 1) % items.length);

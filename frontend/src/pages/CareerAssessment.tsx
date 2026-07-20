@@ -253,6 +253,8 @@ export default function CareerAssessment() {
         <img
           src={assessmentBg}
           alt="Professional Assessment Background"
+          loading="lazy"
+          decoding="async"
           onLoad={() => setBgLoaded(true)}
           className={`w-full h-full object-cover transition-opacity duration-1000 ${bgLoaded ? 'opacity-80' : 'opacity-0'}`}
         />
