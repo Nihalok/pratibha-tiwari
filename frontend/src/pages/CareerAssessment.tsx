@@ -190,15 +190,22 @@ export default function CareerAssessment() {
   const downloadReport = async () => {
     if (!reportRef.current) return;
     setIsGeneratingPdf(true);
+
+    // Detect mobile: use lower scale + JPEG for much faster rendering
+    const isMobile = window.innerWidth < 768;
+    const scale = isMobile ? 1 : 2;
+    const imageType = isMobile ? 'image/jpeg' : 'image/png';
+    const imageQuality = isMobile ? 0.82 : 1;
+
     try {
       const element = reportRef.current;
       const canvas = await html2canvas(element, {
-        scale: 2,
+        scale,
         useCORS: true,
         allowTaint: false,
         logging: false,
         backgroundColor: '#F8FAFC',
-        windowWidth: 1000,
+        windowWidth: isMobile ? 800 : 1000,
         onclone: (clonedDoc) => {
           const wrapper = clonedDoc.querySelector('[data-pdf-wrapper]') as HTMLElement;
           if (wrapper) {
@@ -231,7 +238,7 @@ export default function CareerAssessment() {
         }
       });
 
-      const imgData = canvas.toDataURL('image/png');
+      const imgData = canvas.toDataURL(imageType, imageQuality);
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pdfWidth = pdf.internal.pageSize.getWidth(); // 210mm
       const pdfHeight = pdf.internal.pageSize.getHeight(); // 297mm
@@ -240,22 +247,24 @@ export default function CareerAssessment() {
       const printWidth = pdfWidth - margin * 2; // 190mm
       const printHeight = (canvas.height * printWidth) / canvas.width;
 
+      const jsPdfImageType = isMobile ? 'JPEG' : 'PNG';
+
       if (printHeight <= pdfHeight - margin * 2) {
         // Fits on single page: center vertically with 10mm side margins
         const yPos = (pdfHeight - printHeight) / 2;
-        pdf.addImage(imgData, 'PNG', margin, yPos, printWidth, printHeight, undefined, 'FAST');
+        pdf.addImage(imgData, jsPdfImageType, margin, yPos, printWidth, printHeight, undefined, 'FAST');
       } else {
         // Multi-page fallback with margin bounds
         let heightLeft = printHeight;
         let position = margin;
 
-        pdf.addImage(imgData, 'PNG', margin, position, printWidth, printHeight, undefined, 'FAST');
+        pdf.addImage(imgData, jsPdfImageType, margin, position, printWidth, printHeight, undefined, 'FAST');
         heightLeft -= (pdfHeight - margin * 2);
 
         while (heightLeft > 5) {
           position -= (pdfHeight - margin * 2);
           pdf.addPage();
-          pdf.addImage(imgData, 'PNG', margin, position, printWidth, printHeight, undefined, 'FAST');
+          pdf.addImage(imgData, jsPdfImageType, margin, position, printWidth, printHeight, undefined, 'FAST');
           heightLeft -= (pdfHeight - margin * 2);
         }
       }
