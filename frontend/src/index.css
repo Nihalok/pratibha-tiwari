@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;1,9..144,400&family=Outfit:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&family=Mrs+Saint+Delafield&display=swap');
 @import "tailwindcss";
 
 html.lenis, html.lenis body {
@@ -46,7 +47,19 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-gold/30 rounded-full border-2 border-[#FFF9FA] hover:bg-gold/50 transition-colors;
+  background-color: rgba(184, 151, 74, 0.3);
+  border-radius: 9999px;
+  border: 2px solid #FFF9FA;
+  transition: background-color 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(184, 151, 74, 0.5);
+}
+
+::selection {
+  background-color: rgba(59, 130, 246, 0.2);
+  color: #1A3A5C;
 }
 
 @theme {
@@ -81,8 +94,10 @@ html {
 }
 
 body {
-  @apply text-charcoal font-sans font-normal selection:bg-blue-100 selection:text-primary;
-  background-color: #F8FAFC; /* Aligned with AnimatedBackground */
+  color: #1C1C2E;
+  font-family: var(--font-sans), sans-serif;
+  font-weight: 400;
+  background-color: #F8FAFC;
   position: relative;
   overflow-x: hidden;
 }
@@ -100,7 +115,9 @@ body {
 }
 
 h1, h2, h3, h4 {
-  @apply font-serif font-light tracking-tight;
+  font-family: var(--font-serif), serif;
+  font-weight: 300;
+  letter-spacing: -0.025em;
 }
 
 .perspective-1000 {
@@ -108,19 +125,40 @@ h1, h2, h3, h4 {
 }
 
 .timeline-line {
-  @apply absolute left-1/2 top-0 bottom-0 w-px bg-gold/30 -translate-x-1/2;
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background-color: rgba(184, 151, 74, 0.3);
+  transform: translateX(-50%);
 }
 
 .editorial-card {
-  @apply bg-white border border-gold/10 hover:border-gold/30 transition-all duration-700 shadow-[0_8px_30px_-10px_rgba(184,151,74,0.12)] hover:shadow-[0_20px_50px_-15px_rgba(184,151,74,0.2)];
+  background-color: #ffffff;
+  border: 1px solid rgba(184, 151, 74, 0.1);
+  transition: all 0.7s ease;
+  box-shadow: 0 8px 30px -10px rgba(184, 151, 74, 0.12);
+}
+
+.editorial-card:hover {
+  border-color: rgba(184, 151, 74, 0.3);
+  box-shadow: 0 20px 50px -15px rgba(184, 151, 74, 0.2);
 }
 
 .glass-morphism {
-  @apply bg-white/60 backdrop-blur-xl border border-white/40 shadow-xl;
+  background-color: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
 }
 
 .text-gradient-gold {
-  @apply bg-gradient-to-tr from-primary via-gold to-primary bg-clip-text text-transparent;
+  background-image: linear-gradient(to top right, #1A3A5C, #B8974A, #1A3A5C);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .soft-glow-gold {
@@ -128,9 +166,18 @@ h1, h2, h3, h4 {
 }
 
 .section-spacing {
-  @apply py-32 md:py-48;
+  padding-top: 8rem;
+  padding-bottom: 8rem;
+}
+
+@media (min-width: 768px) {
+  .section-spacing {
+    padding-top: 12rem;
+    padding-bottom: 12rem;
+  }
 }
 
 .reveal-mask {
   mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
 }
