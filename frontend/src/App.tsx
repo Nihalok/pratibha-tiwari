@@ -38,14 +38,14 @@ function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const isAdminPath = location.pathname.startsWith(`/${ADMIN_PREFIX}`) || location.pathname.startsWith('/reset-password');
 
   return (
-    <div className="relative min-h-screen bg-transparent selection:bg-accent/20 selection:text-primary">
+    <div className="relative min-h-screen flex flex-col bg-transparent selection:bg-accent/20 selection:text-primary">
       <SEO />
       <AnimatedBackground />
       {!isAdminPath && <ReadingProgressBar />}
       <ScrollToTop />
       {!isAdminPath && <FloatingContact />}
       {!isAdminPath && <Navbar />}
-      <main>
+      <main className="flex-grow min-h-[75vh] w-full">
         {children}
       </main>
       {!isAdminPath && <Footer />}
@@ -54,7 +54,7 @@ function LayoutWrapper({ children }: { children: React.ReactNode }) {
 }
 
 const PageLoader = () => (
-  <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-pearl/20 backdrop-blur-sm">
+  <div className="min-h-[75vh] w-full flex flex-col items-center justify-center py-20 bg-transparent">
     <div className="w-10 h-10 border-2 border-gold/20 border-t-gold rounded-full animate-spin"></div>
   </div>
 );

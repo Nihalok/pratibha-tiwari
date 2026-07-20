@@ -27,7 +27,11 @@ export default function ScrollToTop() {
           const rect = element.getBoundingClientRect();
           const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
           const targetY = rect.top + scrollTop - 112; // 112px offset for sticky navbar
-          window.scrollTo({ top: targetY, behavior: 'smooth' });
+          if ((window as any).lenis) {
+            (window as any).lenis.scrollTo(targetY, { immediate: false });
+          } else {
+            window.scrollTo({ top: targetY, behavior: 'smooth' });
+          }
           return true;
         }
         return false;
@@ -35,7 +39,6 @@ export default function ScrollToTop() {
 
       // Try immediately
       if (!tryScroll()) {
-        // If the element isn't in the DOM yet (due to page lazy-loading), poll for it
         let attempts = 0;
         const intervalId = setInterval(() => {
           attempts++;
@@ -47,6 +50,11 @@ export default function ScrollToTop() {
       }
     } else {
       window.scrollTo(0, 0);
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+      if ((window as any).lenis) {
+        (window as any).lenis.scrollTo(0, { immediate: true });
+      }
     }
   }, [pathname, hash]);
 

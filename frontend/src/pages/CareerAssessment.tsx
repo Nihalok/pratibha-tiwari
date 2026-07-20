@@ -191,37 +191,51 @@ export default function CareerAssessment() {
     if (!reportRef.current) return;
     setIsGeneratingPdf(true);
     try {
-      const canvas = await html2canvas(reportRef.current, {
+      const element = reportRef.current;
+      const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
-        allowTaint: true,
-        logging: true,
-        backgroundColor: '#FCF8F5',
-        windowWidth: 1200
+        allowTaint: false,
+        logging: false,
+        backgroundColor: '#F8FAFC',
+        windowWidth: 1200,
+        onclone: (clonedDoc) => {
+          const wrapper = clonedDoc.querySelector('[data-pdf-wrapper]') as HTMLElement;
+          if (wrapper) {
+            wrapper.style.position = 'relative';
+            wrapper.style.top = '0';
+            wrapper.style.left = '0';
+            wrapper.style.opacity = '1';
+            wrapper.style.visibility = 'visible';
+          }
+        }
       });
+
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF('p', 'mm', 'a4');
-      const imgWidth = 210; // A4 width in mm
-      const pageHeight = 297; // A4 height in mm
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = pdfWidth;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
       let heightLeft = imgHeight;
       let position = 0;
 
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
+      heightLeft -= pdfHeight;
 
       while (heightLeft > 5) {
-        position = heightLeft - imgHeight;
+        position -= pdfHeight;
         pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
+        heightLeft -= pdfHeight;
       }
 
       const dateStr = new Date().toISOString().split('T')[0];
       pdf.save(`Career_Performance_Report_${dateStr}.pdf`);
     } catch (err: any) {
-      alert('Unable to generate PDF: ' + (err?.message || err));
+      console.error('PDF Generation Error:', err);
+      alert('Unable to generate PDF report: ' + (err?.message || 'Please try again.'));
     } finally {
       setIsGeneratingPdf(false);
     }
@@ -445,8 +459,8 @@ export default function CareerAssessment() {
               />
 
               {/* Hidden Report for PDF Capture */}
-              <div className="absolute top-[-9999px] left-0 pointer-events-none opacity-100 z-0">
-                <div ref={reportRef} className="p-20 bg-pearl w-[1000px] font-sans text-primary">
+              <div data-pdf-wrapper="true" className="fixed top-[-9999px] left-[-9999px] pointer-events-none opacity-100 z-0">
+                <div ref={reportRef} className="p-16 bg-[#F8FAFC] w-[1000px] font-sans text-primary">
                   <div className="flex justify-between items-start border-b-2 border-gold/20 pb-10 mb-16">
                     <div>
                       <h1 className="text-4xl font-serif mb-2">Pratibha Tiwari</h1>
