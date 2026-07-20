@@ -7,7 +7,6 @@ interface Certificate {
   title: string;
   org: string;
   image: string;
-  tag: string;
   vertical?: boolean;
 }
 
@@ -23,36 +22,30 @@ const certificates: Certificate[] = [
     title: "Professional Certified Coach (PCC)",
     org: "ICF Credentials and Standards",
     image: cert1, // photo_3
-    tag: ""
   },
   {
     id: 2,
     title: "Certified NLP Trainer",
     org: "International Association of Professional Coaches, Counsellors & Therapists (IAPCCT)",
     image: cert2, // photo_4
-    tag: ""
   },
   {
     id: 3,
     title: "Advanced Programme in Technology and AI Leadership",
     org: "Indian Institute of Technology Delhi (Department of Management Studies)",
     image: cert3, // photo_2
-    tag: ""
   },
   {
     id: 4,
     title: "Certified Associate Leadership & Executive Coach",
     org: "NLP Coaching Academy (CCE)",
     image: cert4, // photo_1
-    tag: ""
-  }
-  ,
+  },
   {
     id: 5,
     title: "Certified Group Coach",
     org: "Success Mastery",
     image: cert5, // photo_1
-    tag: "Group Coach"
   }
 ];
 
@@ -180,12 +173,7 @@ export default function CertificationsCarousel() {
                           />
                         </div>
 
-                        {/* Tag */}
-                        <div className="absolute top-3 left-3 md:top-8 md:left-8 z-20">
-                          <span className="px-3 py-1.5 md:px-5 md:py-2.5 bg-primary text-[8px] md:text-[10px] font-mono font-bold uppercase tracking-[0.15em] md:tracking-[0.2em] text-white rounded-md md:rounded-lg shadow-md border border-primary/20">
-                            {cert.tag}
-                          </span>
-                        </div>
+
                       </div>
                     </motion.div>
                   );

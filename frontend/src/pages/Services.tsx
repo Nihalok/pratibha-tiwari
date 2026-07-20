@@ -139,14 +139,14 @@ export default function Services() {
   }, [hash]);
 
   return (
-    <div className="min-h-screen bg-pearl/20 pb-20">
+    <div className="min-h-screen bg-pearl/20 pb-20 overflow-x-hidden">
       <SEO
         title="Services & Programs"
         description="Explore Pratibha Tiwari's four pillars of impact: AI Leadership, Executive Coaching, Career Shaping, and Corporate Training."
       />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-16 sm:mb-24 md:mb-32 pt-28 sm:pt-32 md:pt-48 relative text-center md:text-left">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gold/5 blur-[120px] rounded-full -z-10" />
-        <div className="absolute -top-20 -left-20 w-72 h-72 bg-primary/5 blur-[100px] rounded-full -z-10" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gold/5 blur-[120px] rounded-full -z-10 pointer-events-none" />
+        <div className="absolute -top-20 -left-20 w-72 h-72 bg-primary/5 blur-[100px] rounded-full -z-10 pointer-events-none" />
 
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -199,8 +199,8 @@ export default function Services() {
                 </div>
 
                 <motion.div
-                  initial={{ opacity: 0, x: i % 2 === 0 ? -20 : 20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   className="space-y-6 p-5 sm:p-8 md:p-12 rounded-2xl sm:rounded-[2.5rem] border border-slate-700/50 shadow-2xl relative overflow-hidden group"
                 >
@@ -374,8 +374,8 @@ export default function Services() {
                 </motion.div>
 
                 {/* Decorative background elements */}
-                <div className="absolute -bottom-16 -right-16 w-80 h-80 bg-gold/10 blur-[120px] rounded-full -z-10" />
-                <div className="absolute -top-16 -left-16 w-64 h-64 bg-primary/5 blur-[100px] rounded-full -z-10" />
+                <div className="absolute -bottom-16 -right-16 w-80 h-80 bg-gold/10 blur-[120px] rounded-full -z-10 pointer-events-none" />
+                <div className="absolute -top-16 -left-16 w-64 h-64 bg-primary/5 blur-[100px] rounded-full -z-10 pointer-events-none" />
               </div>
             </div>
           </section>
