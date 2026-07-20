@@ -198,7 +198,7 @@ export default function CareerAssessment() {
         allowTaint: false,
         logging: false,
         backgroundColor: '#F8FAFC',
-        windowWidth: 1200,
+        windowWidth: 1000,
         onclone: (clonedDoc) => {
           const wrapper = clonedDoc.querySelector('[data-pdf-wrapper]') as HTMLElement;
           if (wrapper) {
@@ -208,27 +208,56 @@ export default function CareerAssessment() {
             wrapper.style.opacity = '1';
             wrapper.style.visibility = 'visible';
           }
+
+          // Remove any CSS rules containing unsupported oklab/oklch color functions in Tailwind CSS v4
+          try {
+            const styleSheets = Array.from(clonedDoc.styleSheets);
+            styleSheets.forEach((sheet) => {
+              try {
+                const rules = sheet.cssRules || sheet.rules;
+                if (rules) {
+                  for (let j = rules.length - 1; j >= 0; j--) {
+                    const ruleText = rules[j].cssText;
+                    if (ruleText && (ruleText.includes('oklab') || ruleText.includes('oklch'))) {
+                      sheet.deleteRule(j);
+                    }
+                  }
+                }
+              } catch (_e) {
+                // Ignore cross-domain sheets
+              }
+            });
+          } catch (_e) {}
         }
       });
 
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = pdfWidth;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      const pdfWidth = pdf.internal.pageSize.getWidth(); // 210mm
+      const pdfHeight = pdf.internal.pageSize.getHeight(); // 297mm
 
-      let heightLeft = imgHeight;
-      let position = 0;
+      const margin = 10; // 10mm margin on all sides
+      const printWidth = pdfWidth - margin * 2; // 190mm
+      const printHeight = (canvas.height * printWidth) / canvas.width;
 
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
-      heightLeft -= pdfHeight;
+      if (printHeight <= pdfHeight - margin * 2) {
+        // Fits on single page: center vertically with 10mm side margins
+        const yPos = (pdfHeight - printHeight) / 2;
+        pdf.addImage(imgData, 'PNG', margin, yPos, printWidth, printHeight, undefined, 'FAST');
+      } else {
+        // Multi-page fallback with margin bounds
+        let heightLeft = printHeight;
+        let position = margin;
 
-      while (heightLeft > 5) {
-        position -= pdfHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
-        heightLeft -= pdfHeight;
+        pdf.addImage(imgData, 'PNG', margin, position, printWidth, printHeight, undefined, 'FAST');
+        heightLeft -= (pdfHeight - margin * 2);
+
+        while (heightLeft > 5) {
+          position -= (pdfHeight - margin * 2);
+          pdf.addPage();
+          pdf.addImage(imgData, 'PNG', margin, position, printWidth, printHeight, undefined, 'FAST');
+          heightLeft -= (pdfHeight - margin * 2);
+        }
       }
 
       const dateStr = new Date().toISOString().split('T')[0];
@@ -460,48 +489,48 @@ export default function CareerAssessment() {
 
               {/* Hidden Report for PDF Capture */}
               <div data-pdf-wrapper="true" className="fixed top-[-9999px] left-[-9999px] pointer-events-none opacity-100 z-0">
-                <div ref={reportRef} className="p-16 bg-[#F8FAFC] w-[1000px] font-sans text-primary">
-                  <div className="flex justify-between items-start border-b-2 border-gold/20 pb-10 mb-16">
+                <div ref={reportRef} className="p-10 bg-[#F8FAFC] w-[800px] font-sans text-[#1A3A5C] box-border rounded-[24px] border border-[#E2E8F0]">
+                  <div className="flex justify-between items-center border-b-2 border-[rgba(184,151,74,0.3)] pb-6 mb-8">
                     <div>
-                      <h1 className="text-4xl font-serif mb-2">Pratibha Tiwari</h1>
-                      <p className="text-secondary font-mono tracking-[0.3em] uppercase text-xs">Strategic Performance Report</p>
+                      <h1 className="text-3xl font-serif mb-1 text-[#1A3A5C] font-bold">Pratibha Tiwari</h1>
+                      <p className="text-[#0F172A] font-mono tracking-[0.25em] uppercase text-[11px] font-bold">Strategic Performance Report</p>
                     </div>
                     <div className="text-right">
-                      <div className="text-6xl font-serif text-secondary">{percentage}%</div>
-                      <div className="text-[10px] font-mono text-mist uppercase tracking-widest">Global Index</div>
+                      <div className="text-5xl font-serif text-[#0F172A] font-bold">{percentage}%</div>
+                      <div className="text-[10px] font-mono text-[#525D71] uppercase tracking-widest">Global Index</div>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-16 mb-20">
-                    <div className="space-y-8">
-                      <h2 className="text-2xl font-serif border-l-4 border-secondary pl-6">Profile Snapshot</h2>
-                      <div className="space-y-6">
-                        <div className="bg-white p-8 rounded-3xl border border-gray-100">
-                          <div className="text-xs font-mono text-mist uppercase mb-2">Classification</div>
-                          <div className="text-2xl font-serif font-bold text-primary">{level.name}</div>
+                  <div className="grid grid-cols-2 gap-8 mb-8">
+                    <div className="space-y-4">
+                      <h2 className="text-xl font-serif border-l-4 border-[#0F172A] pl-4 text-[#1A3A5C] font-bold">Profile Snapshot</h2>
+                      <div className="space-y-3">
+                        <div className="bg-white p-5 rounded-2xl border border-[#E2E8F0] shadow-sm">
+                          <div className="text-[10px] font-mono text-[#525D71] uppercase mb-1 font-bold">Classification</div>
+                          <div className="text-xl font-serif font-bold text-[#1A3A5C]">{level.name}</div>
                         </div>
-                        <div className="bg-white p-8 rounded-3xl border border-gray-100">
-                          <div className="text-xs font-mono text-mist uppercase mb-2">Top Strength</div>
-                          <div className="text-2xl font-serif font-bold text-secondary">{topStrength.category}</div>
+                        <div className="bg-white p-5 rounded-2xl border border-[#E2E8F0] shadow-sm">
+                          <div className="text-[10px] font-mono text-[#525D71] uppercase mb-1 font-bold">Top Strength</div>
+                          <div className="text-xl font-serif font-bold text-[#0F172A]">{topStrength.category}</div>
                         </div>
-                        <div className="bg-white p-8 rounded-3xl border border-gray-100">
-                          <div className="text-xs font-mono text-mist uppercase mb-2">Growth Opportunity</div>
-                          <div className="text-2xl font-serif font-bold text-rose-500">{mainGrowthArea.category}</div>
+                        <div className="bg-white p-5 rounded-2xl border border-[#E2E8F0] shadow-sm">
+                          <div className="text-[10px] font-mono text-[#525D71] uppercase mb-1 font-bold">Growth Opportunity</div>
+                          <div className="text-xl font-serif font-bold text-[#F43F5E]">{mainGrowthArea.category}</div>
                         </div>
                       </div>
                     </div>
 
-                    <div className="space-y-8">
-                      <h2 className="text-2xl font-serif border-l-4 border-secondary pl-6">Domain Scores</h2>
-                      <div className="space-y-4">
+                    <div className="space-y-4">
+                      <h2 className="text-xl font-serif border-l-4 border-[#0F172A] pl-4 text-[#1A3A5C] font-bold">Domain Scores</h2>
+                      <div className="space-y-3 pt-1">
                         {aggregatedAnswers.map((ans, i) => (
-                          <div key={i} className="flex items-center justify-between py-2 border-b border-gray-100">
-                            <span className="text-sm font-medium">{ans.category}</span>
-                            <div className="flex items-center space-x-4">
-                              <div className="w-32 h-2 bg-gray-100 rounded-full overflow-hidden">
-                                <div className="h-full bg-primary" style={{ width: `${(ans.points / 50) * 100}%` }} />
+                          <div key={i} className="flex items-center justify-between py-1.5 border-b border-[#E2E8F0]">
+                            <span className="text-xs font-semibold text-[#1A3A5C] truncate max-w-[220px]">{ans.category}</span>
+                            <div className="flex items-center space-x-3 shrink-0">
+                              <div className="w-24 h-2 bg-[#E2E8F0] rounded-full overflow-hidden">
+                                <div className="h-full bg-[#1A3A5C]" style={{ width: `${(ans.points / 50) * 100}%` }} />
                               </div>
-                              <span className="text-xs font-mono text-mist">{ans.points}/50</span>
+                              <span className="text-[11px] font-mono font-bold text-[#525D71] w-8 text-right">{ans.points}/50</span>
                             </div>
                           </div>
                         ))}
@@ -509,29 +538,29 @@ export default function CareerAssessment() {
                     </div>
                   </div>
 
-                  <div className="bg-primary p-12 rounded-[40px] text-white mb-20">
-                    <h2 className="text-3xl font-serif mb-8 italic">Pratibha's Strategic Observation</h2>
-                    <p className="text-xl leading-relaxed text-white italic mb-10">
+                  <div className="bg-[#1A3A5C] p-8 rounded-3xl text-white mb-8 shadow-md">
+                    <h2 className="text-2xl font-serif mb-3 italic text-white font-normal">Pratibha's Strategic Observation</h2>
+                    <p className="text-base leading-relaxed text-white/95 italic mb-6 font-normal">
                       {`"To transition from ${level.name} to the next tier of executive influence, you must optimize your ${mainGrowthArea.category.toLowerCase()} architecture. High-impact leaders differ from high-performing managers not by effort, but by the precision of their influence."`}
                     </p>
-                    <div className="grid grid-cols-2 gap-8">
-                      <div className="bg-white/10 p-6 rounded-2xl border border-white/10">
-                        <h4 className="font-bold text-secondary mb-2 flex items-center"><Target size={16} className="mr-2" /> Priority 1</h4>
-                        <p className="text-sm">Automate at least 20% of your cognitive load using AI-driven agents or frameworks to free space for high-value strategic execution.</p>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-[rgba(255,255,255,0.08)] p-4 rounded-xl border border-[rgba(255,255,255,0.15)] text-white">
+                        <h4 className="font-bold text-[#B8974A] mb-1.5 text-xs flex items-center"><Target size={14} className="mr-1.5 shrink-0" /> Priority 1</h4>
+                        <p className="text-xs text-white/90 leading-normal">Automate at least 20% of your cognitive load using AI-driven agents or frameworks to free space for strategic execution.</p>
                       </div>
-                      <div className="bg-white/10 p-6 rounded-2xl border border-white/10">
-                        <h4 className="font-bold text-secondary mb-2 flex items-center"><Zap size={16} className="mr-2" /> Priority 2</h4>
-                        <p className="text-sm">Establish a continuous feedback mechanism to refine and measure your leadership brand footprint.</p>
+                      <div className="bg-[rgba(255,255,255,0.08)] p-4 rounded-xl border border-[rgba(255,255,255,0.15)] text-white">
+                        <h4 className="font-bold text-[#B8974A] mb-1.5 text-xs flex items-center"><Zap size={14} className="mr-1.5 shrink-0" /> Priority 2</h4>
+                        <p className="text-xs text-white/90 leading-normal">Establish a continuous feedback mechanism to refine and measure your leadership brand footprint.</p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="text-center border-t border-gray-100 pt-16">
-                    <p className="text-mist text-xs font-mono tracking-widest mb-10 uppercase">Private & Confidential Performance Data</p>
-                    <div className="flex justify-center space-x-20 grayscale">
-                      <div className="flex items-center text-xs font-bold uppercase"><Award size={14} className="mr-2" /> Executive Certified</div>
-                      <div className="flex items-center text-xs font-bold uppercase"><CheckCircle2 size={14} className="mr-2" /> AI Integrated</div>
-                      <div className="flex items-center text-xs font-bold uppercase"><TrendingUp size={14} className="mr-2" /> Performance Audited</div>
+                  <div className="text-center border-t border-[#E2E8F0] pt-6">
+                    <p className="text-[#525D71] text-[10px] font-mono tracking-widest mb-4 uppercase font-bold">Private & Confidential Performance Data</p>
+                    <div className="flex justify-center space-x-12 text-[#1A3A5C]">
+                      <div className="flex items-center text-[11px] font-bold uppercase"><Award size={14} className="mr-1.5 text-[#B8974A]" /> Executive Certified</div>
+                      <div className="flex items-center text-[11px] font-bold uppercase"><CheckCircle2 size={14} className="mr-1.5 text-[#B8974A]" /> AI Integrated</div>
+                      <div className="flex items-center text-[11px] font-bold uppercase"><TrendingUp size={14} className="mr-1.5 text-[#B8974A]" /> Performance Audited</div>
                     </div>
                   </div>
                 </div>
