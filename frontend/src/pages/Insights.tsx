@@ -251,8 +251,6 @@ export default function Insights() {
                 title: "Importance of Perception", 
                 duration: "12m", 
                 tag: "Mindset",
-                color: "bg-white",
-                yOffset: "translate-y-0",
                 embedUrl: "https://podcasters.spotify.com/pod/show/pratibha-tiwari8/embed/episodes/Importance-of-Perception---Lets-Go-To-Burj-Khalifa-e19cmhg" 
               },
               { 
@@ -260,8 +258,6 @@ export default function Insights() {
                 title: "What is Emotional Intelligence?", 
                 duration: "15m", 
                 tag: "Psychology",
-                color: "bg-[#FBF7F0]",
-                yOffset: "lg:translate-y-12",
                 embedUrl: "https://podcasters.spotify.com/pod/show/pratibha-tiwari8/embed/episodes/What-is-Emotional-Intelligence-e1b25kq" 
               },
               { 
@@ -269,13 +265,11 @@ export default function Insights() {
                 title: "Importance of Motivation for Success", 
                 duration: "14m", 
                 tag: "Strategy",
-                color: "bg-white",
-                yOffset: "translate-y-0",
                 embedUrl: "https://podcasters.spotify.com/pod/show/pratibha-tiwari8/embed/episodes/Importance-of-Motivation-for-Success-e1c692j" 
               },
             ].map((ep) => (
               <SwiperSlide key={ep.id} className="h-auto">
-                <div className={`h-full ${ep.color} border border-gold/10 rounded-[36px] md:rounded-[60px] p-6 sm:p-8 md:p-12 shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-transform duration-300 relative overflow-hidden z-10 flex flex-col justify-between ${ep.yOffset}`}>
+                <div className="editorial-card rounded-[40px] md:rounded-[60px] overflow-hidden flex flex-col justify-between h-full p-8 md:p-12 hover:-translate-y-2 transition-transform duration-300 bg-white border border-gold/10 shadow-sm hover:shadow-xl relative z-10">
                   <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-20 transition-opacity">
                     <Mic2 size={120} className="text-primary rotate-12" />
                   </div>
@@ -411,7 +405,7 @@ export default function Insights() {
                   <SwiperSlide key={post._id || post.id || post.slug} className="h-auto">
                     <article className="group h-full">
                       <Link to={`/insights/${post.slug}`} className="block h-full">
-                        <div className="editorial-card rounded-[40px] md:rounded-[60px] overflow-hidden flex flex-col h-full hover:-translate-y-2 transition-transform duration-300 bg-white border border-gold/5 shadow-sm hover:shadow-xl">
+                        <div className="editorial-card rounded-[40px] md:rounded-[60px] overflow-hidden flex flex-col h-full hover:-translate-y-2 transition-transform duration-300 bg-white border border-gold/10 shadow-sm hover:shadow-xl">
                           <div className="aspect-[4/3] overflow-hidden relative">
                              {(post.featuredImage || post.imageUrl) ? (
                                <img src={post.featuredImage || post.imageUrl} alt={post.title} loading="lazy" decoding="async" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
