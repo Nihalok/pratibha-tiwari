@@ -93,45 +93,45 @@ export default function Contact() {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className="bg-transparent pt-24 md:pt-40 pb-24"
+      className="bg-transparent pt-16 sm:pt-24 md:pt-36 pb-12 sm:pb-20 overflow-x-hidden"
     >
       <SEO 
         title="Contact & Booking" 
         description="Get in touch with Pratibha Tiwari for executive coaching, corporate training, or keynote speaking engagements."
       />
-      <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 lg:gap-32">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 grid lg:grid-cols-2 gap-8 sm:gap-14 lg:gap-24">
         
         {/* Left: Info */}
-        <div className="space-y-16">
-          <div className="space-y-8">
+        <div className="space-y-8 sm:space-y-12">
+          <div className="space-y-4 sm:space-y-8 text-center md:text-left">
             <div className="inline-flex items-center space-x-3 px-4 py-2 bg-gold/5 rounded-full border border-gold/10">
               <div className="w-2 h-2 rounded-full bg-gold animate-pulse" />
-              <span className="text-[10px] font-mono uppercase tracking-[0.4em] text-gold font-black">Global Reach · Local Presence</span>
+              <span className="text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.25em] sm:tracking-[0.4em] text-gold font-black">Global Reach · Local Presence</span>
             </div>
-            <h1 className="text-5xl md:text-8xl font-serif text-primary leading-[1.1] italic font-light">
+            <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-serif text-primary leading-[1.15] italic font-light">
               Let's Start the <span className="text-gold font-normal">Conversation</span>
             </h1>
-            <p className="text-xl md:text-2xl text-mist leading-relaxed max-w-xl font-normal">
+            <p className="text-sm sm:text-xl md:text-2xl text-mist leading-relaxed max-w-xl mx-auto md:mx-0 font-normal">
               Whether you're seeking Executive Coaching, Corporate Training, or AI Leadership Consulting or Career Growth Guidance, let's create a path to your next level of growth.
             </p>
           </div>
 
-          <div className="grid gap-8">
+          <div className="grid gap-4 sm:gap-6">
             <a 
               href="https://mail.google.com/mail/?view=cm&fs=1&to=designsuperdestiny@gmail.com" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="flex items-start space-x-6 group p-6 bg-white rounded-3xl border border-gold/5 hover:border-gold/20 hover:shadow-xl hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 cursor-pointer"
+              className="flex items-start space-x-3.5 sm:space-x-6 group p-4 sm:p-6 bg-white rounded-2xl sm:rounded-3xl border border-gold/5 hover:border-gold/20 hover:shadow-xl hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 cursor-pointer"
             >
-              <div className="p-4 bg-pearl rounded-2xl text-secondary shadow-sm ring-1 ring-gold/10 group-hover:bg-primary group-hover:text-white transition-colors duration-300 shrink-0">
-                <Mail size={24} />
+              <div className="p-3 sm:p-4 bg-pearl rounded-xl sm:rounded-2xl text-secondary shadow-sm ring-1 ring-gold/10 group-hover:bg-primary group-hover:text-white transition-colors duration-300 shrink-0">
+                <Mail size={20} className="sm:w-6 sm:h-6" />
               </div>
-              <div className="min-w-0">
-                <div className="text-[10px] font-mono uppercase tracking-widest text-gold font-black mb-2 flex items-center gap-1.5">
+              <div className="min-w-0 flex-1">
+                <div className="text-[9px] sm:text-[10px] font-mono uppercase tracking-widest text-gold font-black mb-1 sm:mb-2 flex items-center gap-1.5">
                   Email Advisory
                   <span className="inline-block transform translate-x-0 group-hover:translate-x-1 opacity-0 group-hover:opacity-100 transition-all duration-300 text-xs">→</span>
                 </div>
-                <span className="text-xl md:text-2xl text-primary group-hover:text-gold transition-colors duration-300 font-serif italic block truncate">
+                <span className="text-sm sm:text-xl md:text-2xl text-primary group-hover:text-gold transition-colors duration-300 font-serif italic block break-all sm:break-normal">
                   designsuperdestiny@gmail.com
                 </span>
               </div>
@@ -141,17 +141,17 @@ export default function Contact() {
               href="https://wa.me/971508426354" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="flex items-start space-x-6 group p-6 bg-white rounded-3xl border border-gold/5 hover:border-gold/20 hover:shadow-xl hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 cursor-pointer"
+              className="flex items-start space-x-3.5 sm:space-x-6 group p-4 sm:p-6 bg-white rounded-2xl sm:rounded-3xl border border-gold/5 hover:border-gold/20 hover:shadow-xl hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 cursor-pointer"
             >
-              <div className="p-4 bg-pearl rounded-2xl text-secondary shadow-sm ring-1 ring-gold/10 group-hover:bg-primary group-hover:text-white transition-colors duration-300 shrink-0">
-                <Phone size={24} />
+              <div className="p-3 sm:p-4 bg-pearl rounded-xl sm:rounded-2xl text-secondary shadow-sm ring-1 ring-gold/10 group-hover:bg-primary group-hover:text-white transition-colors duration-300 shrink-0">
+                <Phone size={20} className="sm:w-6 sm:h-6" />
               </div>
-              <div className="min-w-0">
-                <div className="text-[10px] font-mono uppercase tracking-widest text-gold font-black mb-2 flex items-center gap-1.5">
+              <div className="min-w-0 flex-1">
+                <div className="text-[9px] sm:text-[10px] font-mono uppercase tracking-widest text-gold font-black mb-1 sm:mb-2 flex items-center gap-1.5">
                   Private WhatsApp
                   <span className="inline-block transform translate-x-0 group-hover:translate-x-1 opacity-0 group-hover:opacity-100 transition-all duration-300 text-xs">→</span>
                 </div>
-                <span className="text-xl md:text-2xl text-primary group-hover:text-gold transition-colors duration-300 font-serif italic block">
+                <span className="text-sm sm:text-xl md:text-2xl text-primary group-hover:text-gold transition-colors duration-300 font-serif italic block">
                   +971 50 842 6354
                 </span>
               </div>
@@ -161,38 +161,38 @@ export default function Contact() {
               href="https://calendly.com/dsdtrainings/30min" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="flex items-start space-x-6 group p-6 bg-white rounded-3xl border border-gold/5 hover:border-gold/20 hover:shadow-xl hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 cursor-pointer"
+              className="flex items-start space-x-3.5 sm:space-x-6 group p-4 sm:p-6 bg-white rounded-2xl sm:rounded-3xl border border-gold/5 hover:border-gold/20 hover:shadow-xl hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 cursor-pointer"
             >
-              <div className="p-4 bg-pearl rounded-2xl text-secondary shadow-sm ring-1 ring-gold/10 group-hover:bg-primary group-hover:text-white transition-colors duration-300 shrink-0">
-                <Calendar size={24} />
+              <div className="p-3 sm:p-4 bg-pearl rounded-xl sm:rounded-2xl text-secondary shadow-sm ring-1 ring-gold/10 group-hover:bg-primary group-hover:text-white transition-colors duration-300 shrink-0">
+                <Calendar size={20} className="sm:w-6 sm:h-6" />
               </div>
-              <div className="min-w-0">
-                <div className="text-[10px] font-mono uppercase tracking-widest text-gold font-black mb-2 flex items-center gap-1.5">
+              <div className="min-w-0 flex-1">
+                <div className="text-[9px] sm:text-[10px] font-mono uppercase tracking-widest text-gold font-black mb-1 sm:mb-2 flex items-center gap-1.5">
                   Direct Booking
                   <span className="inline-block transform translate-x-0 group-hover:translate-x-1 opacity-0 group-hover:opacity-100 transition-all duration-300 text-xs">→</span>
                 </div>
-                <span className="text-xl md:text-2xl text-primary group-hover:text-gold transition-colors duration-300 font-serif italic block">
+                <span className="text-sm sm:text-xl md:text-2xl text-primary group-hover:text-gold transition-colors duration-300 font-serif italic block">
                   Schedule a 30-min Strategy Call
                 </span>
               </div>
             </a>
 
-            <div className="flex items-start space-x-6 p-6 bg-white/70 rounded-3xl border border-gold/5 transition-all duration-500">
-              <div className="p-4 bg-pearl/70 rounded-2xl text-secondary shadow-sm ring-1 ring-gold/10 shrink-0">
-                <MapPin size={24} />
+            <div className="flex items-start space-x-3.5 sm:space-x-6 p-4 sm:p-6 bg-white/70 rounded-2xl sm:rounded-3xl border border-gold/5 transition-all duration-500">
+              <div className="p-3 sm:p-4 bg-pearl/70 rounded-xl sm:rounded-2xl text-secondary shadow-sm ring-1 ring-gold/10 shrink-0">
+                <MapPin size={20} className="sm:w-6 sm:h-6" />
               </div>
               <div>
-                <div className="text-[10px] font-mono uppercase tracking-widest text-gold font-black mb-2">Operations</div>
-                <div className="text-xl md:text-2xl text-primary/80 font-serif italic">
+                <div className="text-[9px] sm:text-[10px] font-mono uppercase tracking-widest text-gold font-black mb-1 sm:mb-2">Operations</div>
+                <div className="text-sm sm:text-xl md:text-2xl text-primary/80 font-serif italic">
                   Serving Dubai, Abu Dhabi, Sharjah & across the UAE & Mena Regions
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="space-y-8 pt-10 border-t border-gold/10">
-            <div className="text-[10px] font-mono uppercase tracking-widest text-mist font-black">Digital Presence</div>
-            <div className="flex flex-wrap gap-4">
+          <div className="space-y-4 sm:space-y-8 pt-6 sm:pt-10 border-t border-gold/10 text-center md:text-left">
+            <div className="text-[9px] sm:text-[10px] font-mono uppercase tracking-widest text-mist font-black">Digital Presence</div>
+            <div className="flex flex-wrap justify-center md:justify-start gap-3 sm:gap-4">
               {[
                 { icon: <Linkedin size={20} />, href: "www.linkedin.com/in/coachpratibhatiwari/" },
                 { icon: <Instagram size={20} />, href: "www.instagram.com/coachpratibha/" },
@@ -203,7 +203,7 @@ export default function Contact() {
                   href={`https://${social.href}`} 
                   target="_blank" 
                   rel="noreferrer"
-                  className="p-5 bg-white rounded-2xl border border-gold/10 text-primary hover:bg-gold hover:text-primary transition-all duration-500 shadow-sm"
+                  className="p-3.5 sm:p-5 bg-white rounded-xl sm:rounded-2xl border border-gold/10 text-primary hover:bg-gold hover:text-primary transition-all duration-500 shadow-sm"
                 >
                   {social.icon}
                 </a>
@@ -214,38 +214,38 @@ export default function Contact() {
 
         {/* Right: Form */}
         <div className="relative">
-          <div className="absolute -inset-10 bg-gold/5 blur-[100px] rounded-full -z-10" />
+          <div className="absolute -inset-10 bg-gold/5 blur-[100px] rounded-full -z-10 pointer-events-none" />
           
-          <div className="relative bg-white/80 backdrop-blur-xl p-10 md:p-14 rounded-[4rem] shadow-2xl border border-gold/10 overflow-hidden">
+          <div className="relative bg-white/80 backdrop-blur-xl p-4 sm:p-8 md:p-12 rounded-2xl sm:rounded-3xl md:rounded-[3rem] shadow-2xl border border-gold/10 overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 blur-3xl rounded-full" />
             
             {isSuccess ? (
               <motion.div 
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="text-center py-20 space-y-8"
+                className="text-center py-12 sm:py-20 space-y-6 sm:space-y-8"
               >
-                <div className="inline-flex items-center justify-center w-28 h-28 bg-gold/10 rounded-full mb-6">
-                  <CheckCircle2 className="text-gold w-14 h-14" />
+                <div className="inline-flex items-center justify-center w-20 h-20 sm:w-28 sm:h-28 bg-gold/10 rounded-full mb-4 sm:mb-6">
+                  <CheckCircle2 className="text-gold w-10 h-10 sm:w-14 sm:h-14" />
                 </div>
-                <div className="space-y-4">
-                  <h2 className="text-4xl font-serif text-primary italic">Message Received</h2>
-                  <p className="text-mist text-lg font-normal leading-relaxed">
+                <div className="space-y-3 sm:space-y-4">
+                  <h2 className="text-3xl sm:text-4xl font-serif text-primary italic">Message Received</h2>
+                  <p className="text-mist text-base sm:text-lg font-normal leading-relaxed">
                     Thank you for reaching out. Pratibha's team will contact you within 24-48 hours to discuss your transformation.
                   </p>
                 </div>
                 <button 
                   onClick={() => setIsSuccess(false)}
-                  className="bg-primary text-white px-10 py-5 rounded-2xl font-bold uppercase tracking-widest text-[10px] hover:bg-gold hover:text-primary transition-all shadow-xl"
+                  className="bg-primary text-white px-8 sm:px-10 py-4 sm:py-5 rounded-2xl font-bold uppercase tracking-widest text-[10px] hover:bg-gold hover:text-primary transition-all shadow-xl"
                 >
                   Send Another Inquiry
                 </button>
               </motion.div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-10 relative z-10">
-                <div className="space-y-8">
-                  <div className="grid md:grid-cols-2 gap-8">
-                    <div className="space-y-3">
+              <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8 relative z-10">
+                <div className="space-y-5 sm:space-y-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-8">
+                    <div className="space-y-2 sm:space-y-3">
                       <label className="text-[10px] font-mono uppercase tracking-widest text-gold font-black">Full Name</label>
                       <input 
                         required 
@@ -253,10 +253,10 @@ export default function Contact() {
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         placeholder="Enter name"
-                        className="w-full bg-pearl/50 border border-gold/10 p-5 focus:outline-none focus:border-gold focus:bg-white transition-all rounded-2xl placeholder:text-mist" 
+                        className="w-full bg-pearl/50 border border-gold/10 px-4 py-3.5 sm:p-5 focus:outline-none focus:border-gold focus:bg-white transition-all rounded-xl sm:rounded-2xl placeholder:text-mist text-sm sm:text-base" 
                       />
                     </div>
-                    <div className="space-y-3">
+                    <div className="space-y-2 sm:space-y-3">
                       <label className="text-[10px] font-mono uppercase tracking-widest text-gold font-black">Email Address</label>
                       <input 
                         required 
@@ -264,20 +264,20 @@ export default function Contact() {
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         placeholder="Enter email"
-                        className="w-full bg-pearl/50 border border-gold/10 p-5 focus:outline-none focus:border-gold focus:bg-white transition-all rounded-2xl placeholder:text-mist" 
+                        className="w-full bg-pearl/50 border border-gold/10 px-4 py-3.5 sm:p-5 focus:outline-none focus:border-gold focus:bg-white transition-all rounded-xl sm:rounded-2xl placeholder:text-mist text-sm sm:text-base" 
                       />
                     </div>
                   </div>
 
-                  <div className="grid md:grid-cols-2 gap-8">
-                    <div className="space-y-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-8">
+                    <div className="space-y-2 sm:space-y-3">
                       <label className="text-[10px] font-mono uppercase tracking-widest text-gold font-black">WhatsApp / Phone</label>
-                      <div className="flex bg-pearl/50 border border-gold/10 focus-within:border-gold focus-within:bg-white transition-all rounded-2xl min-h-[64px] items-stretch relative">
+                      <div className="flex bg-pearl/50 border border-gold/10 focus-within:border-gold focus-within:bg-white transition-all rounded-xl sm:rounded-2xl min-h-[52px] sm:min-h-[64px] items-stretch relative">
                         <div ref={dropdownRef} className="relative flex items-center bg-transparent shrink-0">
                           <button
                             type="button"
                             onClick={() => setIsOpen(!isOpen)}
-                            className="flex items-center space-x-0.5 pl-2 pr-1 h-full hover:bg-gold/5 border-r border-gold/10 transition-colors cursor-pointer select-none text-primary rounded-l-2xl shrink-0"
+                            className="flex items-center space-x-1 pl-2.5 pr-2 h-full hover:bg-gold/5 border-r border-gold/10 transition-colors cursor-pointer select-none text-primary rounded-l-xl sm:rounded-l-2xl shrink-0"
                           >
                             <img 
                               src={`https://flagcdn.com/16x12/${selectedCountry.iso}.png`} 
@@ -289,7 +289,7 @@ export default function Contact() {
                           </button>
 
                           {isOpen && (
-                            <div className="absolute top-[calc(100%+4px)] left-0 z-50 w-48 bg-white border border-gold/10 rounded-xl shadow-2xl max-h-60 overflow-y-auto py-1.5">
+                            <div className="absolute top-[calc(100%+4px)] left-0 z-50 w-56 max-w-[80vw] bg-white border border-gold/10 rounded-xl shadow-2xl max-h-60 overflow-y-auto py-1.5">
                               {countryCodes.map((c) => (
                                 <button
                                   key={`${c.code}-${c.iso}`}
@@ -328,30 +328,30 @@ export default function Contact() {
                             }));
                           }}
                           placeholder="Enter phone"
-                          className="flex-grow min-w-0 bg-transparent py-5 pr-2 pl-2 focus:outline-none placeholder:text-mist text-primary self-stretch rounded-r-2xl" 
+                          className="flex-grow min-w-0 bg-transparent py-3.5 sm:py-5 pr-3 pl-2 focus:outline-none placeholder:text-mist text-primary text-sm sm:text-base self-stretch rounded-r-xl sm:rounded-r-2xl" 
                         />
                       </div>
                     </div>
-                    <div className="space-y-3">
+                    <div className="space-y-2 sm:space-y-3">
                       <label className="text-[10px] font-mono uppercase tracking-widest text-gold font-black">Inquiry Type</label>
                       <div className="relative">
                         <select 
                           value={formData.inquiryType}
                           onChange={(e) => setFormData({ ...formData, inquiryType: e.target.value })}
-                          className="w-full bg-pearl/50 border border-gold/10 p-5 focus:outline-none focus:border-gold focus:bg-white transition-all rounded-2xl appearance-none cursor-pointer text-primary"
+                          className="w-full bg-pearl/50 border border-gold/10 px-4 py-3.5 sm:p-5 focus:outline-none focus:border-gold focus:bg-white transition-all rounded-xl sm:rounded-2xl appearance-none cursor-pointer text-primary text-sm sm:text-base"
                         >
                           {['Executive Coaching', 'Corporate Training', 'AI Leadership Consulting', 'Career Growth Guidance', 'Speaking / Keynote', 'Other'].map(type => (
                             <option key={type} value={type}>{type}</option>
                           ))}
                         </select>
-                        <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none ">
+                        <div className="absolute right-4 sm:right-5 top-1/2 -translate-y-1/2 pointer-events-none text-mist">
                           <Compass size={18} />
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="space-y-3">
+                  <div className="space-y-2 sm:space-y-3">
                     <label className="text-[10px] font-mono uppercase tracking-widest text-gold font-black">Your Vision & Goals</label>
                     <textarea 
                       required 
@@ -359,7 +359,7 @@ export default function Contact() {
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                       placeholder="Tell us about the path you'd like to create..."
-                      className="w-full bg-pearl/50 border border-gold/10 p-6 focus:outline-none focus:border-gold focus:bg-white transition-all rounded-3xl resize-none placeholder:text-mist" 
+                      className="w-full bg-pearl/50 border border-gold/10 p-4 sm:p-6 focus:outline-none focus:border-gold focus:bg-white transition-all rounded-2xl sm:rounded-3xl resize-none placeholder:text-mist text-sm sm:text-base" 
                     />
                   </div>
                 </div>
@@ -368,7 +368,7 @@ export default function Contact() {
 
                 <button 
                   disabled={isSubmitting}
-                  className="w-full py-6 bg-primary text-white rounded-2xl font-bold uppercase tracking-[0.2em] text-[10px] flex items-center justify-center hover:bg-gold hover:text-primary transition-all duration-500 shadow-2xl shadow-primary/20 disabled: group"
+                  className="w-full py-4 sm:py-6 bg-primary text-white rounded-xl sm:rounded-2xl font-bold uppercase tracking-[0.2em] text-[10px] sm:text-xs flex items-center justify-center hover:bg-gold hover:text-primary transition-all duration-500 shadow-2xl shadow-primary/20 disabled:opacity-50 group"
                 >
                   {isSubmitting ? 'Processing...' : (
                     <>
@@ -381,7 +381,7 @@ export default function Contact() {
             )}
           </div>
 
-          <div className="mt-12 text-center text-xs text-mist font-mono uppercase tracking-widest ">
+          <div className="mt-8 sm:mt-12 text-center text-[10px] sm:text-xs text-mist font-mono uppercase tracking-widest px-2">
             Confidentiality Guaranteed · Professional Integrity First
           </div>
         </div>

@@ -17,13 +17,13 @@ export default function SmoothScroll({ children }: SmoothScrollProps) {
     if (isTouchDevice) return;
 
     const lenis = new Lenis({
-      duration: 1,
+      duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: 'vertical',
       gestureOrientation: 'vertical',
       smoothWheel: true,
       wheelMultiplier: 1,
-      touchMultiplier: 0,
+      touchMultiplier: 1.5,
     });
 
     let rafId: number;
