@@ -25,11 +25,7 @@ export default function AdminLogin() {
   const [googleClientId, setGoogleClientId] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!loading && isAdmin) {
-      navigate(`/${ADMIN_PREFIX}`);
-    }
-  }, [isAdmin, loading, navigate]);
+
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);

@@ -18,7 +18,6 @@ const sendTokenResponse = (admin: IAdmin, statusCode: number, res: Response) => 
 
   const isProduction = process.env.NODE_ENV === 'production';
   const options = {
-    expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     httpOnly: true,
     secure: isProduction,          // HTTPS only in production
     sameSite: 'lax' as const,      // 'lax' works on same-site HTTPS; 'strict' can block redirects
@@ -281,7 +280,6 @@ export const googleLoginRedirect = asyncHandler(async (req: Request, res: Respon
 
     const isProduction = process.env.NODE_ENV === 'production';
     const options = {
-      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       httpOnly: true,
       secure: isProduction,
       sameSite: 'lax' as const,   // 'lax' required for redirect-based OAuth flows
