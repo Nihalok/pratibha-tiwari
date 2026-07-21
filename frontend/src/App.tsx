@@ -4,7 +4,7 @@
  */
 
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
 import { AuthProvider } from './lib/auth';
 import { HelmetProvider } from 'react-helmet-async';
@@ -30,7 +30,8 @@ const Terms = lazy(() => import('./pages/Terms'));
 import { ADMIN_PREFIX } from './config/admin';
 
 const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
-const AdminLogin = lazy(() => import('./pages/admin/Login'));
+// AdminLogin is eagerly imported (not lazy) — it's small and must appear instantly
+import AdminLogin from './pages/admin/Login';
 const ResetPassword = lazy(() => import('./pages/admin/ResetPassword'));
 
 function LayoutWrapper({ children }: { children: React.ReactNode }) {
@@ -91,6 +92,8 @@ function AnimatedRoutes() {
         <Route path="/career-assessment" element={<CareerAssessment />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<Terms />} />
+        {/* Exact portal root → redirect instantly to login */}
+        <Route path={`/${ADMIN_PREFIX}`} element={<Navigate to={`/${ADMIN_PREFIX}/login`} replace />} />
         <Route path={`/${ADMIN_PREFIX}/login`} element={<AdminLogin />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path={`/${ADMIN_PREFIX}/*`} element={<AdminLayout />} />
