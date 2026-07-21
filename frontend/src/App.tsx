@@ -29,7 +29,7 @@ const Terms = lazy(() => import('./pages/Terms'));
 
 import { ADMIN_PREFIX } from './config/admin';
 
-const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
+import AdminLayout from './pages/admin/AdminLayout';
 // AdminLogin is eagerly imported (not lazy) — it's small and must appear instantly
 import AdminLogin from './pages/admin/Login';
 const ResetPassword = lazy(() => import('./pages/admin/ResetPassword'));

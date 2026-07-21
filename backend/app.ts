@@ -23,6 +23,7 @@ app.set('trust proxy', 1);
 // Standard middleware
 app.use(helmet({
   contentSecurityPolicy: false, // Disable CSP for development simplicity unless explicitly needed
+  crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
 }));
 app.use(morgan('dev'));
 app.use(express.json({ limit: '10mb' }));
