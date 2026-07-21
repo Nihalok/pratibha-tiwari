@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../lib/auth';
 import { ShieldCheck, ArrowRight, User, Lock, Eye, EyeOff, Mail, ArrowLeft, CheckCircle } from 'lucide-react';
@@ -23,9 +23,8 @@ export default function AdminLogin() {
   const [forgotSuccess, setForgotSuccess] = useState(false);
   const [forgotError, setForgotError] = useState('');
   const [googleClientId, setGoogleClientId] = useState<string | null>(null);
+  const googleBtnRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-
-
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -86,27 +85,31 @@ export default function AdminLogin() {
 
     const interval = setInterval(() => {
       // @ts-ignore
-      if (window.google) {
+      if (window.google && googleBtnRef.current) {
         clearInterval(interval);
-        // @ts-ignore
-        window.google.accounts.id.initialize({
-          client_id: googleClientId,
-          callback: handleGoogleCallback,
-          auto_select: false,
-        });
+        try {
+          // @ts-ignore
+          window.google.accounts.id.initialize({
+            client_id: googleClientId,
+            callback: handleGoogleCallback,
+            auto_select: false,
+          });
 
-        // @ts-ignore
-        window.google.accounts.id.renderButton(
-          document.getElementById("googleBtn"),
-          { 
-            theme: "outline", 
-            size: "large", 
-            width: 320, 
-            type: "standard",
-            shape: "pill",
-            text: "signin_with" 
+          if (googleBtnRef.current) {
+            googleBtnRef.current.innerHTML = '';
+            // @ts-ignore
+            window.google.accounts.id.renderButton(googleBtnRef.current, {
+              theme: "outline",
+              size: "large",
+              width: 320,
+              type: "standard",
+              shape: "pill",
+              text: "signin_with"
+            });
           }
-        );
+        } catch (_e) {
+          // Google SDK render error handled gracefully
+        }
       }
     }, 100);
 
@@ -264,7 +267,7 @@ export default function AdminLogin() {
                   </div>
 
                   <div className="flex justify-center w-full min-h-[44px]">
-                    <div id="googleBtn" className="w-full max-w-[320px] min-h-[44px] flex justify-center"></div>
+                    <div id="googleBtn" ref={googleBtnRef} className="w-full max-w-[320px] min-h-[44px] flex justify-center"></div>
                   </div>
                 </>
               )}
