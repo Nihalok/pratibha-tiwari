@@ -56,7 +56,7 @@ export default function AdminLayout() {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className="min-h-screen flex flex-col md:flex-row bg-gray-50 text-gray-900"
+      className="min-h-screen flex flex-col md:flex-row bg-gray-50 text-gray-900 overflow-x-hidden"
     >
       {/* Top Mobile Bar / Navbar */}
       <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-gray-200 px-4 py-3 md:hidden flex items-center justify-between shadow-sm">
@@ -195,7 +195,7 @@ export default function AdminLayout() {
       </AnimatePresence>
 
       {/* Main Content Area */}
-      <main className="flex-grow p-4 sm:p-6 lg:p-10 overflow-y-auto w-full max-w-full min-w-0">
+      <main className="flex-grow p-4 sm:p-6 lg:p-10 w-full max-w-full min-w-0 md:overflow-y-auto">
         <Routes>
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />

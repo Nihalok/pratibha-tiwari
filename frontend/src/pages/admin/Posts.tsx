@@ -1,6 +1,163 @@
 import React, { useEffect, useState } from 'react';
 import { FileText, Plus, Trash2, Save, X, Upload, Image as ImageIcon, Loader2, CheckCircle, AlertCircle, AlertTriangle, Star, Edit, GripVertical, Calendar, Tag } from 'lucide-react';
-import { motion, AnimatePresence, Reorder } from 'motion/react';
+import { motion, AnimatePresence, Reorder, useDragControls } from 'motion/react';
+
+const PostCardItem = ({ post, selectedIds, handleSelectToggle, toggleStatus, startEdit, setConfirmDeleteId }: any) => {
+  const controls = useDragControls();
+  return (
+    <Reorder.Item
+      key={post._id}
+      value={post}
+      dragListener={false}
+      dragControls={controls}
+      className="bg-white p-5 rounded-3xl border border-gold/10 shadow-xs space-y-4 relative"
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center space-x-3">
+          <div 
+            onPointerDown={(e) => controls.start(e)}
+            className="p-2 rounded text-mist hover:text-primary cursor-grab active:cursor-grabbing touch-none select-none"
+            title="Drag to reorder"
+          >
+            <GripVertical size={20} />
+          </div>
+          <input
+            type="checkbox"
+            className="w-5 h-5 rounded border-gray-300 text-secondary focus:ring-secondary cursor-pointer accent-secondary"
+            checked={selectedIds.includes(post._id)}
+            onChange={() => handleSelectToggle(post._id)}
+          />
+          {post.featuredImage && (
+            <div className="w-10 h-10 rounded-xl overflow-hidden shrink-0 border border-gold/10">
+              <img src={post.featuredImage} alt="" className="w-full h-full object-cover" />
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <button 
+            onClick={() => toggleStatus(post._id, post.status)}
+            className={`px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider transition-all ${
+              post.status === 'published' 
+                ? 'bg-green-50 text-green-600 border border-green-100' 
+                : 'bg-amber-50 text-amber-600 border border-amber-100'
+            }`}
+          >
+            {post.status}
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <h3 className="font-serif text-base font-bold text-primary italic leading-tight">{post.title}</h3>
+        <div className="flex items-center space-x-4 mt-2 text-xs text-mist">
+          <span className="flex items-center text-[10px] font-mono uppercase tracking-wider">
+            <Tag size={12} className="mr-1 text-gold" /> {post.category || 'Uncategorized'}
+          </span>
+          <span className="flex items-center text-[10px]">
+            <Calendar size={12} className="mr-1 text-mist" /> 
+            {post.createdAt ? new Date(post.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Draft'}
+          </span>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-end space-x-2 pt-3 border-t border-gray-100">
+        <button 
+          onClick={() => startEdit(post)} 
+          className="px-3.5 py-2 rounded-xl bg-pearl text-primary text-xs font-semibold hover:bg-primary hover:text-white transition-all flex items-center space-x-1.5"
+        >
+          <Edit size={14} />
+          <span>Edit</span>
+        </button>
+        <button 
+          onClick={() => setConfirmDeleteId(post._id)} 
+          className="px-3.5 py-2 rounded-xl bg-red-50 text-red-500 text-xs font-semibold hover:bg-red-500 hover:text-white transition-all flex items-center space-x-1.5"
+        >
+          <Trash2 size={14} />
+          <span>Delete</span>
+        </button>
+      </div>
+    </Reorder.Item>
+  );
+};
+
+const PostTableRow = ({ post, selectedIds, handleSelectToggle, toggleStatus, startEdit, setConfirmDeleteId }: any) => {
+  const controls = useDragControls();
+  return (
+    <Reorder.Item
+      as="tr"
+      key={post._id}
+      value={post}
+      dragListener={false}
+      dragControls={controls}
+      className="hover:bg-pearl/10 transition-colors group"
+    >
+      <td className="px-6 py-6 text-center">
+        <div 
+          onPointerDown={(e) => controls.start(e)}
+          className="p-2 rounded text-mist hover:text-primary transition-colors cursor-grab active:cursor-grabbing inline-block touch-none select-none"
+          title="Drag to reorder"
+        >
+          <GripVertical size={18} />
+        </div>
+      </td>
+      <td className="px-6 py-6 text-center">
+        <input
+          type="checkbox"
+          className="w-5 h-5 rounded border-gray-300 text-secondary focus:ring-secondary cursor-pointer accent-secondary"
+          checked={selectedIds.includes(post._id)}
+          onChange={() => handleSelectToggle(post._id)}
+        />
+      </td>
+      <td className="px-6 py-6">
+        <div className="flex items-center space-x-4">
+          {post.featuredImage && (
+            <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-gold/10">
+              <img src={post.featuredImage} alt="" className="w-full h-full object-cover" />
+            </div>
+          )}
+          <div>
+            <div className="font-serif text-base lg:text-lg text-primary group-hover:text-secondary transition-colors italic leading-snug">{post.title}</div>
+            <div className="text-[10px] font-mono uppercase tracking-widest text-mist mt-1">{post.category}</div>
+          </div>
+        </div>
+      </td>
+      <td className="px-6 py-6">
+         <button 
+           onClick={() => toggleStatus(post._id, post.status)}
+           className={`px-3.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest transition-all ${
+             post.status === 'published' 
+               ? 'bg-green-50 text-green-600 border border-green-100 hover:bg-green-100' 
+               : 'bg-amber-50 text-amber-600 border border-amber-100 hover:bg-amber-100'
+           }`}
+         >
+           {post.status}
+         </button>
+      </td>
+      <td className="px-6 py-6 text-xs text-mist font-normal">
+        {post.createdAt ? new Date(post.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Pending...'}
+      </td>
+      <td className="px-6 py-6 text-right">
+        <div className="flex items-center justify-end space-x-2">
+          <button 
+            onClick={() => startEdit(post)} 
+            className="w-9 h-9 rounded-xl bg-pearl text-mist hover:bg-primary hover:text-white transition-all flex items-center justify-center"
+            title="Edit Post"
+          >
+            <Edit size={15} />
+          </button>
+          <button 
+            onClick={() => setConfirmDeleteId(post._id)} 
+            className="w-9 h-9 rounded-xl bg-red-50 text-red-400 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center"
+            title="Delete Post"
+          >
+            <Trash2 size={15} />
+          </button>
+        </div>
+      </td>
+    </Reorder.Item>
+  );
+};
 
 export default function Posts() {
   const [posts, setPosts] = useState<any[]>([]);
@@ -537,73 +694,15 @@ export default function Posts() {
         {/* Mobile View: Cards */}
         <div className="grid grid-cols-1 gap-4 md:hidden">
           {(posts || []).map((post) => (
-            <Reorder.Item
+            <PostCardItem
               key={post._id}
-              value={post}
-              className="bg-white p-5 rounded-3xl border border-gold/10 shadow-xs space-y-4 relative cursor-grab active:cursor-grabbing"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex items-center space-x-3">
-                  <div className="p-1 rounded text-mist hover:text-primary cursor-grab active:cursor-grabbing">
-                    <GripVertical size={18} />
-                  </div>
-                  <input
-                    type="checkbox"
-                    className="w-5 h-5 rounded border-gray-300 text-secondary focus:ring-secondary cursor-pointer accent-secondary"
-                    checked={selectedIds.includes(post._id)}
-                    onChange={() => handleSelectToggle(post._id)}
-                  />
-                  {post.featuredImage && (
-                    <div className="w-10 h-10 rounded-xl overflow-hidden shrink-0 border border-gold/10">
-                      <img src={post.featuredImage} alt="" className="w-full h-full object-cover" />
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <button 
-                    onClick={() => toggleStatus(post._id, post.status)}
-                    className={`px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider transition-all ${
-                      post.status === 'published' 
-                        ? 'bg-green-50 text-green-600 border border-green-100' 
-                        : 'bg-amber-50 text-amber-600 border border-amber-100'
-                    }`}
-                  >
-                    {post.status}
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <h3 className="font-serif text-base font-bold text-primary italic leading-tight">{post.title}</h3>
-                <div className="flex items-center space-x-4 mt-2 text-xs text-mist">
-                  <span className="flex items-center text-[10px] font-mono uppercase tracking-wider">
-                    <Tag size={12} className="mr-1 text-gold" /> {post.category || 'Uncategorized'}
-                  </span>
-                  <span className="flex items-center text-[10px]">
-                    <Calendar size={12} className="mr-1 text-mist" /> 
-                    {post.createdAt ? new Date(post.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Draft'}
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-end space-x-2 pt-3 border-t border-gray-100">
-                <button 
-                  onClick={() => startEdit(post)} 
-                  className="px-3.5 py-2 rounded-xl bg-pearl text-primary text-xs font-semibold hover:bg-primary hover:text-white transition-all flex items-center space-x-1.5"
-                >
-                  <Edit size={14} />
-                  <span>Edit</span>
-                </button>
-                <button 
-                  onClick={() => setConfirmDeleteId(post._id)} 
-                  className="px-3.5 py-2 rounded-xl bg-red-50 text-red-500 text-xs font-semibold hover:bg-red-500 hover:text-white transition-all flex items-center space-x-1.5"
-                >
-                  <Trash2 size={14} />
-                  <span>Delete</span>
-                </button>
-              </div>
-            </Reorder.Item>
+              post={post}
+              selectedIds={selectedIds}
+              handleSelectToggle={handleSelectToggle}
+              toggleStatus={toggleStatus}
+              startEdit={startEdit}
+              setConfirmDeleteId={setConfirmDeleteId}
+            />
           ))}
         </div>
 
@@ -623,72 +722,15 @@ export default function Posts() {
               </thead>
               <tbody className="divide-y divide-pearl">
                 {(posts || []).map((post) => (
-                  <Reorder.Item
-                    as="tr"
+                  <PostTableRow
                     key={post._id}
-                    value={post}
-                    className="hover:bg-pearl/10 transition-colors group cursor-grab active:cursor-grabbing"
-                  >
-                    <td className="px-6 py-6 text-center">
-                      <div className="p-1 rounded text-mist hover:text-primary transition-colors cursor-grab active:cursor-grabbing inline-block">
-                        <GripVertical size={18} />
-                      </div>
-                    </td>
-                    <td className="px-6 py-6 text-center">
-                      <input
-                        type="checkbox"
-                        className="w-5 h-5 rounded border-gray-300 text-secondary focus:ring-secondary cursor-pointer accent-secondary"
-                        checked={selectedIds.includes(post._id)}
-                        onChange={() => handleSelectToggle(post._id)}
-                      />
-                    </td>
-                    <td className="px-6 py-6">
-                      <div className="flex items-center space-x-4">
-                        {post.featuredImage && (
-                          <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-gold/10">
-                            <img src={post.featuredImage} alt="" className="w-full h-full object-cover" />
-                          </div>
-                        )}
-                        <div>
-                          <div className="font-serif text-base lg:text-lg text-primary group-hover:text-secondary transition-colors italic leading-snug">{post.title}</div>
-                          <div className="text-[10px] font-mono uppercase tracking-widest text-mist mt-1">{post.category}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-6">
-                       <button 
-                         onClick={() => toggleStatus(post._id, post.status)}
-                         className={`px-3.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest transition-all ${
-                           post.status === 'published' 
-                             ? 'bg-green-50 text-green-600 border border-green-100 hover:bg-green-100' 
-                             : 'bg-amber-50 text-amber-600 border border-amber-100 hover:bg-amber-100'
-                         }`}
-                       >
-                         {post.status}
-                       </button>
-                    </td>
-                    <td className="px-6 py-6 text-xs text-mist font-normal">
-                      {post.createdAt ? new Date(post.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Pending...'}
-                    </td>
-                    <td className="px-6 py-6 text-right">
-                      <div className="flex items-center justify-end space-x-2">
-                        <button 
-                          onClick={() => startEdit(post)} 
-                          className="w-9 h-9 rounded-xl bg-pearl text-mist hover:bg-primary hover:text-white transition-all flex items-center justify-center"
-                          title="Edit Post"
-                        >
-                          <Edit size={15} />
-                        </button>
-                        <button 
-                          onClick={() => setConfirmDeleteId(post._id)} 
-                          className="w-9 h-9 rounded-xl bg-red-50 text-red-400 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center"
-                          title="Delete Post"
-                        >
-                          <Trash2 size={15} />
-                        </button>
-                      </div>
-                    </td>
-                  </Reorder.Item>
+                    post={post}
+                    selectedIds={selectedIds}
+                    handleSelectToggle={handleSelectToggle}
+                    toggleStatus={toggleStatus}
+                    startEdit={startEdit}
+                    setConfirmDeleteId={setConfirmDeleteId}
+                  />
                 ))}
               </tbody>
             </table>

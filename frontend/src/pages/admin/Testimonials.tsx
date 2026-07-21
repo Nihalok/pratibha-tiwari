@@ -1,6 +1,97 @@
 import React, { useEffect, useState } from 'react';
 import { Star, Plus, Trash2, Save, X, BookmarkCheck, Upload, Image as ImageIcon, Loader2, CheckCircle, AlertCircle, AlertTriangle, Quote, Edit, GripVertical } from 'lucide-react';
-import { motion, AnimatePresence, Reorder } from 'motion/react';
+import { motion, AnimatePresence, Reorder, useDragControls } from 'motion/react';
+
+const TestimonialCardItem = ({ t, selectedIds, handleSelectToggle, toggleHome, startEdit, setConfirmDeleteId }: any) => {
+  const controls = useDragControls();
+
+  return (
+    <Reorder.Item 
+      key={t._id}
+      value={t}
+      dragListener={false}
+      dragControls={controls}
+      className="bg-white border border-gold/10 p-6 sm:p-8 lg:p-10 pt-12 sm:pt-14 rounded-3xl sm:rounded-[40px] shadow-sm hover:shadow-2xl transition-all duration-300 group flex flex-col justify-between relative overflow-hidden"
+    >
+      {/* Drag Handle & Checkbox Bar */}
+      <div className="absolute top-3 left-4 flex items-center space-x-3 z-20">
+        <div 
+          onPointerDown={(e) => controls.start(e)}
+          className="p-2 rounded text-mist hover:text-primary transition-colors cursor-grab active:cursor-grabbing touch-none select-none" 
+          title="Drag to reorder"
+        >
+          <GripVertical size={20} />
+        </div>
+        <input
+          type="checkbox"
+          className="w-5 h-5 rounded border-gray-300 text-secondary focus:ring-secondary cursor-pointer accent-secondary"
+          checked={selectedIds.includes(t._id)}
+          onChange={() => handleSelectToggle(t._id)}
+        />
+      </div>
+
+      {/* Action Buttons */}
+      <div className="absolute top-3 right-4 flex space-x-1.5 z-20">
+         <button 
+          onClick={() => toggleHome(t._id, t.showOnHome)}
+          className={`p-2 rounded-xl transition-all ${t.showOnHome ? 'bg-secondary/15 text-secondary' : 'bg-pearl text-mist hover:bg-gold/10 hover:text-secondary'}`}
+          title={t.showOnHome ? 'Currently on Home' : 'Hidden from Home'}
+        >
+          <BookmarkCheck size={16} />
+        </button>
+         <button 
+          onClick={() => startEdit(t)}
+          className="p-2 bg-pearl text-mist hover:text-primary hover:bg-gold/10 rounded-xl transition-all"
+          title="Edit Testimonial"
+        >
+          <Edit size={16} />
+        </button>
+        <button 
+          onClick={() => setConfirmDeleteId(t._id)}
+          className="p-2 bg-red-50 text-red-400 hover:text-red-600 hover:bg-red-100 rounded-xl transition-all"
+          title="Delete Testimonial"
+        >
+          <Trash2 size={16} />
+        </button>
+      </div>
+
+      <div className="absolute -top-6 -right-6 p-8 opacity-[0.03] text-primary pointer-events-none group-hover:rotate-12 transition-transform duration-700">
+         <Quote size={120} fill="currentColor" />
+      </div>
+      
+      <div className="relative z-10 mb-6 sm:mb-8 mt-4">
+        <div className="mb-4 flex items-center space-x-1">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <Star 
+              key={star} 
+              size={14} 
+              className={star <= (t.rating || 5) ? 'text-gold fill-gold' : 'text-gray-200 fill-transparent'} 
+            />
+          ))}
+        </div>
+        <p className="text-primary text-base sm:text-lg font-serif italic leading-relaxed tracking-tight line-clamp-6">
+          "{t.quote}"
+        </p>
+      </div>
+      
+      <div className="flex items-center space-x-4 relative z-10 pt-4 border-t border-pearl">
+        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-gold/10 group-hover:border-secondary transition-all duration-500 shrink-0">
+          <img 
+            src={t.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(t.name || 'Client')}&background=1A3A5C&color=B8974A&bold=true`} 
+            alt={t.name}
+            className="w-full h-full object-cover" 
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+        <div className="overflow-hidden">
+          <h4 className="font-serif font-bold text-primary text-base sm:text-lg leading-snug truncate">{t.name}</h4>
+          <p className="text-xs text-mist font-normal truncate mt-0.5">{t.title}</p>
+        </div>
+      </div>
+    </Reorder.Item>
+  );
+};
 
 export default function Testimonials() {
   const [testimonials, setTestimonials] = useState<any[]>([]);
@@ -476,87 +567,15 @@ export default function Testimonials() {
         className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8"
       >
         {(testimonials || []).map((t) => (
-          <Reorder.Item 
+          <TestimonialCardItem
             key={t._id}
-            value={t}
-            className="bg-white border border-gold/10 p-6 sm:p-8 lg:p-10 pt-12 sm:pt-14 rounded-3xl sm:rounded-[40px] shadow-sm hover:shadow-2xl transition-all duration-300 group flex flex-col justify-between relative overflow-hidden cursor-grab active:cursor-grabbing"
-          >
-            {/* Drag Handle & Checkbox Bar */}
-            <div className="absolute top-3 left-4 flex items-center space-x-3 z-20">
-              <div className="p-1 rounded text-mist hover:text-primary transition-colors cursor-grab active:cursor-grabbing" title="Drag to reorder">
-                <GripVertical size={18} />
-              </div>
-              <input
-                type="checkbox"
-                className="w-5 h-5 rounded border-gray-300 text-secondary focus:ring-secondary cursor-pointer accent-secondary"
-                checked={selectedIds.includes(t._id)}
-                onChange={() => handleSelectToggle(t._id)}
-              />
-            </div>
-
-            {/* Action Buttons (Touch-friendly & Visible) */}
-            <div className="absolute top-3 right-4 flex space-x-1.5 z-20">
-               <button 
-                onClick={() => toggleHome(t._id, t.showOnHome)}
-                className={`p-2 rounded-xl transition-all ${t.showOnHome ? 'bg-secondary/15 text-secondary' : 'bg-pearl text-mist hover:bg-gold/10 hover:text-secondary'}`}
-                title={t.showOnHome ? 'Currently on Home' : 'Hidden from Home'}
-              >
-                <BookmarkCheck size={16} />
-              </button>
-               <button 
-                onClick={() => startEdit(t)}
-                className="p-2 bg-pearl text-mist hover:text-primary hover:bg-gold/10 rounded-xl transition-all"
-                title="Edit Testimonial"
-              >
-                <Edit size={16} />
-              </button>
-              <button 
-                onClick={() => setConfirmDeleteId(t._id)}
-                className="p-2 bg-red-50 text-red-400 hover:text-red-600 hover:bg-red-100 rounded-xl transition-all"
-                title="Delete Testimonial"
-              >
-                <Trash2 size={16} />
-              </button>
-            </div>
-
-            <div className="absolute -top-6 -right-6 p-8 opacity-[0.03] text-primary pointer-events-none group-hover:rotate-12 transition-transform duration-700">
-               <Quote size={120} fill="currentColor" />
-            </div>
-            
-            <div className="relative z-10 mb-6 sm:mb-8 mt-4">
-              <div className="mb-4 flex items-center space-x-1">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star 
-                    key={star} 
-                    size={14} 
-                    className={star <= (t.rating || 5) ? 'text-gold fill-gold' : 'text-gray-200 fill-transparent'} 
-                  />
-                ))}
-              </div>
-              <p className="text-primary text-base sm:text-lg font-serif italic leading-relaxed tracking-tight line-clamp-6">
-                "{t.quote}"
-              </p>
-            </div>
-            
-            <div className="flex items-center space-x-4 relative z-10 pt-4 border-t border-pearl">
-              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-gold/10 group-hover:border-secondary transition-all duration-500 shrink-0">
-                <img 
-                  src={t.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(t.name || 'Client')}&background=1A3A5C&color=B8974A&bold=true`} 
-                  alt={t.name}
-                  className="w-full h-full object-cover" 
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-              <div className="space-y-0.5 min-w-0">
-                <h4 className="font-serif text-primary font-bold leading-tight group-hover:text-secondary transition-colors truncate">{t.name}</h4>
-                <p className="text-[9px] font-mono uppercase tracking-[0.15em] text-mist font-bold leading-tight flex items-center truncate">
-                  <span className="w-2.5 h-px bg-gold/40 mr-1.5 shrink-0" />
-                  {t.title || 'Client'}
-                </p>
-              </div>
-            </div>
-          </Reorder.Item>
+            t={t}
+            selectedIds={selectedIds}
+            handleSelectToggle={handleSelectToggle}
+            toggleHome={toggleHome}
+            startEdit={startEdit}
+            setConfirmDeleteId={setConfirmDeleteId}
+          />
         ))}
       </Reorder.Group>
 
