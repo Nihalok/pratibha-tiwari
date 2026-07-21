@@ -144,19 +144,24 @@ export default function ClientSuccessCarousel() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(197,163,101,0.03)_0%,transparent_70%)] pointer-events-none" />
 
       <div className="relative z-10">
-        <div className="max-w-4xl mx-auto px-6 text-center mb-24">
-          <motion.span
+        <div className="max-w-5xl mx-auto px-6 text-center mb-16 md:mb-24">
+          <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="font-mono text-[10px] uppercase tracking-[0.6em] text-secondary mb-8 block font-bold"
+            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-serif text-gold italic leading-tight tracking-tight mb-4 md:mb-6"
           >
-            Voices of Transformation.
-          </motion.span>
-          <h2 className="text-5xl md:text-7xl font-serif text-primary italic leading-tight tracking-tighter">
-            Real Stories. <br />
-            <span className="not-italic text-secondary">Real Results</span>
-          </h2>
+            Voices of Transformation
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.15 }}
+            className="font-mono text-xs sm:text-sm md:text-base uppercase tracking-[0.4em] sm:tracking-[0.5em] text-primary/80 font-bold"
+          >
+            Real Stories • Real Results
+          </motion.p>
         </div>
 
         <div className="space-y-4">
