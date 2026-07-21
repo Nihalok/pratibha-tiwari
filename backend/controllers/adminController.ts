@@ -69,13 +69,14 @@ export const logout = asyncHandler(async (req: Request, res: Response, next: Nex
   const isProduction = process.env.NODE_ENV === 'production';
   const cookieOptions = {
     expires: new Date(0),
+    maxAge: 0,
     httpOnly: true,
     secure: isProduction,
     sameSite: 'lax' as const,
     path: '/'
   };
 
-  res.cookie('token', '', cookieOptions);
+  res.cookie('token', 'none', cookieOptions);
   res.clearCookie('token', cookieOptions);
 
   res.status(200).json({

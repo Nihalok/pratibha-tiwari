@@ -11,6 +11,7 @@ router.get('/config', (req, res) => {
   res.json({ googleClientId: process.env.GOOGLE_CLIENT_ID });
 });
 router.get('/logout', logout);
+router.post('/logout', logout);
 router.get('/profile', protect, getProfile);
 router.post('/forgotpassword', forgotPassword);
 router.put('/resetpassword/:resettoken', resetPassword);

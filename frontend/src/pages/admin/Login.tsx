@@ -43,6 +43,12 @@ export default function AdminLogin() {
   }, []);
 
   useEffect(() => {
+    if (!loading && isAdmin) {
+      navigate(`/${ADMIN_PREFIX}`, { replace: true });
+    }
+  }, [isAdmin, loading, navigate]);
+
+  useEffect(() => {
     const fetchConfig = async () => {
       try {
         const response = await fetch('/api/admin/config');

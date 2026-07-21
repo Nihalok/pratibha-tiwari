@@ -84,15 +84,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = async () => {
+    try {
+      await fetch('/api/admin/logout', { method: 'POST', credentials: 'include' });
+    } catch (_err) {
+      try {
+        await fetch('/api/admin/logout', { method: 'GET', credentials: 'include' });
+      } catch (_e) {}
+    }
     setUser(null);
     setIsAdmin(false);
-    try {
-      await fetch('/api/admin/logout', { credentials: 'same-origin' });
-    } catch (_err) {
-      // Logout failed silently — session already cleared client-side
-    }
-    const adminPrefix = import.meta.env.VITE_ADMIN_PATH || 'admin';
-    window.location.href = `/${adminPrefix}/login`;
+
+    const adminPrefix = import.meta.env.VITE_ADMIN_PATH || 'pwt-portal';
+    window.location.replace(`/${adminPrefix}/login`);
   };
 
   return (
