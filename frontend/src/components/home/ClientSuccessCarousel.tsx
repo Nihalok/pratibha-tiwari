@@ -7,41 +7,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import { Quote, Star } from 'lucide-react';
 
-const staticTestimonials: any[] = [
-  {
-    _id: 'st-1',
-    quote: "Pratibha's communication coaching completely transformed my confidence and presentation skills. I got the promotion I'd been chasing for 3 years.",
-    name: "Senior Manager",
-    title: "Global Enterprise, UAE",
-    rating: 5,
-    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400"
-  },
-  {
-    _id: 'st-2',
-    quote: "Her emotional intelligence workshops changed the way I communicate with my executive team and key stakeholders. Genuinely life-changing leadership growth.",
-    name: "Operations Director",
-    title: "Tech Sector, Abu Dhabi",
-    rating: 5,
-    image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=400"
-  },
-  {
-    _id: 'st-3',
-    quote: "The executive coaching sessions are practical, powerful, and deeply personal. She sees through your challenges in the best possible way to unlock real potential.",
-    name: "Founder & CEO",
-    title: "Venture Circle, Dubai",
-    rating: 5,
-    image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=400"
-  },
-  {
-    _id: 'st-4',
-    quote: "An extraordinary mentor who blends corporate acumen with emotional intelligence. Her AI leadership roadmap gave our leadership team absolute strategic clarity.",
-    name: "Vice President",
-    title: "Financial Services, UAE",
-    rating: 5,
-    image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=400"
-  }
-];
-
 const TestimonialCard = ({ testimonial }: any) => (
   <motion.div
     whileHover={{
@@ -112,7 +77,10 @@ const MarqueeRow = ({
 
   if (items.length === 0) return null;
 
-  // Detect mobile for speed: use window.innerWidth at render time
+  // Repeat items if count is small so marquee loops seamlessly
+  const repeatCount = items.length < 6 ? Math.ceil(6 / items.length) : 2;
+  const loopItems = Array(repeatCount).fill(items).flat();
+
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
   const activeDuration = isMobile && mobileSpeed !== undefined ? mobileSpeed : speed;
 
@@ -122,7 +90,6 @@ const MarqueeRow = ({
   };
 
   const handleTouchEnd = () => {
-    // Resume after a short delay so single-tap feels responsive
     touchRef.current = setTimeout(() => setPaused(false), 1200);
   };
 
@@ -143,8 +110,7 @@ const MarqueeRow = ({
           animationPlayState: playState,
         }}
       >
-        {/* Double items for seamless percentage-based loop */}
-        {[...items, ...items].map((item, i) => (
+        {loopItems.map((item, i) => (
           <TestimonialCard key={`${item.id || item._id}-${i}`} testimonial={item} />
         ))}
       </div>
@@ -153,41 +119,29 @@ const MarqueeRow = ({
 };
 
 export default function ClientSuccessCarousel() {
-  const [items, setItems] = useState<any[]>(staticTestimonials);
+  const [items, setItems] = useState<any[]>([]);
 
   useEffect(() => {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 1200);
-
     const fetchTestimonials = async () => {
       try {
-        const response = await fetch('/api/testimonials/home', { signal: controller.signal });
-        clearTimeout(timeoutId);
+        const response = await fetch('/api/testimonials/home');
         if (response.ok) {
           const data = await response.json();
-          if (data.data && data.data.length > 0) {
+          if (data.data && Array.isArray(data.data)) {
             setItems(data.data);
-          } else {
-            setItems(staticTestimonials);
           }
         }
       } catch (_error) {
-        // Fast fallback to static testimonials
+        // Silently handle fetch error
       }
     };
 
     fetchTestimonials();
-
-    return () => {
-      clearTimeout(timeoutId);
-      controller.abort();
-    };
   }, []);
 
-  // Use all items for a single marquee row
-  const marqueeItems = items.length > 0
-    ? [...items, ...staticTestimonials.filter(st => !items.some(it => it.name === st.name))]
-    : staticTestimonials;
+  if (items.length === 0) {
+    return null;
+  }
 
   return (
     <section className="pt-12 md:pt-20 pb-40 bg-[#f8f9fa] relative overflow-hidden">
@@ -210,7 +164,7 @@ export default function ClientSuccessCarousel() {
         </div>
 
         <div className="space-y-4">
-          <MarqueeRow items={marqueeItems} direction={1} speed={100} mobileSpeed={45} />
+          <MarqueeRow items={items} direction={1} speed={100} mobileSpeed={45} />
         </div>
 
         <div className="absolute inset-y-0 left-0 w-32 md:w-64 bg-gradient-to-r from-white via-white/80 to-transparent z-10 pointer-events-none" />
