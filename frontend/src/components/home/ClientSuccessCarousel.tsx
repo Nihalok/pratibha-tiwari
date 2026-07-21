@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import { Quote, Star } from 'lucide-react';
 
@@ -96,16 +96,51 @@ const TestimonialCard = ({ testimonial }: any) => (
   </motion.div>
 );
 
-const MarqueeRow = ({ items, direction = 1, speed = 60 }: { items: any[], direction?: 1 | -1, speed?: number }) => {
+const MarqueeRow = ({
+  items,
+  direction = 1,
+  speed = 60,
+  mobileSpeed,
+}: {
+  items: any[];
+  direction?: 1 | -1;
+  speed?: number;
+  mobileSpeed?: number;
+}) => {
+  const [paused, setPaused] = useState(false);
+  const touchRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   if (items.length === 0) return null;
 
+  // Detect mobile for speed: use window.innerWidth at render time
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const activeDuration = isMobile && mobileSpeed !== undefined ? mobileSpeed : speed;
+
+  const handleTouchStart = () => {
+    if (touchRef.current) clearTimeout(touchRef.current);
+    setPaused(true);
+  };
+
+  const handleTouchEnd = () => {
+    // Resume after a short delay so single-tap feels responsive
+    touchRef.current = setTimeout(() => setPaused(false), 1200);
+  };
+
+  const playState = paused ? 'paused' : 'running';
+
   return (
-    <div className="relative flex overflow-hidden py-10 w-full group">
+    <div
+      className="relative flex overflow-hidden py-10 w-full group"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
+    >
       <div
         className="flex space-x-6 md:space-x-12 items-stretch whitespace-nowrap will-change-transform animate-marquee group-hover:[animation-play-state:paused]"
         style={{
           animationDirection: direction === 1 ? 'normal' : 'reverse',
-          animationDuration: `${speed}s`
+          animationDuration: `${activeDuration}s`,
+          animationPlayState: playState,
         }}
       >
         {/* Double items for seamless percentage-based loop */}
@@ -175,7 +210,7 @@ export default function ClientSuccessCarousel() {
         </div>
 
         <div className="space-y-4">
-          <MarqueeRow items={marqueeItems} direction={1} speed={100} />
+          <MarqueeRow items={marqueeItems} direction={1} speed={100} mobileSpeed={45} />
         </div>
 
         <div className="absolute inset-y-0 left-0 w-32 md:w-64 bg-gradient-to-r from-white via-white/80 to-transparent z-10 pointer-events-none" />
