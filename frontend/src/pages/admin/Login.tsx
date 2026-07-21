@@ -96,6 +96,7 @@ export default function AdminLogin() {
         window.google.accounts.id.initialize({
           client_id: googleClientId,
           callback: handleGoogleCallback,
+          auto_select: false,
         });
 
         // @ts-ignore
@@ -166,17 +167,20 @@ export default function AdminLogin() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-pearl">
+        <div className="w-10 h-10 border-2 border-gold/20 border-t-gold rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className="min-h-screen flex items-center justify-center bg-pearl px-6 py-12"
-    >
+    <div className="min-h-screen flex items-center justify-center bg-pearl px-6 py-12">
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
         className="max-w-md w-full bg-white py-8 px-10 rounded-[32px] shadow-2xl border border-gold/10 text-center space-y-5"
       >
         <div className="inline-flex items-center justify-center w-14 h-14 bg-secondary/5 rounded-2xl">
@@ -187,10 +191,10 @@ export default function AdminLogin() {
           {!showForgotPassword ? (
             <motion.div
               key="login"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              transition={{ duration: 0.3 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
               className="space-y-5"
             >
               <div className="space-y-2">
@@ -263,8 +267,8 @@ export default function AdminLogin() {
                     </div>
                   </div>
 
-                  <div className="flex justify-center w-full">
-                    <div id="googleBtn" className="w-full max-w-[320px] flex justify-center"></div>
+                  <div className="flex justify-center w-full min-h-[44px]">
+                    <div id="googleBtn" className="w-full max-w-[320px] min-h-[44px] flex justify-center"></div>
                   </div>
                 </>
               )}
@@ -354,6 +358,6 @@ export default function AdminLogin() {
           Protected by Premium Security Layer
         </div>
       </motion.div>
-    </motion.div>
+    </div>
   );
 }

@@ -22,6 +22,7 @@ const sendTokenResponse = (admin: IAdmin, statusCode: number, res: Response) => 
     httpOnly: true,
     secure: isProduction,          // HTTPS only in production
     sameSite: 'lax' as const,      // 'lax' works on same-site HTTPS; 'strict' can block redirects
+    path: '/'
   };
 
   res
@@ -66,12 +67,17 @@ export const login = asyncHandler(async (req: Request, res: Response, next: Next
 });
 
 export const logout = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-  res.cookie('token', '', {
+  const isProduction = process.env.NODE_ENV === 'production';
+  const cookieOptions = {
     expires: new Date(0),
     httpOnly: true,
-    sameSite: 'strict'
-  });
-  res.clearCookie('token');
+    secure: isProduction,
+    sameSite: 'lax' as const,
+    path: '/'
+  };
+
+  res.cookie('token', '', cookieOptions);
+  res.clearCookie('token', cookieOptions);
 
   res.status(200).json({
     success: true,
@@ -273,11 +279,13 @@ export const googleLoginRedirect = asyncHandler(async (req: Request, res: Respon
       expiresIn
     });
 
+    const isProduction = process.env.NODE_ENV === 'production';
     const options = {
       expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: isProduction,
       sameSite: 'lax' as const,   // 'lax' required for redirect-based OAuth flows
+      path: '/'
     };
 
     res.cookie('token', token, options);
