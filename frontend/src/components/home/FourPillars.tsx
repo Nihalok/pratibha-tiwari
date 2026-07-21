@@ -130,7 +130,7 @@ export default function FourPillars() {
       </div>
 
       {/* Section Heading — The Four Pillars of Impact */}
-      <div className="absolute top-[72px] sm:top-20 md:top-10 left-0 right-0 z-30 pointer-events-none px-6 md:px-12">
+      <div className="absolute top-[72px] sm:top-20 md:top-6 left-0 right-0 z-30 pointer-events-none px-6 md:px-12">
         <motion.div
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -175,7 +175,7 @@ export default function FourPillars() {
           <SwiperSlide key={pillar.id} className="w-full h-full">
             <div className="relative w-full h-full flex overflow-hidden">
               {/* Content Layer */}
-              <div className="relative z-10 w-full h-full flex flex-col md:flex-row items-center justify-center px-6 md:px-20 gap-4 md:gap-20 pt-36 sm:pt-40 md:pt-0">
+              <div className="relative z-10 w-full h-full flex flex-col md:flex-row items-center justify-center px-6 md:px-20 gap-4 md:gap-20 pt-36 sm:pt-40 md:pt-24 lg:pt-28">
 
                 {/* Visual / Image */}
                 <div className="relative group shrink-0">

@@ -14,9 +14,9 @@ export default function MultimediaShelf() {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  // Springs for smooth movement
-  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [15, -45]), { stiffness: 150, damping: 20 });
-  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [15, -15]), { stiffness: 150, damping: 20 });
+  // Springs for smooth movement - symmetric tilt
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [12, -12]), { stiffness: 150, damping: 20 });
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [8, -8]), { stiffness: 150, damping: 20 });
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!containerRef.current) return;
@@ -126,7 +126,7 @@ export default function MultimediaShelf() {
               onMouseLeave={handleMouseLeave}
               className="relative w-full lg:w-1/2 flex justify-center [perspective:3000px] py-10"
             >
-              <div className="relative h-[360px] md:h-[460px] w-full flex items-center justify-center">
+              <div className="relative h-[360px] md:h-[460px] w-full flex items-center justify-center" style={{ transformStyle: "preserve-3d" }}>
                 <AnimatePresence initial={false} custom={direction} mode="wait">
                   <motion.div
                     key={currentIndex}
@@ -153,57 +153,19 @@ export default function MultimediaShelf() {
                         repeat: Infinity, 
                         ease: "easeInOut" 
                       }}
-                      className="relative w-[230px] h-[320px] md:w-[280px] md:h-[400px] transform-gpu transition-all duration-700 cursor-pointer group"
+                      className="relative w-[200px] h-[290px] sm:w-[230px] sm:h-[320px] md:w-[260px] md:h-[370px] transform-gpu cursor-pointer group"
                     >
-                      {/* Back Cover - gives it volume */}
-                      <div 
-                        className="absolute inset-0 bg-[#1a1a1a] shadow-2xl rounded-sm"
-                        style={{ transform: "translateZ(-22.5px)" }}
-                      />
+                      {/* ── BOOK THICKNESS = 40px, so half = 20px ── */}
+                      {/* Half-thickness used for translateZ offsets      */}
 
-                      {/* Book Spine (Left side) */}
+                      {/* Front Cover */}
                       <div 
-                        className="absolute left-0 top-0 h-full origin-left shadow-2xl border-r border-white/5"
+                        className="absolute inset-0 bg-white overflow-hidden rounded-[1px] border border-gold/10"
                         style={{ 
-                          width: "45px",
-                          transform: "rotateY(-90deg) translateZ(0px)", 
-                          backgroundColor: currentBook.color,
-                          backgroundImage: 'linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.2) 20%, rgba(0,0,0,0.1) 80%, rgba(0,0,0,0.6) 100%)',
+                          transform: "translateZ(20px)",
+                          boxShadow: "6px 6px 30px rgba(0,0,0,0.35)",
                         }}
                       >
-                         <div className="absolute inset-0 flex items-center justify-center rotate-90">
-                           <span className="font-mono text-[9px] text-white uppercase tracking-[0.2em] font-bold whitespace-nowrap">{currentBook.subtitle}</span>
-                         </div>
-                         <div className="absolute inset-y-0 left-1 w-px bg-white/10" />
-                         <div className="absolute inset-y-0 right-1 w-px bg-black/20" />
-                      </div>
-
-                      {/* Top Pages Edge */}
-                      <div 
-                        className="absolute top-0 left-0 w-full h-[43px] origin-top bg-[#f5f5f5]"
-                        style={{ 
-                          transform: "rotateX(90deg) translateZ(0px)",
-                          backgroundImage: 'repeating-linear-gradient(to bottom, #f5f5f5, #f5f5f5 1px, #e5e5e5 1px, #e5e5e5 2px)',
-                        }}
-                      />
-
-                      {/* Bottom Pages Edge */}
-                      <div 
-                        className="absolute bottom-0 left-0 w-full h-[43px] origin-bottom bg-[#f0f0f0]"
-                        style={{ 
-                          transform: "rotateX(-90deg) translateZ(0px)",
-                          backgroundImage: 'repeating-linear-gradient(to top, #f0f0f0, #f0f0f0 1px, #d5d5d5 1px, #d5d5d5 2px)',
-                        }}
-                      />
-
-                      {/* Front Cover Container */}
-                      <div 
-                        className="absolute inset-0 bg-white shadow-[25px_25px_50px_-10px_rgba(0,0,0,0.4)] overflow-hidden rounded-sm border border-gold/10"
-                        style={{ 
-                          transform: "translateZ(22.5px)",
-                        }}
-                      >
-
                         <img 
                           src={currentBook.image} 
                           alt={currentBook.title} 
@@ -211,39 +173,92 @@ export default function MultimediaShelf() {
                           loading="eager"
                           decoding="async"
                         />
-                        {/* Enhanced Sheen/Reflection */}
+                        {/* Sheen sweep on hover */}
                         <div className="absolute inset-x-0 top-0 h-full w-full bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-25 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-[2.5s] ease-in-out" />
-                        
-                        {/* Hardcover bevel effect */}
+                        {/* Hardcover bevel */}
                         <div className="absolute inset-0 border-[0.5px] border-white/20 pointer-events-none" />
-                        <div className="absolute left-3 top-0 bottom-0 w-[1.5px] bg-black/10 shadow-[1px_0_2px_rgba(255,255,255,0.05)]" />
+                        <div className="absolute left-3 top-0 bottom-0 w-[1.5px] bg-black/10" />
                       </div>
 
-                      {/* Pages Effect (Right Side) */}
+                      {/* Back Cover */}
                       <div 
-                        className="absolute right-0 top-0 h-full origin-right"
+                        className="absolute inset-0 bg-[#1a1a1a] rounded-[1px]"
+                        style={{ transform: "translateZ(-20px)" }}
+                      />
+
+                      {/* Spine (Left face) — width = thickness = 40px */}
+                      <div 
+                        className="absolute top-0 left-0 h-full border-r border-white/5"
                         style={{ 
-                          width: "43px",
-                          transform: "rotateY(90deg) translateZ(0px)",
-                          backgroundColor: '#fdfdfd',
-                          backgroundImage: 'repeating-linear-gradient(to right, #fdfdfd, #fdfdfd 1px, #e5e5e5 1px, #e5e5e5 2px)',
+                          width: "40px",
+                          /* Move to left edge of front face, rotate -90deg around left edge */
+                          transform: "translateX(-40px) rotateY(-90deg)",
+                          transformOrigin: "right center",
+                          backgroundColor: currentBook.color,
+                          backgroundImage: "linear-gradient(to right, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 25%, rgba(0,0,0,0.05) 75%, rgba(0,0,0,0.55) 100%)",
                         }}
                       >
-                        <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-black/5" />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="font-mono text-[8px] text-white/80 uppercase tracking-[0.15em] font-bold whitespace-nowrap"
+                            style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
+                            {currentBook.subtitle}
+                          </span>
+                        </div>
+                        <div className="absolute inset-y-0 left-1 w-px bg-white/10" />
+                        <div className="absolute inset-y-0 right-1 w-px bg-black/20" />
                       </div>
 
-                      {/* Dynamic Floor Shadow */}
+                      {/* Pages / Right face — width = thickness = 40px */}
+                      <div 
+                        className="absolute top-0 right-0 h-full"
+                        style={{ 
+                          width: "40px",
+                          transform: "translateX(40px) rotateY(90deg)",
+                          transformOrigin: "left center",
+                          backgroundColor: "#f8f8f8",
+                          backgroundImage: "repeating-linear-gradient(to right, #f8f8f8, #f8f8f8 1px, #e0e0e0 1px, #e0e0e0 2px)",
+                        }}
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-b from-black/8 via-transparent to-black/8" />
+                      </div>
+
+                      {/* Top Pages Edge — height = thickness = 40px */}
+                      <div 
+                        className="absolute top-0 left-0 w-full"
+                        style={{ 
+                          height: "40px",
+                          transform: "translateY(-40px) rotateX(90deg)",
+                          transformOrigin: "center bottom",
+                          backgroundColor: "#f5f5f5",
+                          backgroundImage: "repeating-linear-gradient(to bottom, #f5f5f5, #f5f5f5 1px, #e2e2e2 1px, #e2e2e2 2px)",
+                        }}
+                      />
+
+                      {/* Bottom Pages Edge — height = thickness = 40px */}
+                      <div 
+                        className="absolute bottom-0 left-0 w-full"
+                        style={{ 
+                          height: "40px",
+                          transform: "translateY(40px) rotateX(-90deg)",
+                          transformOrigin: "center top",
+                          backgroundColor: "#efefef",
+                          backgroundImage: "repeating-linear-gradient(to top, #efefef, #efefef 1px, #d8d8d8 1px, #d8d8d8 2px)",
+                        }}
+                      />
+
+                      {/* Floor Shadow */}
                       <motion.div 
                         animate={{ 
                           scale: [1, 1.05, 1],
-                          opacity: [0.3, 0.4, 0.3]
+                          opacity: [0.25, 0.35, 0.25]
                         }}
                         transition={{ 
                           duration: 6,
                           repeat: Infinity,
                           ease: "easeInOut"
                         }}
-                        className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-[110%] h-14 bg-black/50 blur-3xl rounded-full pointer-events-none" 
+                        className="absolute -bottom-16 left-1/2 -translate-x-1/2 w-[90%] h-10 bg-black/40 blur-2xl rounded-full pointer-events-none" 
+                        style={{ transform: "translateZ(-20px) translateX(-50%) translateY(60px)" }}
                       />
                     </motion.div>
                   </motion.div>
