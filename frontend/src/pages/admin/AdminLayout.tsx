@@ -18,6 +18,8 @@ export default function AdminLayout() {
   const { user, isAdmin, loading, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  // ✅ All hooks must be declared BEFORE any conditional returns
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (!loading && !isAdmin) {
@@ -35,7 +37,6 @@ export default function AdminLayout() {
 
   if (!isAdmin) return null;
 
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const sidebarLinks = [
     { name: 'Dashboard', href: ADMIN_ROUTES.base, icon: <LayoutDashboard size={20} /> },
     { name: 'Blog Posts', href: ADMIN_ROUTES.posts, icon: <FileText size={20} /> },
@@ -197,6 +198,7 @@ export default function AdminLayout() {
       <main className="flex-grow p-4 sm:p-6 lg:p-10 overflow-y-auto w-full max-w-full min-w-0">
         <Routes>
           <Route index element={<Dashboard />} />
+          <Route path="dashboard" element={<Dashboard />} />
           <Route path="posts" element={<Posts />} />
           <Route path="messages" element={<Messages />} />
           <Route path="testimonials" element={<Testimonials />} />

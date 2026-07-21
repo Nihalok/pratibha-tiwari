@@ -4,7 +4,7 @@
  */
 
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
 import { AuthProvider } from './lib/auth';
 import { HelmetProvider } from 'react-helmet-async';
@@ -92,8 +92,7 @@ function AnimatedRoutes() {
         <Route path="/career-assessment" element={<CareerAssessment />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<Terms />} />
-        {/* Exact portal root → redirect instantly to login */}
-        <Route path={`/${ADMIN_PREFIX}`} element={<Navigate to={`/${ADMIN_PREFIX}/login`} replace />} />
+        {/* /pwt-portal and /pwt-portal/* → AdminLayout handles auth check + redirect to login */}
         <Route path={`/${ADMIN_PREFIX}/login`} element={<AdminLogin />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path={`/${ADMIN_PREFIX}/*`} element={<AdminLayout />} />

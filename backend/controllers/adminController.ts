@@ -16,11 +16,12 @@ const sendTokenResponse = (admin: IAdmin, statusCode: number, res: Response) => 
     expiresIn
   });
 
+  const isProduction = process.env.NODE_ENV === 'production';
   const options = {
     expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict' as const,
+    secure: isProduction,          // HTTPS only in production
+    sameSite: 'lax' as const,      // 'lax' works on same-site HTTPS; 'strict' can block redirects
   };
 
   res
@@ -276,11 +277,12 @@ export const googleLoginRedirect = asyncHandler(async (req: Request, res: Respon
       expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict' as const,
+      sameSite: 'lax' as const,   // 'lax' required for redirect-based OAuth flows
     };
 
     res.cookie('token', token, options);
-    res.redirect(`/${adminPath}`);
+    // Redirect to a sub-path so AdminLayout route (/${adminPath}/*) handles it
+    res.redirect(`/${adminPath}/dashboard`);
   } catch (error: any) {
     console.error('Google verification redirect failed:', error.message);
     res.redirect(`/${adminPath}/login?error=auth_failed`);
