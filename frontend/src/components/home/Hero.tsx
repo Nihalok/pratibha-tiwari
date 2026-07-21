@@ -8,6 +8,7 @@ import { motion, useScroll, useTransform } from 'motion/react';
 import { ArrowRight, CheckCircle2, Mic, Star, Users, MapPin, Globe } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import pratibhaPortrait from '../../assets/images/coach-pratibha-hero-new.png';
+import IcfPccBadge from './IcfPccBadge';
 
 export default function Hero() {
   const containerRef = useRef(null);
@@ -171,20 +172,14 @@ export default function Hero() {
               </svg>
             </motion.div>
 
-            {/* TEDx Badge - Circular with precise labels */}
+            {/* ICF-PCC Corporate & NLP Trainer TEDx Badge */}
             <motion.div
-              initial={{ rotate: -20, scale: 0.5, opacity: 0 }}
-              animate={{ rotate: 5, scale: 1, opacity: 1 }}
+              initial={{ rotate: -15, scale: 0.5, opacity: 0 }}
+              animate={{ rotate: 3, scale: 1, opacity: 1 }}
               transition={{ delay: 1.2, type: "spring", stiffness: 80 }}
-              className="absolute top-4 left-4 md:top-8 md:left-8 z-30"
+              className="absolute -top-2 -left-2 sm:top-2 sm:left-2 md:top-4 md:left-4 z-30 pointer-events-none"
             >
-              <div className="bg-white w-28 h-28 md:w-36 md:h-36 rounded-full border border-gold/10 shadow-2xl flex flex-col items-center justify-center p-4">
-                <div className="text-center">
-                  <span className="text-[18px] md:text-[24px] font-sans font-black text-[#E62B1E] tracking-tighter block leading-none">ICF PCC Coach</span>
-                  <div className="h-[1px] w-10 bg-gold/30 mx-auto my-2" />
-                  <span className="text-[7px] md:text-[9px] font-mono font-bold uppercase tracking-[0.2em] text-primary block">NLP Trainer</span>
-                </div>
-              </div>
+              <IcfPccBadge className="w-22 h-22 sm:w-28 sm:h-28 md:w-36 md:h-36 lg:w-40 lg:h-40" />
             </motion.div>
 
             {/* Certified Mentor Card - Dark Minimalist */}
