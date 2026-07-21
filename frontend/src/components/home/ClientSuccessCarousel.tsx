@@ -43,8 +43,8 @@ const staticTestimonials: any[] = [
 ];
 
 const TestimonialCard = ({ testimonial }: any) => (
-  <motion.div 
-    whileHover={{ 
+  <motion.div
+    whileHover={{
       y: -10,
       scale: 1.02,
       transition: { duration: 0.4, ease: "circOut" }
@@ -55,18 +55,18 @@ const TestimonialCard = ({ testimonial }: any) => (
   >
     {/* Colorful hover glow layer */}
     <div className="absolute inset-0 bg-gradient-to-tr from-secondary/10 via-transparent to-gold/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-    
+
     <div className="absolute -top-6 -right-6 p-8 opacity-[0.02] group-hover:opacity-[0.08] transition-all duration-1000 text-primary pointer-events-none group-hover:rotate-12">
-       <Quote size={160} fill="currentColor" />
+      <Quote size={160} fill="currentColor" />
     </div>
-    
+
     <div className="relative z-10">
       <div className="mb-4 md:mb-6 flex items-center space-x-1">
         {[1, 2, 3, 4, 5].map((star) => (
-          <Star 
-            key={star} 
-            size={14} 
-            className={star <= (testimonial.rating || 5) ? 'text-gold fill-gold' : 'text-primary/10 fill-transparent'} 
+          <Star
+            key={star}
+            size={14}
+            className={star <= (testimonial.rating || 5) ? 'text-gold fill-gold' : 'text-primary/10 fill-transparent'}
           />
         ))}
       </div>
@@ -74,13 +74,13 @@ const TestimonialCard = ({ testimonial }: any) => (
         "{testimonial.quote}"
       </p>
     </div>
-    
+
     <div className="flex items-center space-x-4 sm:space-x-5 relative z-10">
       <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full overflow-hidden border-2 border-gold/10 group-hover:border-secondary transition-all duration-1000 ring-4 ring-gold/5 group-hover:ring-secondary/5 shrink-0">
-        <img 
-          src={testimonial.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(testimonial.name || 'Leader')}&background=1A3A5C&color=B8974A&bold=true`} 
+        <img
+          src={testimonial.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(testimonial.name || 'Leader')}&background=1A3A5C&color=B8974A&bold=true`}
           alt={testimonial.name}
-          className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110" 
+          className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110"
           loading="lazy"
           decoding="async"
         />
@@ -98,12 +98,12 @@ const TestimonialCard = ({ testimonial }: any) => (
 
 const MarqueeRow = ({ items, direction = 1, speed = 60 }: { items: any[], direction?: 1 | -1, speed?: number }) => {
   if (items.length === 0) return null;
-  
+
   return (
     <div className="relative flex overflow-hidden py-10 w-full group">
-      <div 
+      <div
         className="flex space-x-6 md:space-x-12 items-stretch whitespace-nowrap will-change-transform animate-marquee group-hover:[animation-play-state:paused]"
-        style={{ 
+        style={{
           animationDirection: direction === 1 ? 'normal' : 'reverse',
           animationDuration: `${speed}s`
         }}
@@ -150,27 +150,27 @@ export default function ClientSuccessCarousel() {
   }, []);
 
   // Use all items for a single marquee row
-  const marqueeItems = items.length > 0 
-    ? [...items, ...staticTestimonials.filter(st => !items.some(it => it.name === st.name))] 
+  const marqueeItems = items.length > 0
+    ? [...items, ...staticTestimonials.filter(st => !items.some(it => it.name === st.name))]
     : staticTestimonials;
 
   return (
     <section className="pt-12 md:pt-20 pb-40 bg-[#f8f9fa] relative overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(197,163,101,0.03)_0%,transparent_70%)] pointer-events-none" />
-      
+
       <div className="relative z-10">
         <div className="max-w-4xl mx-auto px-6 text-center mb-24">
-          <motion.span 
+          <motion.span
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="font-mono text-[10px] uppercase tracking-[0.6em] text-secondary mb-8 block font-bold"
           >
-            Words of Affirmation
+            Voices of Transformation.
           </motion.span>
           <h2 className="text-5xl md:text-7xl font-serif text-primary italic leading-tight tracking-tighter">
-            Transformation through <br />
-            <span className="not-italic text-secondary">Presence.</span>
+            Real Stories. <br />
+            <span className="not-italic text-secondary">Real Results</span>
           </h2>
         </div>
 
