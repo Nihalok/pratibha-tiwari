@@ -241,7 +241,7 @@ export const googleLoginRedirect = asyncHandler(async (req: Request, res: Respon
   const adminPath = process.env.VITE_ADMIN_PATH || 'admin';
 
   if (!credential) {
-    return res.redirect(`/${adminPath}/login?error=no_token`);
+    return res.redirect(303, `/${adminPath}/login?error=no_token`);
   }
 
   try {
@@ -253,7 +253,7 @@ export const googleLoginRedirect = asyncHandler(async (req: Request, res: Respon
     const payload = ticket.getPayload();
 
     if (!payload || !payload.email) {
-      return res.redirect(`/${adminPath}/login?error=invalid_token`);
+      return res.redirect(303, `/${adminPath}/login?error=invalid_token`);
     }
 
     const email = payload.email.toLowerCase();
@@ -262,7 +262,7 @@ export const googleLoginRedirect = asyncHandler(async (req: Request, res: Respon
     const admin = await Admin.findOne({ email });
 
     if (!admin) {
-      return res.redirect(`/${adminPath}/login?error=unauthorized`);
+      return res.redirect(303, `/${adminPath}/login?error=unauthorized`);
     }
 
     // Set cookie
@@ -281,10 +281,10 @@ export const googleLoginRedirect = asyncHandler(async (req: Request, res: Respon
     };
 
     res.cookie('token', token, options);
-    // Redirect to a sub-path so AdminLayout route (/${adminPath}/*) handles it
-    res.redirect(`/${adminPath}/dashboard`);
+    // 303 See Other forces GET method on redirect to avoid 405 Method Not Allowed on Vercel SPA routes
+    res.redirect(303, `/${adminPath}/dashboard`);
   } catch (error: any) {
     console.error('Google verification redirect failed:', error.message);
-    res.redirect(`/${adminPath}/login?error=auth_failed`);
+    res.redirect(303, `/${adminPath}/login?error=auth_failed`);
   }
 });

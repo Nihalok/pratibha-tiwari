@@ -62,6 +62,29 @@ export default function AdminLogin() {
     fetchConfig();
   }, []);
 
+  const handleGoogleCallback = async (response: any) => {
+    setError('');
+    setIsSubmitting(true);
+    try {
+      const res = await fetch('/api/admin/google-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken: response.credential }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        await checkAuth();
+        navigate(`/${ADMIN_PREFIX}`);
+      } else {
+        setError(data.message || 'Google Authentication failed');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Google Authentication failed. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   useEffect(() => {
     if (!googleClientId || showForgotPassword) return;
 
@@ -72,8 +95,7 @@ export default function AdminLogin() {
         // @ts-ignore
         window.google.accounts.id.initialize({
           client_id: googleClientId,
-          ux_mode: "redirect",
-          login_uri: window.location.origin + "/api/admin/google-login-redirect",
+          callback: handleGoogleCallback,
         });
 
         // @ts-ignore
