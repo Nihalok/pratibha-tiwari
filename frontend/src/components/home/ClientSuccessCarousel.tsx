@@ -139,10 +139,6 @@ export default function ClientSuccessCarousel() {
     fetchTestimonials();
   }, []);
 
-  if (items.length === 0) {
-    return null;
-  }
-
   return (
     <section className="pt-12 md:pt-20 pb-40 bg-[#f8f9fa] relative overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(197,163,101,0.03)_0%,transparent_70%)] pointer-events-none" />
@@ -164,7 +160,13 @@ export default function ClientSuccessCarousel() {
         </div>
 
         <div className="space-y-4">
-          <MarqueeRow items={items} direction={1} speed={100} mobileSpeed={45} />
+          {items.length > 0 ? (
+            <MarqueeRow items={items} direction={1} speed={100} mobileSpeed={45} />
+          ) : (
+            <div className="text-center py-12 text-mist font-serif italic text-base sm:text-lg">
+              New client success stories coming soon...
+            </div>
+          )}
         </div>
 
         <div className="absolute inset-y-0 left-0 w-32 md:w-64 bg-gradient-to-r from-white via-white/80 to-transparent z-10 pointer-events-none" />
