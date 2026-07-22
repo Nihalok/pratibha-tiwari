@@ -194,9 +194,13 @@ export const createMessage = asyncHandler(async (req: Request, res: Response, ne
       const transporter = nodemailer.createTransport({
         host: process.env.EMAIL_HOST,
         port: Number(process.env.EMAIL_PORT),
+        secure: Number(process.env.EMAIL_PORT) === 465,
         auth: {
           user: process.env.EMAIL_USER,
           pass: process.env.EMAIL_PASS
+        },
+        tls: {
+          rejectUnauthorized: false
         }
       });
 
@@ -255,10 +259,28 @@ export const createMessage = asyncHandler(async (req: Request, res: Response, ne
         </html>
       `;
 
+      const plainTextMessage = `
+New Inbound Inquiry from Pratibha Tiwari Website:
+
+Name: ${name}
+Email Address: ${email}
+Phone Number: ${phone || 'N/A'}
+Country/Region: ${country || 'N/A'}
+Inquiry Type: ${inquiryType || 'General Inquiry'}
+
+Message:
+"${messageText}"
+
+---
+This is an automated system notification from your website.
+      `.trim();
+
       await transporter.sendMail({
         from: `"${process.env.FROM_NAME || 'Pratibha Tiwari Admin'}" <${process.env.FROM_EMAIL}>`,
         to: recipient,
+        replyTo: email,
         subject: `New Inquiry from ${name} (${inquiryType})`,
+        text: plainTextMessage,
         html: htmlMessage
       });
       console.log(`[Email] Notification sent successfully to admin for message from ${name}`);
