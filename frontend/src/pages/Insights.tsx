@@ -424,10 +424,10 @@ export default function Insights() {
                               <div className="w-1 h-1 rounded-full bg-gold/20" />
                               <span className="flex items-center"><Clock size={14} className="mr-2 text-gold" /> {calculateReadTime(post.body)}</span>
                             </div>
-                            <h3 className="text-2xl md:text-3xl font-serif text-primary group-hover:text-secondary transition-colors line-clamp-3 leading-snug mb-6 md:mb-8 italic">
+                            <h3 className="text-2xl md:text-3xl font-serif text-primary group-hover:text-secondary transition-colors line-clamp-2 leading-snug h-[2.75em] overflow-hidden mb-6 md:mb-8 italic">
                               "{post.title}"
                             </h3>
-                            <p className="text-charcoal font-normal text-base md:text-[17px] leading-relaxed line-clamp-3 h-[4.875em] mb-8 md:mb-10 transition-opacity">{post.excerpt}</p>
+                            <p className="text-charcoal font-normal text-base md:text-[17px] leading-relaxed line-clamp-3 h-[4.875em] overflow-hidden mb-8 md:mb-10 transition-opacity">{post.excerpt}</p>
                             <div className="pt-8 mt-auto flex items-center space-x-3 text-[10px] font-bold uppercase tracking-[0.4em] text-secondary group-hover:translate-x-3 transition-transform">
                               <span>Open Insight</span>
                               <ArrowUpRight size={16} />

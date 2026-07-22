@@ -110,6 +110,34 @@ const initialPosts = [
       <h2>The quality of our lives</h2>
       <p>It’s communication with self and others that improves the quality of our lives. We all communicate but do not communicate too and sometimes miscommunicate. Sometimes we want to communicate but we do not aware (self and socially), that what and how to communicate is confusing for us.  You must have noticed when we know something, our cognitive brain says ‘aha I know it and we become so confident and comfortable but when we don’t know something it develops a fear of facing the unknown. Imagine attending a party, when you know a few known people will be there,  you feel so confident and comfortable to join that party. On the contrary, if you find yourself in a completely new place and among strangers, then you might be fearful of the discomfort of being there. Communication gets more power when we sense the sense of knowing. It’s the awareness that develops this sense, whether it’s self-awareness or social awareness. The application of Emotional Intelligence brings that awareness to us. People with emotional intelligence find it easier to get confidence and comfort, they know how to face what is unknown or none predicted. It empowers their communication strength. Anyone who wants to improve his/her communication skills for personal and professional growth and success, then it’s a good option for that person to consider learning emotional intelligence skills. Using this skill is like empowering connections between relationships. People can not only improve the quality of their relationships but also find desired growth in workplace and business environments. The best way to learn Emotional intelligence is to do it practically and apply it in real-time situations. For that in one-liner ‘let’s Communicate to communicate with Emotional Intelligence.’</p>
     `
+  },
+  {
+    slug: 'career-sustainability-in-the-ai-era',
+    title: "Career Sustainability in the AI Era",
+    category: "Strategic Leadership",
+    excerpt: "How the rapid acceleration of artificial intelligence demands a new blueprint for personal performance, structural career audits, and emotional resilience.",
+    featuredImage: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2064&auto=format&fit=crop",
+    status: 'published',
+    body: `
+      <p>The dawn of the artificial intelligence era is no longer a future projection—it is our current working reality. As AI systems continuously automate complex analytical and operational workflows, professionals across every tier are left with a critical question: <strong>How do we maintain long-term career sustainability in a landscape defined by constant disruption?</strong></p>
+
+      <h2>The Paradigm Shift: From Cognitive Hard Skills to Human Core Capabilities</h2>
+      <p>For decades, career security was built on highly specialized cognitive skills. Coding, contract drafting, financial modeling, and data analytics were the gold standards of professional value. Today, large language models and cognitive agents perform these tasks in seconds. This shift has changed the equation. The competitive edge is no longer what you know, but how you synthesize what you know using uniquely human capabilities.</p>
+
+      <blockquote>"AI won't replace professionals. But professionals who leverage AI and master emotional intelligence will replace those who do not."</blockquote>
+
+      <p>True sustainability requires pivoting to high-leverage qualities that machines cannot emulate: persuasive leadership, structured empathy, executive presence, and emotional resilience. Building these qualities starts with a deep structural audit of your current skill sets.</p>
+
+      <h2>The Pillars of AI-Ready Career Sustainability</h2>
+      <ul>
+        <li><strong>Adaptive Intelligence (AQ):</strong> The capacity to rapidly unlearn old methodologies and integrate new, collaborative AI tools into your daily workflow.</li>
+        <li><strong>Structural Emotional Intelligence (EI):</strong> The capability to navigate organizational complexity, influence stakeholders, and lead cross-cultural teams with absolute clarity and calm.</li>
+        <li><strong>Executive Presence and Communication:</strong> Distilling complex cognitive concepts into stories that motivate stakeholders and command authority in high-stakes environments.</li>
+      </ul>
+
+      <h2>Audit Your Trajectory: Benchmark Your AI-Readiness</h2>
+      <p>Are your professional skills structured for growth, or are they vulnerable to automated obsolescence? Taking a proactive approach to your career trajectory is the first step toward securing your future in the modern digital workspace. Benchmarking yourself against the strategic categories of emotional adaptability, strategic foresight, and cognitive partnership is essential to mapping a sustainable long-term pathway.</p>
+    `
   }
 ];
 

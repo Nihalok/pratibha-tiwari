@@ -193,6 +193,34 @@ export default function BlogPost() {
                  className="text-primary leading-relaxed font-sans mt-4 article-body"
                  dangerouslySetInnerHTML={{ __html: post.body }} 
                />
+
+               {/* Career Sustainability Assessment CTA Banner */}
+               {(post.slug === 'career-sustainability-in-the-ai-era' || post.title?.toLowerCase().includes('career sustainability')) && (
+                 <div className="my-12 md:my-16 p-6 sm:p-10 md:p-12 rounded-3xl md:rounded-[40px] bg-gradient-to-br from-pearl via-[#fcfbf9] to-[#f5f0e6] border border-gold/20 shadow-xl relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6 md:gap-10 group">
+                   {/* Gold blur ambient glow */}
+                   <div className="absolute -top-12 -right-12 w-48 h-48 bg-gold/5 rounded-full blur-3xl pointer-events-none group-hover:scale-125 transition-transform duration-700" />
+                   
+                   <div className="space-y-3 sm:space-y-4 max-w-xl relative z-10 text-left">
+                     <span className="font-mono text-[9px] uppercase tracking-[0.3em] text-secondary font-bold bg-secondary/5 px-3 py-1 rounded-full w-fit block">Interactive Diagnostic</span>
+                     <h3 className="text-2xl sm:text-3xl font-serif text-primary italic leading-tight">
+                       Benchmark Your Career Sustainability
+                     </h3>
+                     <p className="text-mist text-xs sm:text-sm font-normal leading-relaxed">
+                       Take the 90-second diagnostic Pratibha utilizes with global leadership circles to assess your readiness for the AI era.
+                     </p>
+                   </div>
+                   
+                   <div className="shrink-0 relative z-10 w-full md:w-auto">
+                     <Link 
+                       to="/career-assessment"
+                       className="inline-flex items-center justify-center space-x-3 bg-primary text-white hover:bg-secondary px-8 py-4.5 rounded-full font-bold shadow-xl shadow-primary/10 transition-all hover:scale-105 active:scale-95 group/btn w-full md:w-auto"
+                     >
+                       <span className="text-[10px] font-bold uppercase tracking-widest">Start Assessment</span>
+                       <ArrowUpRight size={16} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
+                     </Link>
+                   </div>
+                 </div>
+               )}
                
                {/* Tags & Footer */}
                <div className="mt-16 md:mt-20 pt-8 md:pt-12 border-t border-gold/10">

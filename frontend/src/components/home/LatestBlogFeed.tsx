@@ -68,11 +68,11 @@ const BlogCard: React.FC<{ post: any; index: number }> = ({ post, index }) => {
               <span className="flex items-center"><Clock size={12} className="mr-2 text-gold" /> {post.readTime}</span>
             </div>
             
-            <h3 className="text-2xl font-serif text-primary leading-tight group-hover:text-secondary transition-colors mb-4 italic font-medium">
+            <h3 className="text-2xl font-serif text-primary leading-tight group-hover:text-secondary transition-colors line-clamp-2 h-[2.5em] overflow-hidden mb-4 italic font-medium">
               "{post.title}"
             </h3>
             
-            <p className="text-mist text-sm leading-relaxed line-clamp-3 font-normal  group-hover:opacity-100 transition-opacity mb-8">
+            <p className="text-mist text-sm leading-relaxed line-clamp-3 h-[4.875em] overflow-hidden font-normal group-hover:opacity-100 transition-opacity mb-8">
               {post.excerpt}
             </p>
 
