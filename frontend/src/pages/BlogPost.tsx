@@ -48,20 +48,7 @@ export default function BlogPost() {
 
     const fetchPostAndRelated = async () => {
       try {
-        // 1. Check static posts first for instant render
-        const staticPost = staticBlogPosts.find(p => p.slug === slug);
-        if (staticPost) {
-          setPost(staticPost);
-          const related = staticBlogPosts
-            .filter(p => p.slug !== slug && p.category === staticPost.category)
-            .slice(0, 3);
-          setRelatedPosts(related);
-          setLoading(false);
-          clearTimeout(timeoutId);
-          return;
-        }
-
-        // 2. Fetch from backend
+        // 1. Fetch from backend first to prioritize user edits/creations from dashboard
         const response = await fetch(`/api/posts/slug/${slug}`, { signal: controller.signal });
         if (response.ok) {
           const data = await response.json();
@@ -78,17 +65,25 @@ export default function BlogPost() {
             setRelatedPosts(related);
           }
         } else {
-          // If backend returns non-ok status, search static posts again as fallback
-          const fallback = staticBlogPosts.find(p => p.slug?.toLowerCase() === slug?.toLowerCase());
-          if (fallback) {
-            setPost(fallback);
+          // 2. If not found in database, check static posts as fallback
+          const staticPost = staticBlogPosts.find(p => p.slug?.toLowerCase() === slug?.toLowerCase());
+          if (staticPost) {
+            setPost(staticPost);
+            const related = staticBlogPosts
+              .filter(p => p.slug !== slug && p.category === staticPost.category)
+              .slice(0, 3);
+            setRelatedPosts(related);
           }
         }
       } catch (_error) {
-        // Silently fall through to static fallback if available
-        const fallback = staticBlogPosts.find(p => p.slug?.toLowerCase() === slug?.toLowerCase());
-        if (fallback) {
-          setPost(fallback);
+        // 3. Fall back to static posts if server is down or unreachable
+        const staticPost = staticBlogPosts.find(p => p.slug?.toLowerCase() === slug?.toLowerCase());
+        if (staticPost) {
+          setPost(staticPost);
+          const related = staticBlogPosts
+            .filter(p => p.slug !== slug && p.category === staticPost.category)
+            .slice(0, 3);
+          setRelatedPosts(related);
         }
       } finally {
         clearTimeout(timeoutId);

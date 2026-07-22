@@ -92,32 +92,54 @@ export default function LatestBlogFeed() {
 
   useEffect(() => {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 4000);
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
 
     const fetchLatestPosts = async () => {
       try {
-        const response = await fetch('/api/posts/home', { signal: controller.signal });
+        const response = await fetch('/api/posts', { signal: controller.signal });
         clearTimeout(timeoutId);
+        
+        let dbPosts: any[] = [];
         if (response.ok) {
           const data = await response.json();
-          if (data.data && data.data.length > 0) {
-            const newPosts = data.data.map((data: any) => ({
-              id: data._id,
-              slug: data.slug,
-              title: data.title,
-              excerpt: data.excerpt,
-              imageUrl: data.featuredImage || staticBlogPosts[0]?.imageUrl,
-              category: data.category,
-              date: data.createdAt ? new Date(data.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recent',
-              readTime: calculateReadTime(data.body)
-            }));
-            setPosts(newPosts);
-          } else {
-            setPosts(staticBlogPosts);
-          }
+          dbPosts = data.data || [];
         }
+
+        // Combine database posts with static fallback posts (avoid duplicates by slug)
+        const combined = [...dbPosts];
+        staticBlogPosts.forEach(staticPost => {
+          if (!combined.find(p => p.slug === staticPost.slug)) {
+            combined.push(staticPost);
+          }
+        });
+
+        // Map combined posts to the structure needed by BlogCard
+        const mappedPosts = combined.map((post: any) => ({
+          id: post._id || post.id,
+          slug: post.slug,
+          title: post.title,
+          excerpt: post.excerpt,
+          imageUrl: post.featuredImage || post.imageUrl,
+          category: post.category,
+          date: post.createdAt 
+            ? new Date(post.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) 
+            : (post.date || 'Recent'),
+          readTime: post.readTime || calculateReadTime(post.body)
+        }));
+
+        setPosts(mappedPosts);
       } catch (_error) {
-        // Silently fall back — static posts remain
+        const fallbackMapped = staticBlogPosts.map((post: any) => ({
+          id: post.id,
+          slug: post.slug,
+          title: post.title,
+          excerpt: post.excerpt,
+          imageUrl: post.imageUrl,
+          category: post.category,
+          date: post.date || 'Recent',
+          readTime: post.readTime || '5m read'
+        }));
+        setPosts(fallbackMapped);
       }
     };
 
