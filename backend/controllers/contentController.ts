@@ -289,7 +289,7 @@ This is an automated system notification from your website.
     }
   };
 
-  sendEmailNotification();
+  await sendEmailNotification();
 
   res.status(201).json({ success: true, data: message });
 });
