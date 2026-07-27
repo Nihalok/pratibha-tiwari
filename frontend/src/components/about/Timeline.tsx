@@ -5,7 +5,7 @@
 
 import React, { useRef } from 'react';
 import { motion, useScroll, useTransform, useSpring, AnimatePresence, useMotionValueEvent } from 'motion/react';
-import { Heart, Target, Star, Award, TrendingUp, Users, Globe, Zap, Sparkles, BookOpen, Mic2, Brain } from 'lucide-react';
+import { Heart, Target, Star, Award, Users, Globe, Zap, Sparkles, BookOpen, Mic2, Brain } from 'lucide-react';
 import { useState } from 'react';
 
 const milestones = [
@@ -77,7 +77,101 @@ const milestones = [
   }
 ];
 
-export default function Timeline() {
+/** Mobile swipeable carousel */
+function MobileTimeline() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const handleScroll = () => {
+    if (!scrollRef.current) return;
+    const scrollLeft = scrollRef.current.scrollLeft;
+    const cardWidth = scrollRef.current.scrollWidth / milestones.length;
+    const index = Math.round(scrollLeft / cardWidth);
+    setActiveIndex(Math.min(Math.max(index, 0), milestones.length - 1));
+  };
+
+  return (
+    <section className="relative py-16 bg-transparent md:hidden">
+      <div className="px-6 mb-10">
+        <span className="font-mono text-[9px] uppercase tracking-[0.6em] text-secondary mb-3 block font-bold">
+          The Journey
+        </span>
+        <h2 className="text-4xl font-serif text-primary italic leading-tight">
+          Legacy in <span className="not-italic text-secondary">Motion.</span>
+        </h2>
+        <p className="text-xs text-mist font-mono mt-3">Swipe to explore →</p>
+      </div>
+
+      {/* Horizontal scroll snap container */}
+      <div
+        ref={scrollRef}
+        onScroll={handleScroll}
+        className="flex flex-row overflow-x-auto snap-x snap-mandatory scrollbar-none gap-5 px-6 pb-6"
+        style={{ scrollBehavior: 'smooth', WebkitOverflowScrolling: 'touch' }}
+      >
+        {milestones.map((m, i) => (
+          <div
+            key={i}
+            className="relative flex-shrink-0 w-[82vw] max-w-[340px] snap-center"
+          >
+            <div className="relative p-8 rounded-[40px] bg-white/80 backdrop-blur-sm border border-gold/10 shadow-xl overflow-hidden">
+              {/* Card Background Image */}
+              <div className="absolute inset-0 z-0">
+                <img
+                  src={(m as any).image}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover opacity-10"
+                />
+                <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-white/80 to-transparent" />
+              </div>
+
+              {/* Milestone Number Background */}
+              <div className="absolute -top-10 -left-6 text-[8rem] font-serif italic text-primary/[0.03] select-none pointer-events-none">
+                {i < 9 ? `0${i + 1}` : i + 1}
+              </div>
+
+              <div className="relative z-10">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-12 h-12 rounded-2xl bg-white shadow-xl shadow-secondary/10 flex items-center justify-center text-secondary">
+                    {React.cloneElement(m.icon as React.ReactElement, { className: 'w-6 h-6' })}
+                  </div>
+                  <div className="h-0.5 w-10 bg-secondary/30" />
+                </div>
+
+                <h3 className="text-xl text-primary font-serif italic font-light leading-[1.4] tracking-tight">
+                  "{m.text}"
+                </h3>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Dot progress indicator */}
+      <div className="flex justify-center gap-2 mt-4 px-6">
+        {milestones.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => {
+              if (scrollRef.current) {
+                const cardWidth = scrollRef.current.scrollWidth / milestones.length;
+                scrollRef.current.scrollTo({ left: cardWidth * i, behavior: 'smooth' });
+              }
+            }}
+            className={`h-1.5 rounded-full transition-all duration-500 ${
+              i === activeIndex ? 'w-6 bg-secondary' : 'w-1.5 bg-primary/15'
+            }`}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/** Desktop scroll-driven horizontal animation */
+function DesktopTimeline() {
   const targetRef = useRef<HTMLDivElement>(null);
 
   const { scrollYProgress } = useScroll({
@@ -85,8 +179,6 @@ export default function Timeline() {
     offset: ["start start", "end end"]
   });
 
-  // Calculate the horizontal translation
-  // Starting from 0% so the first card is visible immediately (offset by px-[10vw]).
   const x = useTransform(scrollYProgress, [0, 1], ["0%", "-82%"]);
   
   const springX = useSpring(x, {
@@ -96,7 +188,6 @@ export default function Timeline() {
     restDelta: 0.005
   });
 
-  // Parallax for floating elements
   const floatY1 = useTransform(scrollYProgress, [0, 1], [0, -250]);
   const floatY2 = useTransform(scrollYProgress, [0, 1], [0, 250]);
   const rotate = useTransform(scrollYProgress, [0, 1], [0, 180]);
@@ -110,8 +201,8 @@ export default function Timeline() {
   });
 
   return (
-    <section ref={targetRef} className="relative h-[500vh] bg-transparent">
-      {/* Snap Points - Invisible divs to guide the scroll-snap if the parent allows */}
+    <section ref={targetRef} className="relative h-[500vh] bg-transparent hidden md:block">
+      {/* Snap Points */}
       <div className="absolute inset-0 pointer-events-none flex flex-col">
         {milestones.map((_, i) => (
           <div key={i} className="h-screen w-full snap-start" />
@@ -119,7 +210,7 @@ export default function Timeline() {
       </div>
 
       <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden">
-        {/* Fixed HUD - Floating Date/Chapter Label */}
+        {/* Fixed HUD */}
         <div className="absolute top-4 right-6 sm:top-12 sm:right-12 md:top-20 md:right-24 z-50 pointer-events-none text-right">
           <div className="flex flex-col items-end">
             <AnimatePresence mode="popLayout">
@@ -137,7 +228,7 @@ export default function Timeline() {
           </div>
         </div>
 
-        {/* Floating Decorative Elements - Lightweight GPU layers */}
+        {/* Floating Decorative Elements */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <motion.div style={{ y: floatY1, rotate }} className="absolute top-[10%] -left-[10%] text-secondary/5 transform-gpu">
             <Sparkles size={160} />
@@ -179,7 +270,7 @@ export default function Timeline() {
                 key={i} 
                 className="relative flex-shrink-0 w-[85vw] md:w-[60vw] lg:w-[45vw] group transform-gpu"
               >
-                {/* Milestone Card - High performance styling */}
+                {/* Milestone Card */}
                 <div 
                   className="relative p-6 sm:p-12 md:p-16 rounded-3xl sm:rounded-[60px] bg-white/70 backdrop-blur-sm border border-gold/10 hover:border-secondary/30 transition-all duration-500 hover:shadow-2xl group-hover:-translate-y-4 overflow-hidden transform-gpu"
                 >
@@ -229,5 +320,14 @@ export default function Timeline() {
         </div>
       </div>
     </section>
+  );
+}
+
+export default function Timeline() {
+  return (
+    <>
+      <MobileTimeline />
+      <DesktopTimeline />
+    </>
   );
 }

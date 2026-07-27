@@ -68,7 +68,7 @@ const pillars = [
     id: '04',
     title: 'Corporate Training & Keynotes',
     subtitle: 'Pillar 4',
-    desc: 'High-impact masterclasses backed by 23+ years of real-world corporate success.',
+    desc: 'Transformative TEDx-quality keynotes and corporate masterclasses that inspire action, shift mindsets, and build high-performance organizational cultures.',
     icon: <Mic2 className="w-12 h-12" />,
     color: '#3B82F6', // Accent
     image: pillar4,
@@ -198,7 +198,7 @@ export default function FourPillars() {
                 </div>
 
                 {/* Content Box */}
-                <div className="text-center md:text-left max-w-2xl px-4 md:px-0">
+                <div className="text-left max-w-2xl px-4 md:px-0">
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{
@@ -218,7 +218,7 @@ export default function FourPillars() {
                       y: activeIndex === idx ? 0 : 30
                     }}
                     transition={{ delay: 0.5, duration: 0.8 }}
-                    className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif text-primary leading-[1.15] tracking-tight mb-3 md:mb-8"
+                    className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif text-primary leading-[1.15] tracking-tight mb-3 md:mb-8 text-left"
                   >
                     {pillar.title}
                   </motion.h3>
@@ -230,7 +230,7 @@ export default function FourPillars() {
                       y: activeIndex === idx ? 0 : 20
                     }}
                     transition={{ delay: 0.6 }}
-                    className="text-primary text-base md:text-2xl mb-5 md:mb-12 leading-relaxed font-normal max-w-xl"
+                    className="text-primary text-base md:text-2xl mb-5 md:mb-12 leading-relaxed font-normal max-w-xl text-left"
                   >
                     {pillar.desc}
                   </motion.p>

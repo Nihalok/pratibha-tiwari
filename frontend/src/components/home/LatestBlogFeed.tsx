@@ -47,13 +47,7 @@ const BlogCard: React.FC<{ post: any; index: number }> = ({ post, index }) => {
             )}
 
 
-            
-            {/* Category Badge */}
-            <div className="absolute top-6 left-6 z-20">
-              <span className="bg-white/90 backdrop-blur-md text-primary text-[9px] font-mono px-4 py-1.5 rounded-full uppercase tracking-widest border border-gold/10 font-bold shadow-sm">
-                {post.category}
-              </span>
-            </div>
+
           </div>
 
           <div className="p-10 flex flex-col flex-grow relative">

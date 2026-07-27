@@ -145,12 +145,12 @@ export default function Hero() {
             />
 
             {/* Main Portrait Image */}
-            <div className="relative z-10 overflow-hidden rounded-b-full">
+            <div className="relative z-10 flex justify-center items-end overflow-hidden">
               <motion.img
                 style={{ y: imageY }}
                 src={pratibhaPortrait}
                 alt="Pratibha Tiwari"
-                className="w-full h-auto object-cover relative z-10"
+                className="w-full h-auto object-cover object-top relative z-10 mx-auto"
                 loading="eager"
                 fetchPriority="high"
                 decoding="async"

@@ -100,6 +100,7 @@ export default function Footer() {
               <li><Link to="/services#career-shaping" onClick={() => handleLinkClick('career-shaping')} className="hover:text-gold transition-colors block">Career Shaping</Link></li>
               <li><Link to="/services#executive-coaching" onClick={() => handleLinkClick('executive-coaching')} className="hover:text-gold transition-colors block">EI Workshops</Link></li>
               <li><Link to="/services#purposeful-leadership" onClick={() => handleLinkClick('purposeful-leadership')} className="hover:text-gold transition-colors block">Purposeful Leadership</Link></li>
+              <li><Link to="/services" className="hover:text-gold transition-colors block">AI Training</Link></li>
             </ul>
           </div>
 

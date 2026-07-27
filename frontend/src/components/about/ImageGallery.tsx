@@ -20,17 +20,17 @@ import gallery10 from '../../assets/images/10.JPG';
 import gallery11 from '../../assets/images/11.JPG';
 
 const galleryImages = [
-  { id: 1, alt: 'Empowering Moments', src: gallery1 },
-  { id: 2, alt: 'Leadership Journey', src: gallery2 },
-  { id: 3, alt: 'Strategic Excellence', src: gallery3 },
-  { id: 4, alt: 'Impactful Conversations', src: gallery4 },
-  { id: 5, alt: 'Professional Growth', src: gallery5 },
-  { id: 6, alt: 'Mentorship in Action', src: gallery6 },
-  { id: 7, alt: 'Global Speaking', src: gallery7 },
-  { id: 8, alt: 'Knowledge Sharing', src: gallery8 },
-  { id: 9, alt: 'Career Transformation', src: gallery9 },
-  { id: 10, alt: 'Workshop Insights', src: gallery10 },
-  { id: 11, alt: 'Visionary Leadership', src: gallery11 },
+  { id: 1, alt: 'Empowering Moments', src: gallery1, isBook: false },
+  { id: 2, alt: 'Leadership Journey', src: gallery2, isBook: false },
+  { id: 3, alt: 'Strategic Excellence', src: gallery3, isBook: false },
+  { id: 4, alt: 'Impactful Conversations', src: gallery4, isBook: false },
+  { id: 5, alt: 'Professional Growth', src: gallery5, isBook: false },
+  { id: 6, alt: 'Mentorship in Action', src: gallery6, isBook: false },
+  { id: 7, alt: 'Global Speaking', src: gallery7, isBook: false },
+  { id: 8, alt: 'Knowledge Sharing', src: gallery8, isBook: false },
+  { id: 9, alt: 'Career Transformation', src: gallery9, isBook: false },
+  { id: 10, alt: 'Design Success Blueprint', src: gallery10, isBook: true },
+  { id: 11, alt: 'Visionary Leadership', src: gallery11, isBook: false },
 ];
 
 export default function ImageGallery() {
@@ -50,12 +50,12 @@ export default function ImageGallery() {
           {galleryImages.map((image) => (
             <div
               key={`mobile-${image.id}`}
-              className="relative w-[82vw] max-w-[320px] sm:w-[360px] h-full shrink-0 snap-center rounded-3xl overflow-hidden bg-white/50 backdrop-blur-sm shadow-xl shadow-primary/5 cursor-grab active:cursor-grabbing"
+              className={`relative w-[82vw] max-w-[320px] sm:w-[360px] h-full shrink-0 snap-center rounded-3xl overflow-hidden backdrop-blur-sm shadow-xl shadow-primary/5 cursor-grab active:cursor-grabbing ${image.isBook ? 'bg-[#b0bec5]' : 'bg-white/50'}`}
             >
               <img
                 src={image.src}
                 alt={image.alt}
-                className="absolute inset-0 w-full h-full object-cover bg-gray-100"
+                className={`absolute inset-0 w-full h-full ${image.isBook ? 'object-contain p-2' : 'object-cover'} bg-transparent`}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/20 to-transparent flex flex-col justify-end p-6">
                 <p className="text-white font-serif italic text-xl drop-shadow-md">
@@ -76,15 +76,16 @@ export default function ImageGallery() {
                 transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]
                 hover:flex-none md:hover:flex-[12]
                 group/card
-                bg-white/50 backdrop-blur-sm
+                backdrop-blur-sm
                 shadow-2xl shadow-primary/5
+                ${image.isBook ? 'bg-[#b0bec5]' : 'bg-white/50'}
                 ${index % 2 === 0 ? 'md:translate-y-8' : 'md:-translate-y-8'}
               `}
             >
               <img
                 src={image.src}
                 alt={image.alt}
-                className="absolute inset-0 w-full h-full object-cover transition-all duration-700 group-hover/card:scale-110 bg-white/5 group-hover/card:grayscale-0"
+                className={`absolute inset-0 w-full h-full ${image.isBook ? 'object-contain p-4' : 'object-cover group-hover/card:scale-110'} transition-all duration-700 bg-transparent`}
               />
 
               {/* Subtle overlay for inactive cards */}

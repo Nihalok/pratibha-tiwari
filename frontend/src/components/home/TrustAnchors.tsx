@@ -29,8 +29,8 @@ const impactStats = [
   {
     icon: <Target className="w-6 h-6 text-gold" />,
     title: "Precision",
-    value: "NLP • EI • AI",
-    desc: "Utilizing advanced behavioral science for peak human performance."
+    value: "NLP • EI • AI • Leadership & Coach",
+    desc: "Utilizing advanced behavioral science, emotional intelligence, AI strategies, and leadership coaching for peak human performance."
   }
 ];
 
@@ -61,7 +61,7 @@ export default function TrustAnchors() {
                   <div className="text-[10px] font-mono uppercase tracking-[0.4em] text-secondary font-black">
                     {stat.title}
                   </div>
-                  <div className="text-2xl font-serif text-primary tracking-tight font-bold">
+                  <div className="text-xl font-serif text-primary tracking-tight font-bold leading-tight">
                     {stat.value}
                   </div>
                 </div>
