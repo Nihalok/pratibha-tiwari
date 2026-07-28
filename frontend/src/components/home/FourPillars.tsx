@@ -120,7 +120,7 @@ export default function FourPillars() {
             animate={{ opacity: 0.05, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: -100 }}
             transition={{ duration: 1.5, ease: [0.33, 1, 0.68, 1] }}
-            className="absolute inset-0 flex items-center justify-center z-20"
+            className="absolute inset-0 flex items-center justify-center z-20 will-change-transform transform-gpu"
           >
             <h2 className="font-serif text-[40vw] md:text-[30vw] font-bold text-primary tracking-tighter leading-none whitespace-nowrap italic uppercase">
               {pillars[activeIndex].title.split(' ')[0]}

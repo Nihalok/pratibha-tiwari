@@ -118,25 +118,65 @@ const MarqueeRow = ({
   );
 };
 
+const staticTestimonials = [
+  {
+    id: 'static-1',
+    quote: "Pratibha's communication coaching completely transformed my confidence and presentation skills. I got the promotion I'd been chasing for 3 years.",
+    name: "Senior Executive",
+    title: "Global Tech Enterprise • UAE",
+    rating: 5
+  },
+  {
+    id: 'static-2',
+    quote: "Her emotional intelligence workshops changed the way I communicate with my team and leadership. Genuinely life-changing experience.",
+    name: "Operations Director",
+    title: "Financial Services • Abu Dhabi",
+    rating: 5
+  },
+  {
+    id: 'static-3',
+    quote: "The coaching sessions are practical, powerful, and deeply personal. She sees through challenges with unmatched strategic clarity.",
+    name: "Business Founder",
+    title: "Venture Capital • Dubai",
+    rating: 5
+  },
+  {
+    id: 'static-4',
+    quote: "After attending Pratibha's leadership development series, our management alignment and strategic decision-making improved exponentially.",
+    name: "VP of People & Culture",
+    title: "Multinational Brand • Middle East",
+    rating: 5
+  }
+];
+
 export default function ClientSuccessCarousel() {
-  const [items, setItems] = useState<any[]>([]);
+  const [items, setItems] = useState<any[]>(staticTestimonials);
 
   useEffect(() => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 1500);
+
     const fetchTestimonials = async () => {
       try {
-        const response = await fetch('/api/testimonials/home');
+        const response = await fetch('/api/testimonials/home', { signal: controller.signal });
+        clearTimeout(timeoutId);
         if (response.ok) {
           const data = await response.json();
-          if (data.data && Array.isArray(data.data)) {
+          if (data.data && Array.isArray(data.data) && data.data.length > 0) {
             setItems(data.data);
           }
         }
       } catch (_error) {
-        // Silently handle fetch error
+        // Silently keep static fallback
       }
     };
 
     fetchTestimonials();
+
+    return () => {
+      clearTimeout(timeoutId);
+      controller.abort();
+    };
   }, []);
 
   return (

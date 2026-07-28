@@ -4,7 +4,7 @@
  */
 
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
 import { AuthProvider } from './lib/auth';
 import { HelmetProvider } from 'react-helmet-async';
@@ -18,14 +18,14 @@ import SmoothScroll from './components/layout/SmoothScroll';
 import SEO from './components/layout/SEO';
 
 import Home from './pages/Home';
-const About = lazy(() => import('./pages/About'));
-const Services = lazy(() => import('./pages/Services'));
-const Insights = lazy(() => import('./pages/Insights'));
-const BlogPost = lazy(() => import('./pages/BlogPost'));
-const Contact = lazy(() => import('./pages/Contact'));
-const CareerAssessment = lazy(() => import('./pages/CareerAssessment'));
-const Privacy = lazy(() => import('./pages/Privacy'));
-const Terms = lazy(() => import('./pages/Terms'));
+import About from './pages/About';
+import Services from './pages/Services';
+import Insights from './pages/Insights';
+import BlogPost from './pages/BlogPost';
+import Contact from './pages/Contact';
+import CareerAssessment from './pages/CareerAssessment';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
 
 import { ADMIN_PREFIX } from './config/admin';
 
@@ -70,12 +70,12 @@ const NotFound = () => (
     <p className="text-mist max-w-md mx-auto mb-12 text-lg font-serif italic">
       The coordinates you requested do not exist in this presence.
     </p>
-    <a 
-      href="/" 
+    <Link 
+      to="/" 
       className="bg-primary hover:bg-secondary text-white font-mono text-xs uppercase tracking-widest px-8 py-4 rounded-full transition-all hover:scale-105 shadow-xl shadow-primary/10 hover:shadow-secondary/15"
     >
       Return to Home
-    </a>
+    </Link>
   </div>
 );
 

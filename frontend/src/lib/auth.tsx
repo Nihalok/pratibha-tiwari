@@ -30,7 +30,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const checkAuth = async () => {
     try {
-      const response = await fetch('/api/admin/profile');
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1500);
+
+      const response = await fetch('/api/admin/profile', { signal: controller.signal });
+      clearTimeout(timeoutId);
       const contentType = response.headers.get('content-type');
       
       if (response.ok && contentType && contentType.includes('application/json')) {
