@@ -10,7 +10,7 @@ import { Helmet } from 'react-helmet-async';
 import { calculateReadTime } from '../lib/blog-utils';
 import { staticBlogPosts } from '../data/blogPosts';
 import { Calendar, ArrowLeft, Loader2, Share2, Linkedin, Twitter, MessageCircle, Clock, ArrowUpRight } from 'lucide-react';
-import pratibhaPortrait from '../assets/images/coach-pratibha-hero-new.png';
+import pratibhaPortrait from '../assets/images/pratibha-tiwari-leadership-coach.png';
 
 export default function BlogPost() {
   const { slug } = useParams();

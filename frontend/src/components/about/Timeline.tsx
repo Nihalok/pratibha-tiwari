@@ -66,7 +66,7 @@ const milestones = [
   },
   {
 
-    text: 'CF , PCC COACH.',
+    text: 'ICF , PCC COACH.',
     icon: <Mic2 className="w-6 h-6" />,
     image: "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&q=80&w=1000"
   },
@@ -133,15 +133,15 @@ function MobileTimeline() {
                 {i < 9 ? `0${i + 1}` : i + 1}
               </div>
 
-              <div className="relative z-10 flex flex-col justify-between flex-grow">
-                <div className="flex items-center gap-4 mb-6">
+              <div className="relative z-10 flex flex-col justify-between flex-grow text-center">
+                <div className="flex flex-col items-center gap-3 mb-6">
                   <div className="w-12 h-12 rounded-2xl bg-white shadow-xl shadow-secondary/10 flex items-center justify-center text-secondary flex-shrink-0">
                     {React.cloneElement(m.icon as React.ReactElement, { className: 'w-6 h-6' })}
                   </div>
                   <div className="h-0.5 w-10 bg-secondary/30" />
                 </div>
 
-                <h3 className="text-xl text-primary font-serif italic font-light leading-[1.4] tracking-tight">
+                <h3 className="text-xl text-primary font-serif italic font-light leading-[1.4] tracking-tight text-center">
                   "{m.text}"
                 </h3>
               </div>
@@ -291,17 +291,15 @@ function DesktopTimeline() {
                     {i < 9 ? `0${i + 1}` : i + 1}
                   </div>
 
-                  <div className="relative z-10 flex flex-col justify-between flex-grow">
-                    <div className="flex items-center gap-4 sm:gap-6 mb-6 sm:mb-10">
+                  <div className="relative z-10 flex flex-col justify-between flex-grow text-center">
+                    <div className="flex flex-col items-center gap-3 mb-6 sm:mb-10">
                       <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl sm:rounded-3xl bg-white shadow-xl shadow-secondary/10 flex items-center justify-center text-secondary group-hover:scale-105 transition-all duration-500 flex-shrink-0">
                         {React.cloneElement(m.icon as React.ReactElement, { className: 'w-6 h-6 sm:w-8 sm:h-8' })}
                       </div>
-                      <div className="flex flex-col gap-1">
-                        <div className="h-0.5 w-12 bg-secondary/30" />
-                      </div>
+                      <div className="h-0.5 w-12 bg-secondary/30" />
                     </div>
 
-                    <h3 className="text-xl sm:text-2xl lg:text-3xl text-primary font-serif italic font-light leading-[1.45] tracking-tight">
+                    <h3 className="text-xl sm:text-2xl lg:text-3xl text-primary font-serif italic font-light leading-[1.45] tracking-tight text-center">
                       "{m.text}"
                     </h3>
                   </div>

@@ -20,7 +20,7 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { safeLocalStorage } from '../lib/storage-helper';
 import AssessmentResultsSummary, { assessmentConfig } from '../components/assessment/AssessmentResultsSummary';
-import assessmentBg from '../assets/images/assessment.jpg';
+import assessmentBg from '../assets/images/pratibha-tiwari-career-assessment.jpg';
 
 // ─── Flatten ALL questions from all sections ───────────────────────────────
 interface FlatQuestion {
@@ -204,8 +204,8 @@ export default function CareerAssessment() {
         useCORS: true,
         allowTaint: false,
         logging: false,
-        backgroundColor: '#F8FAFC',
-        windowWidth: isMobile ? 800 : 1000,
+        backgroundColor: '#FFFFFF',
+        windowWidth: 1000,
         onclone: (clonedDoc) => {
           const wrapper = clonedDoc.querySelector('[data-pdf-wrapper]') as HTMLElement;
           if (wrapper) {
@@ -496,50 +496,54 @@ export default function CareerAssessment() {
                 isGeneratingPdf={isGeneratingPdf}
               />
 
-              {/* Hidden Report for PDF Capture */}
-              <div data-pdf-wrapper="true" className="fixed top-[-9999px] left-[-9999px] pointer-events-none opacity-100 z-0">
-                <div ref={reportRef} className="p-10 bg-[#F8FAFC] w-[800px] font-sans text-[#1A3A5C] box-border rounded-[24px] border border-[#E2E8F0]">
-                  <div className="flex justify-between items-center border-b-2 border-[rgba(184,151,74,0.3)] pb-6 mb-8">
+              {/* Hidden Report for PDF Capture - Solid High-Contrast Styling for html2canvas */}
+              <div data-pdf-wrapper="true" className="absolute top-0 left-[-9999px] pointer-events-none opacity-100 z-[-100]">
+                <div ref={reportRef} className="p-10 bg-white w-[800px] font-sans text-[#0F172A] box-border rounded-[24px] border border-[#CBD5E1]">
+                  {/* Header */}
+                  <div className="flex justify-between items-center border-b-2 border-[#B8995B] pb-6 mb-8">
                     <div>
-                      <h1 className="text-3xl font-serif mb-1 text-[#1A3A5C] font-bold">Pratibha Tiwari</h1>
-                      <p className="text-[#0F172A] font-mono tracking-[0.25em] uppercase text-[11px] font-bold">Strategic Performance Report</p>
+                      <h1 className="text-3xl font-serif mb-1 text-[#0F172A] font-bold tracking-tight">Pratibha Tiwari</h1>
+                      <p className="text-[#B8995B] font-mono tracking-[0.25em] uppercase text-[11px] font-black">Strategic Performance Report</p>
                     </div>
                     <div className="text-right">
-                      <div className="text-5xl font-serif text-[#0F172A] font-bold">{percentage}%</div>
-                      <div className="text-[10px] font-mono text-[#525D71] uppercase tracking-widest">Global Index</div>
+                      <div className="text-5xl font-serif text-[#0F172A] font-bold leading-none">{percentage}%</div>
+                      <div className="text-[10px] font-mono text-[#64748B] uppercase tracking-widest font-bold mt-1">Global Index</div>
                     </div>
                   </div>
 
+                  {/* Main Grid: Profile Snapshot + Domain Scores */}
                   <div className="grid grid-cols-2 gap-8 mb-8">
-                    <div className="space-y-4">
-                      <h2 className="text-xl font-serif border-l-4 border-[#0F172A] pl-4 text-[#1A3A5C] font-bold">Profile Snapshot</h2>
+                    {/* Profile Snapshot */}
+                    <div>
+                      <h2 className="text-lg font-serif border-l-4 border-[#0F172A] pl-3 text-[#0F172A] font-bold mb-4">Profile Snapshot</h2>
                       <div className="space-y-3">
-                        <div className="bg-white p-5 rounded-2xl border border-[#E2E8F0] shadow-sm">
-                          <div className="text-[10px] font-mono text-[#525D71] uppercase mb-1 font-bold">Classification</div>
-                          <div className="text-xl font-serif font-bold text-[#1A3A5C]">{level.name}</div>
+                        <div className="bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0]">
+                          <div className="text-[10px] font-mono text-[#64748B] uppercase mb-1 font-bold">Classification</div>
+                          <div className="text-lg font-serif font-bold text-[#0F172A] leading-snug">{level.name}</div>
                         </div>
-                        <div className="bg-white p-5 rounded-2xl border border-[#E2E8F0] shadow-sm">
-                          <div className="text-[10px] font-mono text-[#525D71] uppercase mb-1 font-bold">Top Strength</div>
-                          <div className="text-xl font-serif font-bold text-[#0F172A]">{topStrength.category}</div>
+                        <div className="bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0]">
+                          <div className="text-[10px] font-mono text-[#64748B] uppercase mb-1 font-bold">Top Strength</div>
+                          <div className="text-lg font-serif font-bold text-[#0F172A] leading-snug">{topStrength.category}</div>
                         </div>
-                        <div className="bg-white p-5 rounded-2xl border border-[#E2E8F0] shadow-sm">
-                          <div className="text-[10px] font-mono text-[#525D71] uppercase mb-1 font-bold">Growth Opportunity</div>
-                          <div className="text-xl font-serif font-bold text-[#F43F5E]">{mainGrowthArea.category}</div>
+                        <div className="bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0]">
+                          <div className="text-[10px] font-mono text-[#64748B] uppercase mb-1 font-bold">Growth Opportunity</div>
+                          <div className="text-lg font-serif font-bold text-[#E11D48] leading-snug">{mainGrowthArea.category}</div>
                         </div>
                       </div>
                     </div>
 
-                    <div className="space-y-4">
-                      <h2 className="text-xl font-serif border-l-4 border-[#0F172A] pl-4 text-[#1A3A5C] font-bold">Domain Scores</h2>
-                      <div className="space-y-3 pt-1">
+                    {/* Domain Scores */}
+                    <div>
+                      <h2 className="text-lg font-serif border-l-4 border-[#0F172A] pl-3 text-[#0F172A] font-bold mb-4">Domain Scores</h2>
+                      <div className="space-y-2.5 pt-1">
                         {aggregatedAnswers.map((ans, i) => (
-                          <div key={i} className="flex items-center justify-between py-1.5 border-b border-[#E2E8F0]">
-                            <span className="text-xs font-semibold text-[#1A3A5C] truncate max-w-[220px]">{ans.category}</span>
+                          <div key={i} className="flex items-center justify-between py-2 border-b border-[#E2E8F0]">
+                            <span className="text-xs font-semibold text-[#1E293B] truncate max-w-[210px]">{ans.category}</span>
                             <div className="flex items-center space-x-3 shrink-0">
                               <div className="w-24 h-2 bg-[#E2E8F0] rounded-full overflow-hidden">
-                                <div className="h-full bg-[#1A3A5C]" style={{ width: `${(ans.points / 50) * 100}%` }} />
+                                <div className="h-full bg-[#0F172A]" style={{ width: `${(ans.points / 50) * 100}%` }} />
                               </div>
-                              <span className="text-[11px] font-mono font-bold text-[#525D71] w-8 text-right">{ans.points}/50</span>
+                              <span className="text-[11px] font-mono font-bold text-[#475569] w-8 text-right">{ans.points}/50</span>
                             </div>
                           </div>
                         ))}
@@ -547,29 +551,31 @@ export default function CareerAssessment() {
                     </div>
                   </div>
 
-                  <div className="bg-[#1A3A5C] p-8 rounded-3xl text-white mb-8 shadow-md">
-                    <h2 className="text-2xl font-serif mb-3 italic text-white font-normal">Pratibha's Strategic Observation</h2>
-                    <p className="text-base leading-relaxed text-white/95 italic mb-6 font-normal">
+                  {/* Strategic Observation Box — Solid High Contrast */}
+                  <div className="bg-[#0F172A] p-7 rounded-2xl text-white mb-8 shadow-md">
+                    <h2 className="text-xl font-serif mb-2 italic text-[#F1F5F9] font-normal">Pratibha's Strategic Observation</h2>
+                    <p className="text-sm leading-relaxed text-[#F8FAFC] italic mb-5 font-normal">
                       {`"To transition from ${level.name} to the next tier of executive influence, you must optimize your ${mainGrowthArea.category.toLowerCase()} architecture. High-impact leaders differ from high-performing managers not by effort, but by the precision of their influence."`}
                     </p>
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-[rgba(255,255,255,0.08)] p-4 rounded-xl border border-[rgba(255,255,255,0.15)] text-white">
-                        <h4 className="font-bold text-[#B8974A] mb-1.5 text-xs flex items-center"><Target size={14} className="mr-1.5 shrink-0" /> Priority 1</h4>
-                        <p className="text-xs text-white/90 leading-normal">Automate at least 20% of your cognitive load using AI-driven agents or frameworks to free space for strategic execution.</p>
+                      <div className="bg-[#1E293B] p-4 rounded-xl border border-[#334155]">
+                        <h4 className="font-bold text-[#F59E0B] mb-1 text-xs flex items-center"><Target size={14} className="mr-1.5 shrink-0" /> Priority 1</h4>
+                        <p className="text-xs text-[#F8FAFC] leading-normal font-normal">Automate at least 20% of your cognitive load using AI-driven agents or frameworks to free space for strategic execution.</p>
                       </div>
-                      <div className="bg-[rgba(255,255,255,0.08)] p-4 rounded-xl border border-[rgba(255,255,255,0.15)] text-white">
-                        <h4 className="font-bold text-[#B8974A] mb-1.5 text-xs flex items-center"><Zap size={14} className="mr-1.5 shrink-0" /> Priority 2</h4>
-                        <p className="text-xs text-white/90 leading-normal">Establish a continuous feedback mechanism to refine and measure your leadership brand footprint.</p>
+                      <div className="bg-[#1E293B] p-4 rounded-xl border border-[#334155]">
+                        <h4 className="font-bold text-[#F59E0B] mb-1 text-xs flex items-center"><Zap size={14} className="mr-1.5 shrink-0" /> Priority 2</h4>
+                        <p className="text-xs text-[#F8FAFC] leading-normal font-normal">Establish a continuous feedback mechanism to refine and measure your leadership brand footprint.</p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="text-center border-t border-[#E2E8F0] pt-6">
-                    <p className="text-[#525D71] text-[10px] font-mono tracking-widest mb-4 uppercase font-bold">Private & Confidential Performance Data</p>
-                    <div className="flex justify-center space-x-12 text-[#1A3A5C]">
-                      <div className="flex items-center text-[11px] font-bold uppercase"><Award size={14} className="mr-1.5 text-[#B8974A]" /> Executive Certified</div>
-                      <div className="flex items-center text-[11px] font-bold uppercase"><CheckCircle2 size={14} className="mr-1.5 text-[#B8974A]" /> AI Integrated</div>
-                      <div className="flex items-center text-[11px] font-bold uppercase"><TrendingUp size={14} className="mr-1.5 text-[#B8974A]" /> Performance Audited</div>
+                  {/* Footer */}
+                  <div className="text-center border-t border-[#E2E8F0] pt-5">
+                    <p className="text-[#64748B] text-[10px] font-mono tracking-widest mb-3 uppercase font-bold">Private & Confidential Performance Data</p>
+                    <div className="flex justify-center space-x-10 text-[#0F172A]">
+                      <div className="flex items-center text-[11px] font-bold uppercase"><Award size={14} className="mr-1.5 text-[#B8995B]" /> Executive Certified</div>
+                      <div className="flex items-center text-[11px] font-bold uppercase"><CheckCircle2 size={14} className="mr-1.5 text-[#B8995B]" /> AI Integrated</div>
+                      <div className="flex items-center text-[11px] font-bold uppercase"><TrendingUp size={14} className="mr-1.5 text-[#B8995B]" /> Performance Audited</div>
                     </div>
                   </div>
                 </div>

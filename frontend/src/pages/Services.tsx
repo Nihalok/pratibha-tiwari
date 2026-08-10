@@ -10,10 +10,10 @@ import { Cpu, Heart, Compass, Mic2, ArrowRight, Check } from 'lucide-react';
 import SEO from '../components/layout/SEO';
 import FAQSection from '../components/services/FAQSection';
 
-import careerStrategy from '../assets/images/future ready.jpg';
-import executiveCoaching from '../assets/images/executive coaching.jpg';
-import corporateTraining from '../assets/images/keynotes.jpg';
-import leadershipVision from '../assets/images/ai.jpg';
+import careerStrategy from '../assets/images/pratibha-tiwari-future-ready-leadership.jpg';
+import executiveCoaching from '../assets/images/pratibha-tiwari-executive-coaching-uae.jpg';
+import corporateTraining from '../assets/images/pratibha-tiwari-keynote-speaker-tedx.jpg';
+import leadershipVision from '../assets/images/pratibha-tiwari-ai-leadership-coaching.jpg';
 
 const ServiceImage = ({ src, alt, priority = false }: { src: string; alt: string; priority?: boolean }) => {
   const [isLoaded, setIsLoaded] = useState(false);

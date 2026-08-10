@@ -7,7 +7,7 @@ import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'motion/react';
 import { Download, ChevronRight } from 'lucide-react';
 import { jsPDF } from 'jspdf';
-import portrait from '../../assets/images/about hero lat.png';
+import portrait from '../../assets/images/pratibha-tiwari-about-portrait.png';
 
 export default function AboutHero() {
   const containerRef = useRef(null);
@@ -92,7 +92,7 @@ export default function AboutHero() {
               <motion.img
                 style={{ y: imageY }}
                 src={portrait}
-                alt="Pratibha Tiwari"
+                alt="Pratibha Tiwari - Executive Coach, TEDx Speaker & NLP Master Trainer UAE"
                 className="w-full h-[120%] object-cover absolute inset-0 transition-transform duration-700 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-primary/40 via-transparent to-white/10" />

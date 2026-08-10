@@ -6,7 +6,7 @@
 import bookCoachCover from '../assets/images/books/own-coach.jpg';
 import bookMotivationalDiet from '../assets/images/books/motivational-diet.jpg';
 import bookBlueprint from '../assets/images/books/career-blueprint.jpg';
-import globalbook from '../assets/images/books/global voice.jpg';
+import globalbook from '../assets/images/books/pratibha-tiwari-global-voice-book.jpg';
 
 export interface Book {
   title: string;

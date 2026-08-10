@@ -16,10 +16,10 @@ import 'swiper/css/effect-coverflow';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 
-import pillar1 from '../../assets/images/ai.jpg';
-import pillar2 from '../../assets/images/executive coaching.jpg';
-import pillar3 from '../../assets/images/future ready.jpg';
-import pillar4 from '../../assets/images/keynotes.jpg';
+import pillar1 from '../../assets/images/pratibha-tiwari-ai-leadership-coaching.jpg';
+import pillar2 from '../../assets/images/pratibha-tiwari-executive-coaching-uae.jpg';
+import pillar3 from '../../assets/images/pratibha-tiwari-future-ready-leadership.jpg';
+import pillar4 from '../../assets/images/pratibha-tiwari-keynote-speaker-tedx.jpg';
 
 const pillars = [
   {

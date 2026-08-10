@@ -10,11 +10,11 @@ interface Certificate {
   vertical?: boolean;
 }
 
-import cert1 from '../../assets/images/certificates/icf.jpg';
-import cert2 from '../../assets/images/certificates/nlp.jpg';
-import cert3 from '../../assets/images/certificates/iit.jpg';
-import cert4 from '../../assets/images/certificates/iapcct.jpg';
-import cert5 from '../../assets/images/certificates/group coach.jpg';
+import cert1 from '../../assets/images/certificates/pratibha-tiwari-icf-pcc-certificate.jpg';
+import cert2 from '../../assets/images/certificates/pratibha-tiwari-nlp-trainer-certificate.jpg';
+import cert3 from '../../assets/images/certificates/pratibha-tiwari-iit-delhi-certificate.jpg';
+import cert4 from '../../assets/images/certificates/pratibha-tiwari-iapcct-certificate.jpg';
+import cert5 from '../../assets/images/certificates/pratibha-tiwari-certified-group-coach.jpg';
 
 const certificates: Certificate[] = [
   {

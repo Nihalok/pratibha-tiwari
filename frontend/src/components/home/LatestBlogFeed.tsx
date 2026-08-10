@@ -184,10 +184,31 @@ export default function LatestBlogFeed() {
           </Link>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {posts.slice(0, 4).map((post, i) => (
-            <BlogCard key={post.id || i} post={post} index={i} />
-          ))}
+        {/* Mobile swipe hint */}
+        <div className="flex sm:hidden items-center justify-between pb-4">
+          <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-gold font-bold flex items-center gap-1.5">
+            <span>Swipe to explore</span>
+            <ArrowRight size={12} className="animate-pulse text-gold" />
+          </span>
+          <span className="text-[10px] font-mono text-mist font-bold">({posts.slice(0,4).length} Articles)</span>
+        </div>
+
+        {/* Mobile: horizontal scroll — Desktop: 4-col grid */}
+        <div className="relative">
+          {/* Edge gradient masks (mobile only) */}
+          <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white/60 to-transparent z-10 pointer-events-none sm:hidden" />
+          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white/60 to-transparent z-10 pointer-events-none sm:hidden" />
+
+          {/* Scroll container */}
+          <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-8 overflow-x-auto sm:overflow-visible snap-x snap-mandatory sm:snap-none scrollbar-none pb-4 sm:pb-0 -mx-6 px-6 sm:mx-0 sm:px-0"
+            style={{ WebkitOverflowScrolling: 'touch' }}
+          >
+            {posts.slice(0, 4).map((post, i) => (
+              <div key={post.id || i} className="flex-shrink-0 w-[80vw] max-w-[320px] sm:w-auto sm:max-w-none snap-center">
+                <BlogCard post={post} index={i} />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

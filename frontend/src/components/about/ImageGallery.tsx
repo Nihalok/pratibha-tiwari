@@ -7,17 +7,17 @@ import React from 'react';
 import { Reveal } from '../Reveal';
 
 // Import images from assets
-import gallery1 from '../../assets/images/1.jpg';
-import gallery2 from '../../assets/images/2.jpg';
-import gallery3 from '../../assets/images/3.jpg';
-import gallery4 from '../../assets/images/4.jpg';
-import gallery5 from '../../assets/images/5.jpg';
-import gallery6 from '../../assets/images/6.JPG';
-import gallery7 from '../../assets/images/7.JPG';
-import gallery8 from '../../assets/images/8.JPG';
-import gallery9 from '../../assets/images/9.JPG';
-import gallery10 from '../../assets/images/10.JPG';
-import gallery11 from '../../assets/images/11.JPG';
+import gallery1  from '../../assets/images/pratibha-tiwari-gallery-01.jpg';
+import gallery2  from '../../assets/images/pratibha-tiwari-gallery-02.jpg';
+import gallery3  from '../../assets/images/pratibha-tiwari-gallery-03.jpg';
+import gallery4  from '../../assets/images/pratibha-tiwari-gallery-04.jpg';
+import gallery5  from '../../assets/images/pratibha-tiwari-gallery-05.jpg';
+import gallery6  from '../../assets/images/pratibha-tiwari-gallery-06.jpg';
+import gallery7  from '../../assets/images/pratibha-tiwari-gallery-07.jpg';
+import gallery8  from '../../assets/images/pratibha-tiwari-gallery-08.jpg';
+import gallery9  from '../../assets/images/pratibha-tiwari-gallery-09.jpg';
+import gallery10 from '../../assets/images/pratibha-tiwari-gallery-10.jpg';
+import gallery11 from '../../assets/images/pratibha-tiwari-gallery-11.jpg';
 
 const galleryImages = [
   { id: 1, alt: 'Empowering Moments', src: gallery1, isBook: false },

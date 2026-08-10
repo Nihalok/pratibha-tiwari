@@ -7,10 +7,10 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 
-import journeyCls from '../../assets/images/7.JPG';
-import journeyDes from '../../assets/images/3.jpg';
-import journeySuccess from '../../assets/images/5.jpg';
-import journeyTed from '../../assets/images/6.JPG';
+import journeyCls from '../../assets/images/pratibha-tiwari-gallery-07.jpg';
+import journeyDes from '../../assets/images/pratibha-tiwari-gallery-03.jpg';
+import journeySuccess from '../../assets/images/pratibha-tiwari-gallery-05.jpg';
+import journeyTed from '../../assets/images/pratibha-tiwari-gallery-06.jpg';
 
 const slides = [
   {

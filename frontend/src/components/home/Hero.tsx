@@ -7,7 +7,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'motion/react';
 import { ArrowRight, CheckCircle2, Mic, Star, Users, MapPin, Globe } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import pratibhaPortrait from '../../assets/images/hero.png';
+import pratibhaPortrait from '../../assets/images/pratibha-tiwari-executive-coach-hero.png';
 import IcfPccBadge from './IcfPccBadge';
 
 export default function Hero() {
@@ -152,7 +152,7 @@ export default function Hero() {
               <motion.img
                 style={{ y: imageY }}
                 src={pratibhaPortrait}
-                alt="Pratibha Tiwari"
+                alt="Pratibha Tiwari - ICF PCC Certified Executive Coach & AI Leadership Strategist Abu Dhabi UAE"
                 className="w-full h-auto object-contain object-top relative z-10 mx-auto transform-gpu"
                 loading="eager"
                 fetchPriority="high"
