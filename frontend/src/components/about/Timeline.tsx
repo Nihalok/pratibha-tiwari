@@ -9,69 +9,70 @@ import { Heart, Target, Star, Award, Users, Globe, Zap, Sparkles, BookOpen, Mic2
 import { useState } from 'react';
 
 const milestones = [
-  { 
- 
-    text: 'Born with a medical challenge — doctors said I wouldn\'t survive. I did.', 
+  {
+
+    text: 'Born with a medical challenge — doctors said I wouldn\'t survive. I did.',
     icon: <Heart className="w-6 h-6" />,
     image: "https://images.unsplash.com/photo-1519810755548-39cd217da494?auto=format&fit=crop&q=80&w=1000"
   },
-  { 
-    
-    text: 'Double Masters: Computer Applications + Philosophy.', 
+  {
+
+    text: 'Double Masters: Mphill + Computer Science.',
     icon: <BookOpen className="w-6 h-6" />,
     image: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80&w=1000"
   },
-  { 
- 
-    text: 'Success as a Software Engineer — building foundations in logical architecture.', 
+  {
+
+    text: 'Success as a Software Engineer — building foundations in logical architecture.',
     icon: <Zap className="w-6 h-6" />,
     image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=1000"
   },
-  { 
- 
-    text: 'Intentional pause for parenting — deepening human understanding & emotional intelligence.', 
+  {
+
+    text: 'Computer Lecturer in Delhi University',
     icon: <Users className="w-6 h-6" />,
     image: "https://images.unsplash.com/photo-1510154221590-ff63e90a136f?auto=format&fit=crop&q=80&w=1000"
   },
-  { 
-  
-    text: 'Founded "Design Super Destiny" Coaching & Consultancy in the UAE.', 
+  {
+
+    text: 'Founded "Design Super Destiny" Coaching & Consultancy in the UAE.',
     icon: <Target className="w-6 h-6" />,
     image: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1000"
   },
-  { 
+  {
 
-    text: 'Certified NLP Master Practitioner (trained by Vikram Dhar).', 
-    icon: <Brain className="w-6 h-6" />,
-    image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=1000"
-  },
-  { 
-
-    text: 'Certified Emotional Intelligence Coach & Licensed Behavioral Trainer.', 
-    icon: <Sparkles className="w-6 h-6" />,
-    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80&w=1000"
-  },
-  { 
-
-    text: 'Global Career Counsellor (UCLA Extension).', 
+    text: 'Global Career Counsellor (UCLA Extension).',
     icon: <Globe className="w-6 h-6" />,
     image: "https://images.unsplash.com/photo-1454165833767-0274b0426abd?auto=format&fit=crop&q=80&w=1000"
   },
-  { 
+  {
 
-    text: 'Published "Motivational Diet — 369 Days" (Focus, Efficiency, Productivity).', 
+    text: 'Certified NLP Trainer.',
+    icon: <Brain className="w-6 h-6" />,
+    image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=1000"
+  },
+  {
+
+    text: 'Certified Emotional Intelligence Coach & Licensed Behavioral Trainer.',
+    icon: <Sparkles className="w-6 h-6" />,
+    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80&w=1000"
+  },
+
+  {
+
+    text: 'Artificial Intelligence , Leadership from IIT DElhi.',
     icon: <Award className="w-6 h-6" />,
     image: "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&q=80&w=1000"
   },
-  { 
-  
-    text: 'TEDx Speaker addressing global audiences on the power of presence.', 
+  {
+
+    text: 'CF , PCC COACH.',
     icon: <Mic2 className="w-6 h-6" />,
     image: "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&q=80&w=1000"
   },
-  { 
-   
-    text: '23+ Years experience, 4000+ professionals trained, based in Abu Dhabi.', 
+  {
+
+    text: '23+ Years experience, 4000+ professionals trained, based in Abu Dhabi.',
     icon: <Star className="w-6 h-6" />,
     image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=1000"
   }
@@ -114,7 +115,7 @@ function MobileTimeline() {
             key={i}
             className="relative flex-shrink-0 w-[82vw] max-w-[340px] snap-center"
           >
-            <div className="relative p-8 rounded-[40px] bg-white/80 backdrop-blur-sm border border-gold/10 shadow-xl overflow-hidden">
+            <div className="relative p-8 rounded-[40px] bg-white/80 backdrop-blur-sm border border-gold/10 shadow-xl overflow-hidden min-h-[280px] flex flex-col">
               {/* Card Background Image */}
               <div className="absolute inset-0 z-0">
                 <img
@@ -122,7 +123,7 @@ function MobileTimeline() {
                   alt=""
                   loading="lazy"
                   decoding="async"
-                  className="w-full h-full object-cover opacity-10"
+                  className="w-full h-full object-cover opacity-10 transform-gpu"
                 />
                 <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-white/80 to-transparent" />
               </div>
@@ -132,9 +133,9 @@ function MobileTimeline() {
                 {i < 9 ? `0${i + 1}` : i + 1}
               </div>
 
-              <div className="relative z-10">
+              <div className="relative z-10 flex flex-col justify-between flex-grow">
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-12 h-12 rounded-2xl bg-white shadow-xl shadow-secondary/10 flex items-center justify-center text-secondary">
+                  <div className="w-12 h-12 rounded-2xl bg-white shadow-xl shadow-secondary/10 flex items-center justify-center text-secondary flex-shrink-0">
                     {React.cloneElement(m.icon as React.ReactElement, { className: 'w-6 h-6' })}
                   </div>
                   <div className="h-0.5 w-10 bg-secondary/30" />
@@ -160,9 +161,8 @@ function MobileTimeline() {
                 scrollRef.current.scrollTo({ left: cardWidth * i, behavior: 'smooth' });
               }
             }}
-            className={`h-1.5 rounded-full transition-all duration-500 ${
-              i === activeIndex ? 'w-6 bg-secondary' : 'w-1.5 bg-primary/15'
-            }`}
+            className={`h-1.5 rounded-full transition-all duration-500 ${i === activeIndex ? 'w-6 bg-secondary' : 'w-1.5 bg-primary/15'
+              }`}
           />
         ))}
       </div>
@@ -180,7 +180,7 @@ function DesktopTimeline() {
   });
 
   const x = useTransform(scrollYProgress, [0, 1], ["0%", "-82%"]);
-  
+
   const springX = useSpring(x, {
     stiffness: 120,
     damping: 30,
@@ -193,7 +193,7 @@ function DesktopTimeline() {
   const rotate = useTransform(scrollYProgress, [0, 1], [0, 180]);
 
   const [activeIndex, setActiveIndex] = useState(0);
-  
+
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
     const step = 1 / (milestones.length - 1);
     const index = Math.min(Math.max(Math.round(latest / step), 0), milestones.length - 1);
@@ -243,7 +243,7 @@ function DesktopTimeline() {
 
         <div className="relative z-10 px-4 sm:px-6 pt-12 sm:pt-0 mb-6 sm:mb-12">
           <div className="max-w-7xl mx-auto">
-            <motion.span 
+            <motion.span
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -260,28 +260,28 @@ function DesktopTimeline() {
         <div className="relative flex items-center h-[50vh]">
           {/* Horizontal Track line */}
           <div className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-gold/20 to-transparent top-1/2 -translate-y-1/2" />
-          
-          <motion.div 
-            style={{ x: springX }} 
+
+          <motion.div
+            style={{ x: springX }}
             className="flex gap-16 sm:gap-24 md:gap-40 px-[10vw] transform-gpu will-change-transform"
           >
             {milestones.map((m, i) => (
-              <div 
-                key={i} 
+              <div
+                key={i}
                 className="relative flex-shrink-0 w-[85vw] md:w-[60vw] lg:w-[45vw] group transform-gpu"
               >
                 {/* Milestone Card */}
-                <div 
-                  className="relative p-6 sm:p-12 md:p-16 rounded-3xl sm:rounded-[60px] bg-white/70 backdrop-blur-sm border border-gold/10 hover:border-secondary/30 transition-all duration-500 hover:shadow-2xl group-hover:-translate-y-4 overflow-hidden transform-gpu"
+                <div
+                  className="relative p-8 sm:p-12 md:p-14 rounded-3xl sm:rounded-[48px] bg-white/70 backdrop-blur-sm border border-gold/10 hover:border-secondary/30 transition-all duration-500 hover:shadow-2xl group-hover:-translate-y-4 overflow-hidden transform-gpu min-h-[320px] sm:min-h-[360px] flex flex-col"
                 >
                   {/* Card Background Image */}
                   <div className="absolute inset-0 z-0">
-                    <img 
-                      src={(m as any).image} 
+                    <img
+                      src={(m as any).image}
                       alt=""
                       loading="lazy"
                       decoding="async"
-                      className="w-full h-full object-cover opacity-10 group-hover:opacity-20 transition-opacity duration-700"
+                      className="w-full h-full object-cover opacity-10 group-hover:opacity-20 transition-opacity duration-700 transform-gpu"
                     />
                     <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-white/80 to-transparent" />
                   </div>
@@ -291,18 +291,17 @@ function DesktopTimeline() {
                     {i < 9 ? `0${i + 1}` : i + 1}
                   </div>
 
-                  <div className="relative z-10">
+                  <div className="relative z-10 flex flex-col justify-between flex-grow">
                     <div className="flex items-center gap-4 sm:gap-6 mb-6 sm:mb-10">
-                      <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl sm:rounded-3xl bg-white shadow-xl shadow-secondary/10 flex items-center justify-center text-secondary group-hover:scale-105 transition-all duration-500">
+                      <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl sm:rounded-3xl bg-white shadow-xl shadow-secondary/10 flex items-center justify-center text-secondary group-hover:scale-105 transition-all duration-500 flex-shrink-0">
                         {React.cloneElement(m.icon as React.ReactElement, { className: 'w-6 h-6 sm:w-8 sm:h-8' })}
                       </div>
                       <div className="flex flex-col gap-1">
-                        <span className="font-mono text-[11px] uppercase tracking-[0.5em] text-gold font-bold"></span>
                         <div className="h-0.5 w-12 bg-secondary/30" />
                       </div>
                     </div>
 
-                    <h3 className="text-lg sm:text-3xl lg:text-4xl text-primary font-serif italic font-light leading-[1.4] tracking-tight">
+                    <h3 className="text-xl sm:text-2xl lg:text-3xl text-primary font-serif italic font-light leading-[1.45] tracking-tight">
                       "{m.text}"
                     </h3>
                   </div>

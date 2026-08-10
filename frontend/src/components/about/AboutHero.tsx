@@ -7,7 +7,7 @@ import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'motion/react';
 import { Download, ChevronRight } from 'lucide-react';
 import { jsPDF } from 'jspdf';
-import portrait from '../../assets/images/about-prathibha.jpeg';
+import portrait from '../../assets/images/about hero lat.png';
 
 export default function AboutHero() {
   const containerRef = useRef(null);
@@ -35,7 +35,7 @@ export default function AboutHero() {
       doc.setFontSize(28);
       doc.setTextColor(255, 255, 255);
       doc.text("PRATIBHA TIWARI", 20, 25);
-      
+
       doc.setFontSize(12);
       doc.setFont("helvetica", "italic");
       doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
@@ -53,7 +53,7 @@ export default function AboutHero() {
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
       doc.setTextColor(textColor[0], textColor[1], textColor[2]);
-      
+
       const profileText = doc.splitTextToSize(
         "Pratibha Tiwari is a world-class NLP Master Practitioner and Executive Coach dedicated to the architecture of human potential. With over 23 years of global experience, she specializes in transitioning elite performers into impactful leaders.",
         170
@@ -70,7 +70,7 @@ export default function AboutHero() {
       {/* Dynamic Background Elements */}
       <div className="absolute top-0 right-0 w-full h-[800px] bg-primary/[0.02] -skew-y-6 translate-y-[-20%] pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-full h-[400px] bg-gold/[0.03] skew-y-6 translate-y-[20%] pointer-events-none" />
-      
+
       <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 lg:gap-32 items-start relative z-10">
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
@@ -83,23 +83,23 @@ export default function AboutHero() {
             {/* Bold Architectural Frame Elements */}
             <div className="absolute -top-12 -right-12 w-64 h-64 border-t-[3px] border-r-[3px] border-gold/30 z-0" />
             <div className="absolute -bottom-12 -left-12 w-64 h-64 border-b-[3px] border-l-[3px] border-primary/20 z-0" />
-            
+
             {/* Secondary Thin Frame */}
             <div className="absolute -inset-4 border border-primary/5 rounded-[2rem] md:rounded-[3rem] z-0" />
-            
+
             {/* Main Image Container - Enlarged */}
             <div className="relative z-10 aspect-[4/5] rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-[0_80px_120px_-30px_rgba(26,58,92,0.3)] bg-slate-200">
-              <motion.img 
+              <motion.img
                 style={{ y: imageY }}
                 src={portrait}
                 alt="Pratibha Tiwari"
-                className="w-full h-[120%] object-cover absolute inset-0 transition-transform duration-700 group-hover:scale-105" 
+                className="w-full h-[120%] object-cover absolute inset-0 transition-transform duration-700 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-primary/40 via-transparent to-white/10" />
             </div>
-            
+
             {/* Floating Achievement Card - Refined & Compact on Mobile */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -116,9 +116,9 @@ export default function AboutHero() {
                     <div className="text-[8px] sm:text-[10px] lg:text-[11px] font-mono uppercase tracking-[0.15em] sm:tracking-[0.2em] text-gold mt-1 sm:mt-2">Global Impact</div>
                   </div>
                 </div>
-                
+
                 <div className="h-px bg-primary/5 w-full" />
-                
+
                 <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:gap-8">
                   <div className="space-y-0.5 sm:space-y-1">
                     <div className="text-base sm:text-xl lg:text-2xl font-serif text-primary font-bold">4,000+</div>
@@ -149,13 +149,13 @@ export default function AboutHero() {
                 The Architect of Potential
               </span>
             </div>
-            
+
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif text-primary leading-[0.85] tracking-tight italic">
               About <br />
               <span className="not-italic bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">Pratibha</span>
             </h1>
           </div>
-          
+
           <div className="space-y-10">
             <div className="relative group">
               <div className="absolute left-0 top-0 bottom-0 w-1 bg-gold/10 group-hover:bg-gold transition-colors duration-500" />
@@ -163,16 +163,16 @@ export default function AboutHero() {
                 "Helping leaders discover their potential, embrace change, and lead with confidence in an AI-driven world."
               </p>
             </div>
-            
+
             <div className="space-y-8 font-serif leading-relaxed text-lg md:text-xl lg:text-2xl">
               <p className="text-primary">
                 With over 23 years of global experience, Pratibha Tiwari is an ICF-PCC Certified Executive Coach, AI Leadership Strategist, TEDx Speaker, NLP Trainer, and Corporate Leadership Coach dedicated to empowering professionals, entrepreneurs, executives, and organizations across the UAE.
               </p>
-              
+
               <p className="text-primary">
                 Having coached 4,000+ professionals from 150+ nationalities and 2,700+ Coaching hours and substantial training hours spent for professionals and for organizational growth, she combines executive coaching, emotional intelligence, leadership development, and AI-ready strategies to help individuals communicate with confidence, inspire teams, and create meaningful impact.
               </p>
-              
+
               <div className="flex items-center space-x-3 text-gold italic font-medium">
                 <ChevronRight className="w-5 h-5" />
                 <span>Helping people become the leaders they are meant to be.</span>
@@ -198,7 +198,7 @@ export default function AboutHero() {
                 </div>
               </div>
             </motion.button>
-            
+
             <div className="flex -space-x-3">
               {[1, 2, 3, 4].map((i) => (
                 <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-slate-200 overflow-hidden">

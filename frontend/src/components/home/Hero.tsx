@@ -3,21 +3,30 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'motion/react';
 import { ArrowRight, CheckCircle2, Mic, Star, Users, MapPin, Globe } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import pratibhaPortrait from '../../assets/images/coach-pratibha-hero-new.png';
+import pratibhaPortrait from '../../assets/images/hero.png';
 import IcfPccBadge from './IcfPccBadge';
 
 export default function Hero() {
   const containerRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 1024);
+    check();
+    window.addEventListener('resize', check, { passive: true });
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"]
   });
 
-  const imageY = useTransform(scrollYProgress, [0, 1], ["-8%", "12%"]);
+  const imageY = useTransform(scrollYProgress, [0, 1], isMobile ? ["0%", "0%"] : ["-8%", "12%"]);
 
   return (
     <section ref={containerRef} className="relative min-h-[90vh] lg:min-h-screen flex flex-col pt-32 sm:pt-36 lg:pt-32 pb-8 overflow-hidden bg-[#FDFBF7] z-0">
@@ -37,7 +46,8 @@ export default function Hero() {
         <motion.div
           animate={{ scale: [1, 1.05, 1], x: [0, 10, 0], y: [0, -10, 0] }}
           transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-1/4 right-0 w-[800px] h-[800px] bg-gold/5 blur-[120px] rounded-full"
+          className="absolute top-1/4 right-0 w-[800px] h-[800px] bg-gold/5 blur-[120px] rounded-full will-change-transform"
+          style={{ backfaceVisibility: 'hidden' }}
         />
       </div>
 
@@ -136,21 +146,14 @@ export default function Hero() {
           className="relative flex justify-center lg:justify-end"
         >
           <div className="relative w-full max-w-[580px]">
-            {/* The Large Dark Circle Background */}
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.4, duration: 1.5 }}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] h-[95%] bg-[#0A1929] rounded-full shadow-2xl overflow-hidden border-8 border-white/50"
-            />
 
             {/* Main Portrait Image */}
-            <div className="relative z-10 flex justify-center items-end overflow-hidden">
+            <div className="relative z-10 flex justify-center items-end">
               <motion.img
                 style={{ y: imageY }}
                 src={pratibhaPortrait}
                 alt="Pratibha Tiwari"
-                className="w-full h-auto object-cover object-top relative z-10 mx-auto"
+                className="w-full h-auto object-contain object-top relative z-10 mx-auto transform-gpu"
                 loading="eager"
                 fetchPriority="high"
                 decoding="async"

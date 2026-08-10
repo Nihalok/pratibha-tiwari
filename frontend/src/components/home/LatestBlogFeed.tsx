@@ -27,8 +27,8 @@ const BlogCard: React.FC<{ post: any; index: number }> = ({ post, index }) => {
     >
       <Link to={`/insights/${post.slug}`} className="block h-full">
         <div className="bg-white/40 backdrop-blur-md rounded-[40px] overflow-hidden flex flex-col h-full border border-gold/10 hover:border-secondary/30 hover:shadow-2xl hover:shadow-gold/5 transition-all duration-700 group">
-          {/* Image Container with Modern Aspect Ratio */}
-          <div className="aspect-[16/10] overflow-hidden relative bg-pearl">
+          {/* Image Container - matches Insights page style */}
+          <div className="aspect-[4/3] overflow-hidden relative bg-pearl">
             <div className="absolute inset-0 bg-primary/5 group-hover:bg-transparent transition-colors duration-700 z-10" />
             
             {post.imageUrl ? (
@@ -37,18 +37,25 @@ const BlogCard: React.FC<{ post: any; index: number }> = ({ post, index }) => {
                 alt={post.title} 
                 className="w-full h-full object-cover group-hover:scale-105 transition-all duration-1000" 
                 onError={(e) => {
-                  (e.target as HTMLImageElement).src = `https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=2029&auto=format&fit=crop`; // Colorful fallback
+                  (e.target as HTMLImageElement).src = `https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=2029&auto=format&fit=crop`;
                 }}
               />
             ) : (
-              <div className="w-full h-full bg-gradient-to-br from-gold/10 via-secondary/5 to-primary/5 flex items-center justify-center">
-                <span className="font-serif italic text-primary text-4xl">Insight</span>
+              <div className="w-full h-full bg-pearl flex items-center justify-center">
+                <span className="font-serif italic text-primary text-7xl">{(post.category || 'A')[0]}</span>
               </div>
             )}
 
-
-
+            {/* Category badge - matches Insights page */}
+            {post.category && (
+              <div className="absolute top-6 left-6 z-20">
+                <span className="bg-white/95 backdrop-blur-md text-primary text-[10px] font-bold px-5 py-2 rounded-full uppercase tracking-[0.2em] border border-gold/10 shadow-lg">
+                  {post.category}
+                </span>
+              </div>
+            )}
           </div>
+
 
           <div className="p-10 flex flex-col flex-grow relative">
             {/* Read More Floating Action */}
