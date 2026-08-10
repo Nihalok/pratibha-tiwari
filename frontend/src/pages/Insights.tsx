@@ -268,13 +268,13 @@ export default function Insights() {
                 embedUrl: "https://podcasters.spotify.com/pod/show/pratibha-tiwari8/embed/episodes/Importance-of-Motivation-for-Success-e1c692j" 
               },
             ].map((ep) => (
-              <SwiperSlide key={ep.id} className="h-auto">
-                <div className="editorial-card rounded-[40px] md:rounded-[60px] overflow-hidden flex flex-col justify-between h-full p-8 md:p-12 hover:-translate-y-2 transition-transform duration-300 bg-white border border-gold/10 shadow-sm hover:shadow-xl relative z-10">
+              <SwiperSlide key={ep.id} className="!h-auto flex">
+                <div className="editorial-card rounded-[40px] md:rounded-[60px] overflow-hidden flex flex-col justify-between w-full min-h-[480px] sm:min-h-[520px] p-8 md:p-12 hover:-translate-y-2 transition-transform duration-300 bg-white border border-gold/10 shadow-sm hover:shadow-xl relative z-10">
                   <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-20 transition-opacity">
                     <Mic2 size={120} className="text-primary rotate-12" />
                   </div>
 
-                  <div className="relative z-10 flex flex-col h-full space-y-8 sm:space-y-10">
+                  <div className="relative z-10 flex flex-col justify-between h-full flex-grow space-y-6 sm:space-y-8">
                     <div className="flex justify-between items-start">
                       <div className="space-y-2">
                         <div className="flex items-center space-x-3">
@@ -286,16 +286,16 @@ export default function Insights() {
                           <span>{ep.duration} Session</span>
                         </div>
                       </div>
-                      <div className="w-12 h-12 rounded-2xl bg-primary/5 flex items-center justify-center group-hover:bg-secondary group-hover:text-white transition-colors duration-300">
+                      <div className="w-12 h-12 rounded-2xl bg-primary/5 flex items-center justify-center group-hover:bg-secondary group-hover:text-white transition-colors duration-300 shrink-0">
                         <Play size={20} fill="currentColor" />
                       </div>
                     </div>
 
-                    <h4 className="text-xl sm:text-2xl md:text-3xl font-serif text-primary italic leading-tight group-hover:text-secondary transition-colors">
+                    <h4 className="text-xl sm:text-2xl md:text-3xl font-serif text-primary italic leading-tight group-hover:text-secondary transition-colors line-clamp-2 min-h-[2.6em] flex items-center">
                       "{ep.title}"
                     </h4>
 
-                    <div className="rounded-3xl overflow-hidden bg-white/50 backdrop-blur-sm border border-gold/5 shadow-inner p-3 sm:p-4">
+                    <div className="rounded-3xl overflow-hidden bg-white/50 backdrop-blur-sm border border-gold/5 shadow-inner p-3 sm:p-4 mt-auto">
                       <iframe 
                         src={ep.embedUrl} 
                         height="102px" 
