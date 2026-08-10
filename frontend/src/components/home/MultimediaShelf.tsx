@@ -153,7 +153,7 @@ export default function MultimediaShelf() {
                         repeat: Infinity, 
                         ease: "easeInOut" 
                       }}
-                      className="relative w-[200px] h-[290px] sm:w-[230px] sm:h-[320px] md:w-[260px] md:h-[370px] transform-gpu cursor-pointer group"
+                      className="relative w-[170px] h-[250px] xs:w-[190px] xs:h-[280px] sm:w-[230px] sm:h-[320px] md:w-[260px] md:h-[370px] transform-gpu cursor-pointer group"
                     >
                       {/* ── BOOK THICKNESS = 40px, so half = 20px ── */}
                       {/* Half-thickness used for translateZ offsets      */}
@@ -188,7 +188,7 @@ export default function MultimediaShelf() {
 
                       {/* Spine (Left face) — width = thickness = 40px */}
                       <div 
-                        className="absolute top-0 left-0 h-full border-r border-white/5"
+                        className="absolute top-0 left-0 h-full border-r border-white/5 overflow-hidden"
                         style={{ 
                           width: "40px",
                           /* Move to left edge of front face, rotate -90deg around left edge */
@@ -198,12 +198,6 @@ export default function MultimediaShelf() {
                           backgroundImage: "linear-gradient(to right, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 25%, rgba(0,0,0,0.05) 75%, rgba(0,0,0,0.55) 100%)",
                         }}
                       >
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="font-mono text-[8px] text-white/80 uppercase tracking-[0.15em] font-bold whitespace-nowrap"
-                            style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>
-                            {currentBook.subtitle}
-                          </span>
-                        </div>
                         <div className="absolute inset-y-0 left-1 w-px bg-white/10" />
                         <div className="absolute inset-y-0 right-1 w-px bg-black/20" />
                       </div>
@@ -318,47 +312,47 @@ export default function MultimediaShelf() {
                       <span className="text-secondary font-mono text-[9px] uppercase tracking-[0.3em] font-bold">{currentBook.tag}</span>
                     </motion.div>
                     
-                    <h3 className="text-4xl md:text-6xl lg:text-7xl font-serif text-primary italic leading-[1.1] tracking-tighter">
+                    <h3 className="text-2xl sm:text-4xl md:text-6xl lg:text-7xl font-serif text-primary italic leading-[1.1] tracking-tighter">
                       "{currentBook.title}"
                     </h3>
                     
-                    <div className="flex flex-wrap gap-3 pt-2">
+                    <div className="flex flex-wrap gap-2 sm:gap-3 pt-1 sm:pt-2">
                       {currentBook.highlights.map((h, i) => (
-                        <span key={i} className="text-[9px] font-mono uppercase tracking-widest text-gold border border-gold/20 px-3 py-1.5 rounded-sm bg-gold/5">
+                        <span key={i} className="text-[8px] sm:text-[9px] font-mono uppercase tracking-widest text-gold border border-gold/20 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-sm bg-gold/5">
                           {h}
                         </span>
                       ))}
                     </div>
                   </div>
 
-                  <div className="space-y-6 text-primary text-base md:text-xl font-normal leading-relaxed max-w-2xl">
-                    <p className="relative italic pl-10 before:content-['“'] before:absolute before:left-0 before:top-0 before:text-5xl before:text-gold before:font-serif">
+                  <div className="space-y-6 text-primary text-sm sm:text-base md:text-xl font-normal leading-relaxed max-w-2xl">
+                    <p className="relative italic pl-6 sm:pl-10 before:content-['“'] before:absolute before:left-0 before:top-0 before:text-3xl sm:before:text-5xl before:text-gold before:font-serif">
                       {currentBook.desc}
                     </p>
                   </div>
 
-                  <div className="pt-2 flex flex-wrap items-center gap-8">
+                  <div className="pt-2 flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-8">
                     <a 
                       href={currentBook.link}
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="group relative inline-flex items-center gap-5 bg-primary text-white px-8 py-4 rounded-full hover:bg-secondary transition-all duration-700 shadow-xl shadow-primary/20 overflow-hidden"
+                      className="group relative inline-flex items-center justify-center gap-4 sm:gap-5 bg-primary text-white px-6 py-3.5 sm:px-8 sm:py-4 rounded-full hover:bg-secondary transition-all duration-700 shadow-xl shadow-primary/20 overflow-hidden w-full sm:w-auto"
                     >
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                       <span className="text-[10px] font-bold uppercase tracking-[0.2em] relative z-10">Secure Your Copy</span>
                       <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform relative z-10" />
                     </a>
                     
-                    <div className="flex items-center gap-5">
+                    <div className="flex items-center gap-4 sm:gap-5">
                       <div className="flex -space-x-3">
                         {[1,2,3,4,5].map(i => (
-                          <div key={i} className="w-10 h-10 rounded-full border-2 border-white overflow-hidden bg-gold/10 shadow-lg relative group/avatar">
+                          <div key={i} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-white overflow-hidden bg-gold/10 shadow-lg relative group/avatar shrink-0">
                             <img src={`https://ui-avatars.com/api/?name=User+${i}&background=1A3A5C&color=B8974A&bold=true`} alt="Reader avatar" className="w-full h-full object-cover group-hover/avatar:scale-110 transition-all" loading="lazy" decoding="async" />
                           </div>
                         ))}
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-secondary font-bold text-base leading-none">4,000+</span>
+                        <span className="text-secondary font-bold text-sm sm:text-base leading-none">4,000+</span>
                         <span className="text-[9px] font-mono uppercase tracking-widest text-mist">Global Readers</span>
                       </div>
                     </div>

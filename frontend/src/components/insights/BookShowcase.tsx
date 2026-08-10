@@ -169,9 +169,6 @@ function BookItem({ book, index }: BookItemProps) {
               backgroundImage: 'linear-gradient(to right, rgba(0,0,0,0.7) 0%, rgba(255,255,255,0.1) 20%, rgba(0,0,0,0.2) 80%, rgba(0,0,0,0.8) 100%)',
             }}
           >
-            <div className="absolute inset-0 flex items-center justify-center rotate-90 opacity-90">
-              <span className="font-mono text-[10px] text-white uppercase tracking-[0.4em] font-bold whitespace-nowrap drop-shadow-md">{book.subtitle}</span>
-            </div>
             {/* Binding texture */}
             <div className="absolute inset-y-0 left-[2px] w-[1px] bg-white/20" />
             <div className="absolute inset-y-0 right-[2px] w-[1px] bg-black/40" />
