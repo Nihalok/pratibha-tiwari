@@ -406,18 +406,21 @@ export default function Insights() {
                     <article className="group h-full">
                       <Link to={`/insights/${post.slug}`} className="block h-full">
                         <div className="editorial-card rounded-[40px] md:rounded-[60px] overflow-hidden flex flex-col h-full hover:-translate-y-2 transition-transform duration-300 bg-white border border-gold/10 shadow-sm hover:shadow-xl">
-                          <div className="aspect-[4/3] overflow-hidden relative">
-                             {(post.featuredImage || post.imageUrl) ? (
-                               <img src={post.featuredImage || post.imageUrl} alt={post.title} loading="lazy" decoding="async" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                             ) : (
-                               <div className="w-full h-full bg-pearl flex items-center justify-center text-primary">
-                                  <div className="text-7xl md:text-[120px] font-serif italic select-none">{(post.category || 'A')[0]}</div>
-                               </div>
-                             )}
-                             <div className="absolute top-6 md:top-8 left-6 md:left-8">
-                               <span className="bg-white/95 backdrop-blur-md text-primary text-[10px] font-bold px-5 py-2 rounded-full uppercase tracking-[0.2em] border border-gold/10 shadow-lg">{post.category}</span>
-                             </div>
-                          </div>
+                           <div className="aspect-[16/10] overflow-hidden relative bg-pearl">
+                              {(post.featuredImage || post.imageUrl) ? (
+                                <img 
+                                  src={post.featuredImage || post.imageUrl} 
+                                  alt={post.title} 
+                                  loading="lazy" 
+                                  decoding="async" 
+                                  className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105" 
+                                />
+                              ) : (
+                                <div className="w-full h-full bg-pearl flex items-center justify-center text-primary">
+                                   <div className="text-7xl md:text-[120px] font-serif italic select-none">{(post.category || 'A')[0]}</div>
+                                </div>
+                              )}
+                           </div>
                           <div className="p-8 md:p-12 flex flex-col flex-grow">
                             <div className="flex items-center space-x-4 text-[10px] font-mono uppercase tracking-[0.2em] text-mist mb-6 md:mb-8">
                               <span className="flex items-center"><Calendar size={14} className="mr-2 text-gold" /> {post.createdAt ? new Date(post.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recent'}</span>

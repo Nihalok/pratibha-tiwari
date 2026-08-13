@@ -42,25 +42,25 @@ const ServiceImage = ({ src, alt, priority = false }: { src: string; alt: string
 
 const programs = [
   {
-    icon: <Compass size={40} />,
+    icon: <Cpu size={40} />,
     id: "01",
-    label: "Strategic Thinking",
-    title: "Future-Ready Career Strategy",
-    problem: "The workplace is evolving faster than ever. I want to stay relevant, advance with confidence, and build a career that grows with the future—not one that's left behind.",
-    solution: "Career success today requires more than experience—it demands clarity, adaptability, and strategic direction. Through personalized Career Coaching, leadership assessments, and future-focused development, Pratibha Tiwari helps professionals identify their strengths, overcome career roadblocks, and create a clear roadmap for sustainable growth in an AI-driven workplace.",
+    label: "AI & Innovation",
+    title: "AI Leadership & Digital Strategy",
+    problem: "We have the talent, but we need to integrate AI with a human-centric approach. How do we build AI-ready leadership and drive digital strategy?",
+    solution: "Empowering leaders to navigate the AI era with human-centric technological vision. Pratibha Tiwari works with executives and leadership teams to define AI strategies, build organizational digital capability, and foster a culture where human intelligence and artificial intelligence work in synergy.",
     outcomes: [
-      "Gain clarity on your career direction and long-term goals",
-      "Identify strengths, opportunities, and development areas",
-      "Build a future-ready career strategy with confidence",
-      "Strengthen your executive presence and personal brand",
-      "Improve interview, promotion, and leadership readiness",
-      "Make career decisions with clarity and confidence"
+      "Navigate the AI landscape with ethical, human-centric vision",
+      "Develop AI-ready decision-making frameworks for leadership",
+      "Build organizational resilience and digital adaptability",
+      "Bridge the gap between technology implementation and team adoption",
+      "Strengthen strategic innovation and future-focused culture",
+      "Drive sustainable performance in an AI-driven economy"
     ],
-    format: "1-on-1 Strategy Sessions | Career Sustainability Audit",
-    cta: "Start Your Career Transformation",
-    image: careerStrategy,
-    cardBg: "https://images.unsplash.com/photo-1454165833767-027ffea9e778?q=80&w=2070",
-    outcomeBg: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=2071"
+    format: "Executive Advisory | AI Leadership Masterclasses | Strategic Audits",
+    cta: "Inquire About AI Leadership",
+    image: leadershipVision,
+    cardBg: "https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=1974",
+    outcomeBg: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2015"
   },
   {
     icon: <Heart size={40} />,
@@ -84,10 +84,31 @@ const programs = [
     outcomeBg: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?q=80&w=2070"
   },
   {
-    icon: <Mic2 size={40} />,
+    icon: <Compass size={40} />,
     id: "03",
+    label: "Strategic Thinking",
+    title: "Future-Ready Career Shaping",
+    problem: "The workplace is evolving faster than ever. I want to stay relevant, advance with confidence, and build a career that grows with the future—not one that's left behind.",
+    solution: "Career success today requires more than experience—it demands clarity, adaptability, and strategic direction. Through personalized Career Coaching, leadership assessments, and future-focused development, Pratibha Tiwari helps professionals identify their strengths, overcome career roadblocks, and create a clear roadmap for sustainable growth in an AI-driven workplace.",
+    outcomes: [
+      "Gain clarity on your career direction and long-term goals",
+      "Identify strengths, opportunities, and development areas",
+      "Build a future-ready career strategy with confidence",
+      "Strengthen your executive presence and personal brand",
+      "Improve interview, promotion, and leadership readiness",
+      "Make career decisions with clarity and confidence"
+    ],
+    format: "1-on-1 Strategy Sessions | Career Sustainability Audit",
+    cta: "Start Your Career Transformation",
+    image: careerStrategy,
+    cardBg: "https://images.unsplash.com/photo-1454165833767-027ffea9e778?q=80&w=2070",
+    outcomeBg: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=2071"
+  },
+  {
+    icon: <Mic2 size={40} />,
+    id: "04",
     label: "Mastery Communication",
-    title: "Corporate Training & Executive Keynotes",
+    title: "Corporate Training & Keynotes",
     problem: "Our people have the potential—but they need the right leadership, communication, and future-ready skills to perform at their best in a rapidly evolving workplace.",
     solution: "Every organization is unique, and so is every learning journey. Pratibha Tiwari designs and delivers customized Corporate Training Programs, Executive Workshops, and Leadership Keynote Sessions that inspire lasting behavioral change. Blending executive coaching, emotional intelligence, AI leadership, and practical business strategies, she equips teams with the mindset and skills to thrive in today's dynamic business environment.",
     outcomes: [
@@ -103,27 +124,6 @@ const programs = [
     image: corporateTraining,
     cardBg: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=2070",
     outcomeBg: "https://images.unsplash.com/photo-1515187029135-18ee286d815b?q=80&w=2070"
-  },
-  {
-    icon: <Cpu size={40} />,
-    id: "04",
-    label: "Purposeful Leadership",
-    title: "Purposeful Leadership & Performance Culture",
-    problem: "We have the talent, but we lack a unified sense of purpose. How do we align our values with our goals to drive long-term impact?",
-    solution: "Transforming leadership from a title into a purposeful practice. Pratibha Tiwari works with boards and senior executives to define leadership values, build organizational resilience, and foster a culture where high performance is fueled by meaning and accountability.",
-    outcomes: [
-      "Define and align core leadership values across the organization",
-      "Foster a culture of accountability and high performance",
-      "Build organizational resilience to navigate market volatility",
-      "Strengthen strategic alignment between purpose and profits",
-      "Develop mission-driven leaders who inspire legacy",
-      "Enhance employee retention through purposeful leadership"
-    ],
-    format: "Executive Advisory | Strategic Workshops | Culture Audits",
-    cta: "Connect for Strategic Advisory",
-    image: leadershipVision,
-    cardBg: "https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=1974",
-    outcomeBg: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2015"
   }
 ];
 

@@ -66,7 +66,7 @@ export default function ClientTicker() {
             The <span className="italic font-light text-slate-700">Network</span> of Trust
           </h2>
           <p className="text-slate-600 text-sm md:text-base mt-6 max-w-xl mx-auto font-light leading-relaxed">
-            Collaborating with regional giants and global leaders to drive strategic growth and leadership excellence.
+            Coached and Trained executives, leaders and professionals from leading organizations.
           </p>
         </motion.div>
       </div>

@@ -145,19 +145,30 @@ export default function Hero() {
           transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
           className="relative flex justify-center lg:justify-end"
         >
-          <div className="relative w-full max-w-[580px]">
+          <div className="relative w-full max-w-[460px] sm:max-w-[500px] lg:max-w-[520px] mx-auto lg:mr-0">
 
-            {/* Main Portrait Image */}
-            <div className="relative z-10 flex justify-center items-end">
-              <motion.img
-                style={{ y: imageY }}
+            {/* Ambient Radial Golden Glow */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-gold/30 via-primary/10 to-transparent blur-3xl opacity-70 rounded-full pointer-events-none" />
+
+            {/* Outer Architectural Floating Gold Outline Frame (Asymmetric Arch) */}
+            <div className="absolute -inset-4 sm:-inset-5 rounded-[140px_36px_140px_36px] md:rounded-[180px_44px_180px_44px] border border-gold/35 z-0 pointer-events-none" />
+            
+            {/* Secondary Inner Accent Frame Offset */}
+            <div className="absolute -top-2 -bottom-2 -left-2 -right-2 rounded-[130px_32px_130px_32px] md:rounded-[165px_38px_165px_38px] border border-gold/20 z-0 pointer-events-none" />
+
+            {/* Main Creative Shaped Portrait Frame - Perfectly fitted photo with 0% gap and 0% clipping */}
+            <div className="relative z-10 aspect-[3/4] rounded-[120px_28px_120px_28px] md:rounded-[155px_36px_155px_36px] overflow-hidden border-2 border-gold/40 shadow-2xl shadow-primary/20 bg-pearl group">
+              <img
                 src={pratibhaPortrait}
                 alt="Pratibha Tiwari - ICF PCC Certified Executive Coach & AI Leadership Strategist Abu Dhabi UAE"
-                className="w-full h-auto object-contain object-top relative z-10 mx-auto transform-gpu"
+                className="w-full h-full object-cover object-[center_top] relative z-10 transform-gpu group-hover:scale-105 transition-transform duration-1000"
                 loading="eager"
                 fetchPriority="high"
                 decoding="async"
               />
+
+              {/* Bottom Vignette Gradient */}
+              <div className="absolute inset-0 bg-gradient-to-t from-primary/30 via-transparent to-transparent z-20 pointer-events-none" />
             </div>
 
             {/* Leaf Accents (Simplified as SVG) */}

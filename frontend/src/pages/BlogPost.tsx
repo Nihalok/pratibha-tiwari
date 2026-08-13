@@ -176,8 +176,12 @@ export default function BlogPost() {
           </div>
 
           {(post.featuredImage || post.imageUrl) && (
-            <div className="aspect-video rounded-3xl md:rounded-[48px] overflow-hidden border border-gold/10 shadow-2xl">
-              <img src={post.featuredImage || post.imageUrl} alt={post.title} className="w-full h-full object-cover" />
+            <div className="aspect-video rounded-3xl md:rounded-[48px] overflow-hidden border border-gold/10 shadow-2xl relative bg-pearl">
+              <img 
+                src={post.featuredImage || post.imageUrl} 
+                alt={post.title} 
+                className="w-full h-full object-cover object-center" 
+              />
             </div>
           )}
 
@@ -291,17 +295,12 @@ export default function BlogPost() {
                   className="group"
                 >
                   <Link to={`/insights/${relatedPost.slug}`} className="block space-y-6">
-                    <div className="aspect-[4/5] rounded-[32px] overflow-hidden border border-gold/5 transition-all duration-700 shadow-sm group-hover:shadow-xl relative">
+                    <div className="aspect-[16/10] rounded-[32px] overflow-hidden border border-gold/5 transition-all duration-700 shadow-sm group-hover:shadow-xl relative bg-pearl">
                       <img 
                         src={relatedPost.featuredImage || relatedPost.imageUrl} 
                         alt={relatedPost.title} 
-                        className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
+                        className="w-full h-full object-cover object-center transition-all duration-700 group-hover:scale-110"
                       />
-                      <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-primary/80 to-transparent">
-                        <span className="text-[9px] font-mono text-white uppercase tracking-widest">
-                          {relatedPost.category}
-                        </span>
-                      </div>
                     </div>
                     <h4 className="text-xl font-serif text-primary group-hover:text-secondary transition-colors leading-tight">
                       {relatedPost.title}
