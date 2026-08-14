@@ -92,7 +92,7 @@ export default function FourPillars() {
   };
 
   return (
-    <section className="min-h-[100dvh] py-16 md:py-0 md:h-[100dvh] w-full bg-[#FDFBF7] relative overflow-hidden group/pillars flex items-center">
+    <section className="min-h-screen py-10 sm:py-14 md:py-16 w-full bg-[#FDFBF7] relative overflow-hidden group/pillars flex flex-col justify-between">
       {/* Background Architectural Layer */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden select-none z-0">
         {/* Base Background Image with subtle parallax effect */}
@@ -105,7 +105,7 @@ export default function FourPillars() {
           <img
             src={pillar1}
             alt="Corporate Architecture"
-            className="w-full h-full object-cover "
+            className="w-full h-full object-cover"
           />
         </motion.div>
 
@@ -120,9 +120,9 @@ export default function FourPillars() {
             animate={{ opacity: 0.05, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: -100 }}
             transition={{ duration: 1.5, ease: [0.33, 1, 0.68, 1] }}
-            className="absolute inset-0 flex items-center justify-center z-20 will-change-transform transform-gpu"
+            className="absolute inset-0 flex items-center justify-center z-20 will-change-transform transform-gpu pointer-events-none"
           >
-            <h2 className="font-serif text-[40vw] md:text-[30vw] font-bold text-primary tracking-tighter leading-none whitespace-nowrap italic uppercase">
+            <h2 className="font-serif text-[35vw] md:text-[25vw] font-bold text-primary tracking-tighter leading-none whitespace-nowrap italic uppercase select-none opacity-40">
               {pillars[activeIndex].title.split(' ')[0]}
             </h2>
           </motion.div>
@@ -130,54 +130,54 @@ export default function FourPillars() {
       </div>
 
       {/* Section Heading — The Four Pillars of Impact */}
-      <div className="absolute top-[72px] sm:top-20 md:top-6 left-0 right-0 z-30 pointer-events-none px-6 md:px-12">
+      <div className="relative z-30 pointer-events-none px-6 sm:px-10 md:px-16 max-w-7xl mx-auto w-full pt-4 sm:pt-6 md:pt-8 shrink-0">
         <motion.div
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: 'easeOut' }}
           className="flex flex-col items-start"
         >
-          <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.35em] text-gold font-bold mb-1.5">Framework</span>
-          <h2 className="font-serif text-2xl sm:text-3xl md:text-3xl lg:text-4xl text-primary leading-tight tracking-tight">
+          <span className="font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.35em] text-gold font-bold mb-1">Framework</span>
+          <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl text-primary leading-tight tracking-tight">
             The Four Pillars of{' '}
             <span className="italic text-secondary">Impact</span>
           </h2>
         </motion.div>
       </div>
 
-      <Swiper
-        direction="horizontal"
-        effect="coverflow"
-        grabCursor={true}
-        centeredSlides={true}
-        slidesPerView={1}
-        speed={1000}
-        autoplay={{
-          delay: 3000,
-          disableOnInteraction: false,
-        }}
-        mousewheel={false}
-        coverflowEffect={{
-          rotate: 0,
-          stretch: 0,
-          depth: 100,
-          modifier: 2,
-          slideShadows: false,
-        }}
-        observer={true}
-        observeParents={true}
-        modules={[EffectCoverflow, Pagination, Navigation, Autoplay]}
-        onSwiper={(swiper) => (swiperRef.current = swiper)}
-        onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
-        className="w-full h-full z-10"
-      >
-        {pillars.map((pillar, idx) => (
-          <SwiperSlide key={pillar.id} className="w-full h-full">
-            <div className="relative w-full h-full flex overflow-hidden">
-              {/* Content Layer */}
-              <div className="relative z-10 w-full h-full flex flex-col md:flex-row items-center justify-center px-6 md:px-20 gap-4 md:gap-20 pt-36 sm:pt-40 md:pt-24 lg:pt-28">
-
-                {/* Visual / Image */}
+      {/* Swiper Carousel */}
+      <div className="w-full flex-1 flex items-center relative z-10 my-auto py-4">
+        <Swiper
+          direction="horizontal"
+          effect="coverflow"
+          grabCursor={true}
+          centeredSlides={true}
+          slidesPerView={1}
+          speed={1000}
+          autoplay={{
+            delay: 4000,
+            disableOnInteraction: false,
+          }}
+          mousewheel={false}
+          coverflowEffect={{
+            rotate: 0,
+            stretch: 0,
+            depth: 100,
+            modifier: 2,
+            slideShadows: false,
+          }}
+          observer={true}
+          observeParents={true}
+          modules={[EffectCoverflow, Pagination, Navigation, Autoplay]}
+          onSwiper={(swiper) => (swiperRef.current = swiper)}
+          onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
+          className="w-full h-full"
+        >
+          {pillars.map((pillar, idx) => (
+            <SwiperSlide key={pillar.id} className="w-full flex items-center justify-center">
+              <div className="relative w-full max-w-7xl mx-auto px-6 sm:px-10 md:px-16 flex flex-col lg:flex-row items-center justify-between gap-6 sm:gap-8 lg:gap-16 py-2 sm:py-4">
+                
+                {/* Visual / Image Container */}
                 <div className="relative group shrink-0">
                   <motion.div
                     initial={{ scale: 0.9, opacity: 0 }}
@@ -185,85 +185,89 @@ export default function FourPillars() {
                       scale: activeIndex === idx ? 1 : 0.9,
                       opacity: activeIndex === idx ? 1 : 0
                     }}
-                    transition={{ duration: 1.2, ease: [0.33, 1, 0.68, 1] }}
-                    className="relative w-full max-w-[200px] sm:max-w-[300px] md:max-w-[450px] aspect-[4/5] rounded-[2rem] md:rounded-[2.5rem] overflow-hidden shadow-[0_40px_80px_-20px_rgba(0,0,0,0.2)] ring-1 ring-primary/5"
+                    transition={{ duration: 1, ease: [0.33, 1, 0.68, 1] }}
+                    className="relative w-full max-w-[220px] sm:max-w-[280px] md:max-w-[330px] lg:max-w-[380px] xl:max-w-[420px] max-h-[36vh] sm:max-h-[42vh] lg:max-h-[52vh] aspect-[4/5] rounded-[1.75rem] md:rounded-[2.5rem] overflow-hidden shadow-[0_25px_50px_-12px_rgba(0,0,0,0.18)] ring-1 ring-primary/5 bg-stone-100 flex items-center justify-center"
                   >
-                    <img src={pillar.image} alt={pillar.title} className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-primary/40 via-transparent to-transparent" />
+                    <img 
+                      src={pillar.image} 
+                      alt={pillar.title} 
+                      className="w-full h-full object-cover object-top sm:object-center transition-all duration-1000 group-hover:scale-105" 
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-primary/30 via-transparent to-transparent pointer-events-none" />
                   </motion.div>
 
                   {/* Decorative Elements around image */}
-                  <div className="absolute -bottom-6 -right-6 w-24 h-24 md:w-32 md:h-32 bg-gold/10 rounded-full blur-3xl -z-10" />
-                  <div className="absolute -top-6 -left-6 w-24 h-24 md:w-32 md:h-32 bg-primary/5 rounded-full blur-3xl -z-10" />
+                  <div className="absolute -bottom-4 -right-4 w-20 h-20 md:w-28 md:h-28 bg-gold/10 rounded-full blur-2xl -z-10 pointer-events-none" />
+                  <div className="absolute -top-4 -left-4 w-20 h-20 md:w-28 md:h-28 bg-primary/5 rounded-full blur-2xl -z-10 pointer-events-none" />
                 </div>
 
                 {/* Content Box */}
-                <div className="text-left max-w-2xl px-4 md:px-0">
+                <div className="text-left max-w-xl lg:max-w-2xl px-2 sm:px-0 flex-1">
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{
                       opacity: activeIndex === idx ? 1 : 0,
                       x: activeIndex === idx ? 0 : -20
                     }}
-                    transition={{ delay: 0.4 }}
-                    className="mb-4 md:mb-6 inline-block px-4 md:px-5 py-1.5 md:py-2 rounded-full bg-gold/10 border border-gold/20"
+                    transition={{ delay: 0.3 }}
+                    className="mb-2 md:mb-4 inline-block px-3.5 sm:px-4 py-1.5 rounded-full bg-gold/10 border border-gold/20"
                   >
-                    <span className="font-mono text-[9px] md:text-xs uppercase tracking-[0.3em] md:tracking-[0.4em] text-secondary font-bold">{pillar.subtitle}</span>
+                    <span className="font-mono text-[9px] sm:text-xs uppercase tracking-[0.25em] sm:tracking-[0.3em] text-secondary font-bold">{pillar.subtitle}</span>
                   </motion.div>
 
                   <motion.h3
-                    initial={{ opacity: 0, y: 30 }}
+                    initial={{ opacity: 0, y: 20 }}
                     animate={{
                       opacity: activeIndex === idx ? 1 : 0,
-                      y: activeIndex === idx ? 0 : 30
+                      y: activeIndex === idx ? 0 : 20
                     }}
-                    transition={{ delay: 0.5, duration: 0.8 }}
-                    className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif text-primary leading-[1.15] tracking-tight mb-3 md:mb-8 text-left"
+                    transition={{ delay: 0.4, duration: 0.7 }}
+                    className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif text-primary leading-[1.15] tracking-tight mb-2.5 sm:mb-4 md:mb-6 text-left"
                   >
                     {pillar.title}
                   </motion.h3>
 
                   <motion.p
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 15 }}
                     animate={{
                       opacity: activeIndex === idx ? 1 : 0,
-                      y: activeIndex === idx ? 0 : 20
+                      y: activeIndex === idx ? 0 : 15
                     }}
-                    transition={{ delay: 0.6 }}
-                    className="text-primary text-base md:text-2xl mb-5 md:mb-12 leading-relaxed font-normal max-w-xl text-left"
+                    transition={{ delay: 0.5 }}
+                    className="text-primary/95 text-xs sm:text-sm md:text-base lg:text-lg mb-4 sm:mb-6 md:mb-8 leading-relaxed font-normal max-w-xl text-left"
                   >
                     {pillar.desc}
                   </motion.p>
 
                   <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 15 }}
                     animate={{
                       opacity: activeIndex === idx ? 1 : 0,
-                      y: activeIndex === idx ? 0 : 20
+                      y: activeIndex === idx ? 0 : 15
                     }}
-                    transition={{ delay: 0.7 }}
+                    transition={{ delay: 0.6 }}
                   >
                     <Link
                       to="/services"
-                      className="inline-flex items-center space-x-4 md:space-x-8 px-8 md:px-12 py-3 md:py-5 bg-primary text-white rounded-full font-bold hover:bg-secondary hover:scale-105 transition-all shadow-[0_20px_40px_rgba(26,58,92,0.15)] group overflow-hidden relative"
+                      className="inline-flex items-center space-x-3 sm:space-x-4 md:space-x-6 px-5 sm:px-7 md:px-9 py-2.5 sm:py-3 md:py-4 bg-primary text-white rounded-full font-bold hover:bg-secondary hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_15px_30px_rgba(26,58,92,0.15)] group overflow-hidden relative"
                     >
                       <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
-                      <span className="text-xs md:text-lg relative z-10">Discover Precision Coaching</span>
-                      <ArrowRight size={18} className="group-hover:translate-x-2 md:group-hover:translate-x-3 transition-transform relative z-10 md:w-[22px] md:h-[22px]" />
+                      <span className="text-xs sm:text-sm md:text-base relative z-10">Discover Precision Coaching</span>
+                      <ArrowRight size={16} className="group-hover:translate-x-1.5 transition-transform relative z-10 sm:w-4 sm:h-4 md:w-5 md:h-5" />
                     </Link>
                   </motion.div>
                 </div>
               </div>
-            </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </div>
 
-      {/* Navigation Controls - Refined UI */}
-      <div className="absolute bottom-6 md:bottom-12 right-6 md:right-16 z-50 flex flex-row md:flex-col items-center space-x-4 md:space-x-0 md:space-y-8">
+      {/* Navigation Controls */}
+      <div className="relative md:absolute bottom-4 sm:bottom-6 md:bottom-8 right-6 md:right-12 z-50 flex flex-row md:flex-col items-center justify-end space-x-4 md:space-x-0 md:space-y-6 px-6 md:px-0 shrink-0">
         {/* Status Line */}
         <div className="hidden md:flex flex-col items-center">
-          <div className="h-20 w-px bg-primary/10 relative">
+          <div className="h-16 w-px bg-primary/10 relative">
             <motion.div
               className="absolute top-0 left-0 w-full bg-gold"
               animate={{ height: `${((activeIndex + 1) / pillars.length) * 100}%` }}
@@ -273,25 +277,25 @@ export default function FourPillars() {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex flex-row md:flex-col space-x-3 md:space-x-0 md:space-y-4">
+        <div className="flex flex-row md:flex-col space-x-3 md:space-x-0 md:space-y-3">
           <motion.button
             onClick={goPrev}
-            whileHover={{ scale: 1.1, backgroundColor: '#ffffff' }}
-            whileTap={{ scale: 0.9 }}
-            className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-white shadow-xl border border-primary/5 flex items-center justify-center text-primary hover:text-secondary transition-all"
+            whileHover={{ scale: 1.08, backgroundColor: '#ffffff' }}
+            whileTap={{ scale: 0.92 }}
+            className="w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full bg-white shadow-lg border border-primary/10 flex items-center justify-center text-primary hover:text-secondary transition-all"
             aria-label="Previous Pillar"
           >
-            <ArrowLeft className="w-5 h-5 md:w-6 md:h-6" />
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
           </motion.button>
 
           <motion.button
             onClick={goNext}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-primary text-white flex items-center justify-center shadow-2xl shadow-primary/20 hover:bg-secondary transition-all"
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.92 }}
+            className="w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full bg-primary text-white flex items-center justify-center shadow-xl shadow-primary/20 hover:bg-secondary transition-all"
             aria-label="Next Pillar"
           >
-            <ArrowRight className="w-5 h-5 md:w-6 md:h-6" />
+            <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
           </motion.button>
         </div>
       </div>

@@ -9,6 +9,31 @@ import { Download, ChevronRight } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import portrait from '../../assets/images/pratibha-tiwari-about-portrait.png';
 
+const loadImageAsBase64 = (url: string): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.onload = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth || img.width;
+        canvas.height = img.naturalHeight || img.height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0);
+          resolve(canvas.toDataURL('image/jpeg', 0.92));
+        } else {
+          reject(new Error('Canvas context unavailable'));
+        }
+      } catch (err) {
+        reject(err);
+      }
+    };
+    img.onerror = (err) => reject(err);
+    img.src = url;
+  });
+};
+
 export default function AboutHero() {
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll({
@@ -19,49 +44,66 @@ export default function AboutHero() {
   const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
   const rotateVal = useTransform(scrollYProgress, [0, 1], [0, 5]);
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     try {
-      const doc = new jsPDF();
-      const primaryColor = [26, 58, 92]; // #1A3A5C
-      const secondaryColor = [184, 153, 91]; // #B8995B
-      const textColor = [51, 51, 51];
+      const doc = new jsPDF('landscape', 'mm', 'a4');
 
-      doc.setFillColor(250, 248, 246);
-      doc.rect(0, 0, 210, 297, "F");
-      doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-      doc.rect(0, 0, 210, 40, "F");
+      // Full background fill: Dark Navy Blue (#102147)
+      doc.setFillColor(16, 33, 71);
+      doc.rect(0, 0, 297, 210, "F");
 
+      // Left Header: Name Title
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(28);
+      doc.setFontSize(22);
       doc.setTextColor(255, 255, 255);
-      doc.text("PRATIBHA TIWARI", 20, 25);
+      doc.text("PRATIBHA TIWARI", 16, 22);
 
-      doc.setFontSize(12);
-      doc.setFont("helvetica", "italic");
-      doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
-      doc.text("EXECUTIVE PRESENCE & LEADERSHIP ARCHITECT", 20, 32);
+      // Left Column: Portrait Image
+      const imgWidth = 72;
+      const imgHeight = 118;
+      const imgX = 16;
+      const imgY = 28;
 
-      let currentY = 55;
+      try {
+        const base64Img = await loadImageAsBase64(portrait);
+        doc.addImage(base64Img, "JPEG", imgX, imgY, imgWidth, imgHeight);
+      } catch (_imgErr) {
+        doc.setFillColor(25, 45, 95);
+        doc.roundedRect(imgX, imgY, imgWidth, imgHeight, 3, 3, "F");
+      }
+
+      // Left Column: Phone Number
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(14);
-      doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-      doc.text("EXECUTIVE PROFILE", 20, currentY);
-      doc.setDrawColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
-      doc.line(20, currentY + 2, 60, currentY + 2);
+      doc.setFontSize(13);
+      doc.setTextColor(255, 255, 255);
+      doc.text("+971508426354", 16, 160);
 
-      currentY += 12;
+      // Right Column: Executive Profile Bio Text
+      const rightX = 96;
+      const maxRightWidth = 185;
+      let currentY = 22;
+
+      const paragraphs = [
+        "Pratibha Tiwari is an Abu Dhabi–based ICF-PCC certified coach, Senior Corporate Trainer, TEDx Speaker, Author, Leadership & Executive Coach, and, with over 25 years of diverse experience spanning Research & Development, Academia, and Corporate Training. She specializes in enabling individuals and organizations to unlock their true potential and achieve sustainable excellence.",
+        "She is a highly accomplished professional in NLP, Emotional Intelligence, Business Management, and Corporate Training, and a counselor with expertise in Cognitive Behavioral Therapy (CBT) and Emotional Freedom Technique (EFT). A Licensed Behavioral Trainer and trained Hypnotherapist, Pratibha brings a holistic and transformative approach to personal and professional development. She also holds an Advanced Diploma in Business Coaching from Business NLP Ltd., United Kingdom.",
+        "Adding to her forward-thinking expertise, Pratibha is an AI Leadership Strategist certified from IIT Delhi, empowering leaders and organizations to leverage artificial intelligence for strategic growth, innovation, and future readiness.",
+        "With a strong academic foundation, including a Master’s degree in Computer Applications, she began her career as a Software Engineer and later served as an Associate Professor at Delhi University. She subsequently transitioned into the corporate world, where she has made a significant impact as a Senior Training & Development professional.",
+        "Through her extensive experience as a coach and trainer, Pratibha has consistently helped individuals and organizations enhance performance, build confidence, and create meaningful success."
+      ];
+
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(10);
-      doc.setTextColor(textColor[0], textColor[1], textColor[2]);
+      doc.setFontSize(9.5);
+      doc.setTextColor(255, 255, 255);
 
-      const profileText = doc.splitTextToSize(
-        "Pratibha Tiwari is a world-class NLP Master Practitioner and Executive Coach dedicated to the architecture of human potential. With over 23 years of global experience, she specializes in transitioning elite performers into impactful leaders.",
-        170
-      );
-      doc.text(profileText, 20, currentY);
-      doc.save('Pratibha_Tiwari_Executive_Profile.pdf');
-    } catch (_e) {
-      // Silent failure — PDF generation unavailable
+      paragraphs.forEach((pText) => {
+        const lines = doc.splitTextToSize(pText, maxRightWidth);
+        doc.text(lines, rightX, currentY);
+        currentY += lines.length * 4.6 + 5.5;
+      });
+
+      doc.save("Pratibha_Tiwari_Executive_Profile.pdf");
+    } catch (e) {
+      console.error("PDF generation error:", e);
     }
   };
 
