@@ -10,7 +10,12 @@ import {
   MessageSquare,
   Users,
   Eye,
-  Rocket
+  Rocket,
+  Sparkles,
+  ArrowRight,
+  ShieldCheck,
+  FileText,
+  Clock
 } from 'lucide-react';
 
 // ==========================================
@@ -146,6 +151,7 @@ interface ResultsProps {
   onDownload: () => void;
   onRetake: () => void;
   onHome: () => void;
+  onStartPremium?: () => void;
   isGeneratingPdf: boolean;
 }
 
@@ -184,6 +190,7 @@ export default function AssessmentResultsSummary({
   onDownload,
   onRetake,
   onHome,
+  onStartPremium,
   isGeneratingPdf
 }: ResultsProps) {
 
@@ -234,7 +241,7 @@ export default function AssessmentResultsSummary({
             disabled={isGeneratingPdf}
             className="w-full sm:w-auto bg-white text-primary px-6 py-4 sm:px-10 sm:py-5 rounded-full font-bold text-xs sm:text-sm flex items-center justify-center hover:bg-secondary hover:text-white transition-all shadow-lg active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
           >
-            {isGeneratingPdf ? 'Forging Report...' : 'Download Premium PDF Report'}
+            {isGeneratingPdf ? 'Forging Report...' : 'Download Free PDF Summary'}
           </button>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
             <button
@@ -252,6 +259,60 @@ export default function AssessmentResultsSummary({
           </div>
         </div>
       </div>
+
+      {/* PREMIUM ASSESSMENT UPGRADE CARD */}
+      {onStartPremium && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative bg-gradient-to-br from-slate-900 via-primary to-slate-950 rounded-3xl sm:rounded-[44px] p-6 sm:p-12 text-white border-2 border-gold/40 shadow-2xl overflow-hidden"
+        >
+          <div className="absolute top-0 right-0 w-80 h-80 bg-gold/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
+            <div className="space-y-4 max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-gold/20 text-gold rounded-full text-xs font-mono font-bold uppercase tracking-widest border border-gold/30">
+                <Sparkles size={14} /> AI Career Intelligence Blueprint — Paid
+              </div>
+              <h3 className="text-2xl sm:text-4xl font-serif leading-tight">
+                Unlock Your Bespoke <span className="italic text-gold">AI Career Intelligence Report</span>
+              </h3>
+              <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">
+                Take our Premium Strategic Discovery Questionnaire (12–15 mins). Upload your latest resume, outline your career direction, and receive an exhaustive custom blueprint prepared by AI and reviewed by human career strategists.
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                <div className="flex items-center gap-2 text-xs text-slate-200">
+                  <Clock size={16} className="text-gold" /> 12–15 Min Questionnaire
+                </div>
+                <div className="flex items-center gap-2 text-xs text-slate-200">
+                  <FileText size={16} className="text-gold" /> Deep Resume & Positioning Audit
+                </div>
+                <div className="flex items-center gap-2 text-xs text-slate-200">
+                  <ShieldCheck size={16} className="text-gold" /> Reviewed by Human Strategist
+                </div>
+              </div>
+            </div>
+
+            <div className="w-full lg:w-auto shrink-0 flex flex-col items-center lg:items-end gap-3 border-t lg:border-t-0 lg:border-l border-white/10 pt-6 lg:pt-0 lg:pl-8">
+              <div className="text-center lg:text-right">
+                <div className="text-[10px] font-mono text-slate-400 uppercase tracking-widest">Premium Package</div>
+                <div className="text-3xl sm:text-4xl font-serif text-gold font-bold">$99.00 <span className="text-xs font-sans text-slate-400 font-normal">(Demo Gateway)</span></div>
+              </div>
+
+              <button
+                onClick={onStartPremium}
+                className="w-full sm:w-auto bg-gradient-to-r from-gold via-amber-400 to-gold text-slate-950 font-bold px-8 py-4 sm:px-10 sm:py-5 rounded-full text-sm sm:text-base flex items-center justify-center gap-3 hover:scale-105 transition-all shadow-xl shadow-gold/20 active:scale-95 cursor-pointer"
+              >
+                Start Premium Assessment <ArrowRight size={18} />
+              </button>
+
+              <div className="text-[11px] font-mono text-slate-400">
+                Payment after questionnaire completion
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       {/* Dynamic Breakdown Bento */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">

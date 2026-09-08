@@ -20,6 +20,9 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { safeLocalStorage } from '../lib/storage-helper';
 import AssessmentResultsSummary, { assessmentConfig } from '../components/assessment/AssessmentResultsSummary';
+import PremiumAssessmentWizard from '../components/assessment/PremiumAssessmentWizard';
+import DemoPaymentModal from '../components/assessment/DemoPaymentModal';
+import PremiumConfirmationModal from '../components/assessment/PremiumConfirmationModal';
 import assessmentBg from '../assets/images/pratibha-tiwari-career-assessment.jpg';
 
 // ─── Flatten ALL questions from all sections ───────────────────────────────
@@ -69,6 +72,12 @@ export default function CareerAssessment() {
   const [isFinished, setIsFinished] = useState<boolean>(() => {
     return safeLocalStorage.getItem('career_assessment_finished') === 'true';
   });
+
+  // Premium Assessment States
+  const [isPremiumWizardOpen, setIsPremiumWizardOpen] = useState<boolean>(false);
+  const [isDemoPaymentOpen, setIsDemoPaymentOpen] = useState<boolean>(false);
+  const [isConfirmationOpen, setIsConfirmationOpen] = useState<boolean>(false);
+  const [premiumFormData, setPremiumFormData] = useState<any>(null);
 
   // For open-text: hold the draft value while the user types
   const [openTextDraft, setOpenTextDraft] = useState('');
@@ -473,8 +482,28 @@ export default function CareerAssessment() {
             </motion.div>
           )}
 
+          {/* ── Premium Assessment Wizard Screen ── */}
+          {isPremiumWizardOpen && (
+            <motion.div
+              key="premium-wizard"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="py-4"
+            >
+              <PremiumAssessmentWizard
+                onCancel={() => setIsPremiumWizardOpen(false)}
+                onSubmit={(formData) => {
+                  setPremiumFormData(formData);
+                  setIsPremiumWizardOpen(false);
+                  setIsDemoPaymentOpen(true);
+                }}
+              />
+            </motion.div>
+          )}
+
           {/* ── Results screen ── */}
-          {isFinished && (
+          {isFinished && !isPremiumWizardOpen && (
             <motion.div
               key="results"
               initial={{ opacity: 0, scale: 0.95 }}
@@ -487,6 +516,7 @@ export default function CareerAssessment() {
                 level={level}
                 onDownload={downloadReport}
                 onRetake={handleStart}
+                onStartPremium={() => setIsPremiumWizardOpen(true)}
                 onHome={() => {
                   safeLocalStorage.removeItem('career_assessment_step');
                   safeLocalStorage.removeItem('career_assessment_answers');
@@ -585,6 +615,33 @@ export default function CareerAssessment() {
 
         </AnimatePresence>
       </div>
+
+      {/* Demo Payment Gateway Modal */}
+      <DemoPaymentModal
+        isOpen={isDemoPaymentOpen}
+        onClose={() => setIsDemoPaymentOpen(false)}
+        userName={premiumFormData?.fullName}
+        userEmail={premiumFormData?.email}
+        onPaymentSuccess={() => {
+          setIsDemoPaymentOpen(false);
+          setIsConfirmationOpen(true);
+        }}
+      />
+
+      {/* Premium Confirmation Modal */}
+      <PremiumConfirmationModal
+        isOpen={isConfirmationOpen}
+        formData={premiumFormData}
+        onClose={() => setIsConfirmationOpen(false)}
+        onHome={() => {
+          setIsConfirmationOpen(false);
+          safeLocalStorage.removeItem('career_assessment_step');
+          safeLocalStorage.removeItem('career_assessment_answers');
+          safeLocalStorage.removeItem('career_assessment_finished');
+          safeLocalStorage.removeItem('premium_career_assessment_draft');
+          navigate('/');
+        }}
+      />
     </motion.div>
   );
 }
