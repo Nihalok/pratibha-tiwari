@@ -16,7 +16,6 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { safeLocalStorage } from '../lib/storage-helper';
 import AssessmentResultsSummary, { assessmentConfig } from '../components/assessment/AssessmentResultsSummary';
@@ -74,6 +73,17 @@ export default function CareerAssessment() {
   });
 
   // Premium Assessment States
+  const [selectedPackage, setSelectedPackage] = useState<{
+    id: 'report' | 'platinum';
+    title: string;
+    price: string;
+    priceNum: number;
+  }>({
+    id: 'report',
+    title: 'Premium AI Career Intelligence Report',
+    price: '$68.00',
+    priceNum: 68
+  });
   const [isPremiumWizardOpen, setIsPremiumWizardOpen] = useState<boolean>(false);
   const [isDemoPaymentOpen, setIsDemoPaymentOpen] = useState<boolean>(false);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState<boolean>(false);
@@ -100,7 +110,6 @@ export default function CareerAssessment() {
   }, [step]);
 
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
-  const reportRef = useRef<HTMLDivElement>(null);
 
   // ── Score calculation (only rating questions) ──────────────────────────
   const ratingAnswers = answers.filter(a => a.type === 'rating');
@@ -195,91 +204,326 @@ export default function CareerAssessment() {
   const topStrength = sortedAggregated[0] || { category: 'AI Readiness', points: 0 };
   const mainGrowthArea = sortedAggregated[sortedAggregated.length - 1] || { category: 'Human Skills & Leadership', points: 0 };
 
-  // ── PDF download ───────────────────────────────────────────────────────
+  // ── PDF download (Pure Native Vector jsPDF Engine for Zero Text Clipping & Razor Sharp Quality) ──
   const downloadReport = async () => {
-    if (!reportRef.current) return;
     setIsGeneratingPdf(true);
 
-    // Detect mobile: use lower scale + JPEG for much faster rendering
-    const isMobile = window.innerWidth < 768;
-    const scale = isMobile ? 1 : 2;
-    const imageType = isMobile ? 'image/jpeg' : 'image/png';
-    const imageQuality = isMobile ? 0.82 : 1;
-
     try {
-      const element = reportRef.current;
-      const canvas = await html2canvas(element, {
-        scale,
-        useCORS: true,
-        allowTaint: false,
-        logging: false,
-        backgroundColor: '#FFFFFF',
-        windowWidth: 1000,
-        onclone: (clonedDoc) => {
-          const wrapper = clonedDoc.querySelector('[data-pdf-wrapper]') as HTMLElement;
-          if (wrapper) {
-            wrapper.style.position = 'relative';
-            wrapper.style.top = '0';
-            wrapper.style.left = '0';
-            wrapper.style.opacity = '1';
-            wrapper.style.visibility = 'visible';
-          }
-
-          // Remove any CSS rules containing unsupported oklab/oklch color functions in Tailwind CSS v4
-          try {
-            const styleSheets = Array.from(clonedDoc.styleSheets);
-            styleSheets.forEach((sheet) => {
-              try {
-                const rules = sheet.cssRules || sheet.rules;
-                if (rules) {
-                  for (let j = rules.length - 1; j >= 0; j--) {
-                    const ruleText = rules[j].cssText;
-                    if (ruleText && (ruleText.includes('oklab') || ruleText.includes('oklch'))) {
-                      sheet.deleteRule(j);
-                    }
-                  }
-                }
-              } catch (_e) {
-                // Ignore cross-domain sheets
-              }
-            });
-          } catch (_e) {}
-        }
+      const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+        compress: true,
       });
 
-      const imgData = canvas.toDataURL(imageType, imageQuality);
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth(); // 210mm
-      const pdfHeight = pdf.internal.pageSize.getHeight(); // 297mm
+      const pageWidth = 210;
+      const pageHeight = 297;
+      const margin = 14;
+      const contentWidth = pageWidth - (margin * 2); // 182 mm
+      const rightX = pageWidth - margin; // 196 mm
 
-      const margin = 10; // 10mm margin on all sides
-      const printWidth = pdfWidth - margin * 2; // 190mm
-      const printHeight = (canvas.height * printWidth) / canvas.width;
+      // ── Outer Subtle Executive Border ──
+      doc.setDrawColor(226, 232, 240); // #E2E8F0
+      doc.setLineWidth(0.35);
+      doc.roundedRect(8, 8, pageWidth - 16, pageHeight - 16, 3, 3, 'S');
 
-      const jsPdfImageType = isMobile ? 'JPEG' : 'PNG';
+      // ── Top Gold Luxury Accent Line ──
+      doc.setFillColor(184, 151, 74); // #B8974A
+      doc.roundedRect(margin, 14, contentWidth, 1.8, 0.9, 0.9, 'F');
 
-      if (printHeight <= pdfHeight - margin * 2) {
-        // Fits on single page: center vertically with 10mm side margins
-        const yPos = (pdfHeight - printHeight) / 2;
-        pdf.addImage(imgData, jsPdfImageType, margin, yPos, printWidth, printHeight, undefined, 'FAST');
-      } else {
-        // Multi-page fallback with margin bounds
-        let heightLeft = printHeight;
-        let position = margin;
+      // ── Header Left: Brand & Report Title ──
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(20);
+      doc.setTextColor(26, 58, 92); // #1A3A5C
+      doc.text('PRATIBHA TIWARI', margin, 24);
 
-        pdf.addImage(imgData, jsPdfImageType, margin, position, printWidth, printHeight, undefined, 'FAST');
-        heightLeft -= (pdfHeight - margin * 2);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8.5);
+      doc.setTextColor(184, 151, 74); // #B8974A
+      doc.text('EXECUTIVE STRATEGIC PERFORMANCE REPORT', margin, 29);
 
-        while (heightLeft > 5) {
-          position -= (pdfHeight - margin * 2);
-          pdf.addPage();
-          pdf.addImage(imgData, jsPdfImageType, margin, position, printWidth, printHeight, undefined, 'FAST');
-          heightLeft -= (pdfHeight - margin * 2);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7.5);
+      doc.setTextColor(100, 116, 139); // #64748B
+      const dateFormatted = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      doc.text(`COHORT BENCHMARK: GLOBAL EXECUTIVE  |  DATE: ${dateFormatted}`, margin, 34);
+
+      // ── Header Right: Global Index Score Card ──
+      const badgeW = 46;
+      const badgeH = 22;
+      const badgeX = rightX - badgeW;
+      const badgeY = 17;
+
+      doc.setFillColor(15, 23, 42); // #0F172A
+      doc.setDrawColor(184, 151, 74); // #B8974A
+      doc.setLineWidth(0.4);
+      doc.roundedRect(badgeX, badgeY, badgeW, badgeH, 2.5, 2.5, 'FD');
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(18);
+      doc.setTextColor(255, 255, 255);
+      doc.text(`${percentage}%`, badgeX + (badgeW / 2), badgeY + 8, { align: 'center' });
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(6.5);
+      doc.setTextColor(197, 168, 128); // #C5A880
+      doc.text('GLOBAL PERFORMANCE INDEX', badgeX + (badgeW / 2), badgeY + 13, { align: 'center' });
+
+      doc.setFillColor(30, 41, 59); // #1E293B
+      doc.roundedRect(badgeX + 4, badgeY + 15, badgeW - 8, 4.5, 2, 2, 'F');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(6.5);
+      doc.setTextColor(248, 250, 252);
+      doc.text(level.name.toUpperCase(), badgeX + (badgeW / 2), badgeY + 18.2, { align: 'center' });
+
+      // ── Divider ──
+      doc.setDrawColor(226, 232, 240);
+      doc.setLineWidth(0.3);
+      doc.line(margin, 42, rightX, 42);
+
+      // ── Section 1: Executive Profile Snapshot (3 Cards) ──
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8.5);
+      doc.setTextColor(26, 58, 92);
+      doc.text('01. EXECUTIVE PROFILE SNAPSHOT', margin, 48);
+
+      const cardW = (contentWidth - 8) / 3; // (182 - 8)/3 = 58 mm
+      const cardH = 22;
+      const cardY = 51;
+
+      // Card 1: Classification Tier
+      doc.setFillColor(248, 250, 252);
+      doc.setDrawColor(226, 232, 240);
+      doc.setLineWidth(0.3);
+      doc.roundedRect(margin, cardY, cardW, cardH, 2, 2, 'FD');
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(6.5);
+      doc.setTextColor(100, 116, 139);
+      doc.text('CLASSIFICATION TIER', margin + 3.5, cardY + 5);
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9.5);
+      doc.setTextColor(26, 58, 92);
+      doc.text(level.name, margin + 3.5, cardY + 11);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(6.5);
+      doc.setTextColor(100, 116, 139);
+      doc.text('Evaluated Leadership Benchmark', margin + 3.5, cardY + 17);
+
+      // Card 2: Dominant Strength
+      const card2X = margin + cardW + 4;
+      doc.setFillColor(240, 253, 244); // #F0FDF4
+      doc.setDrawColor(187, 247, 208); // #BBF7D0
+      doc.roundedRect(card2X, cardY, cardW, cardH, 2, 2, 'FD');
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(6.5);
+      doc.setTextColor(21, 128, 61); // #15803D
+      doc.text('DOMINANT STRENGTH', card2X + 3.5, cardY + 5);
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8.5);
+      doc.setTextColor(20, 83, 45); // #14532D
+      const strengthLines = doc.splitTextToSize(topStrength.category, cardW - 7);
+      doc.text(strengthLines, card2X + 3.5, cardY + 10);
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(6.5);
+      doc.setTextColor(22, 163, 74); // #16A34A
+      doc.text(`Score: ${topStrength.points}/50 Pts (Benchmark Lead)`, card2X + 3.5, cardY + 18);
+
+      // Card 3: Growth Accelerator
+      const card3X = card2X + cardW + 4;
+      doc.setFillColor(255, 241, 242); // #FFF1F2
+      doc.setDrawColor(254, 205, 211); // #FECDD3
+      doc.roundedRect(card3X, cardY, cardW, cardH, 2, 2, 'FD');
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(6.5);
+      doc.setTextColor(190, 18, 60); // #BE123C
+      doc.text('GROWTH ACCELERATOR', card3X + 3.5, cardY + 5);
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8.5);
+      doc.setTextColor(159, 18, 57); // #9F1239
+      const growthLines = doc.splitTextToSize(mainGrowthArea.category, cardW - 7);
+      doc.text(growthLines, card3X + 3.5, cardY + 10);
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(6.5);
+      doc.setTextColor(225, 29, 72); // #E11D48
+      doc.text(`Score: ${mainGrowthArea.points}/50 Pts (Priority Focus)`, card3X + 3.5, cardY + 18);
+
+      // ── Section 2: Domain Performance Audit (5 Pillars) ──
+      const section2Y = 78;
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8.5);
+      doc.setTextColor(26, 58, 92);
+      doc.text('02. STRATEGIC DOMAIN AUDIT (5 PILLARS)', margin, section2Y);
+
+      let rowY = section2Y + 4;
+      const rowHeight = 11.5;
+
+      aggregatedAnswers.forEach((ans) => {
+        const scorePercent = (ans.points / 50);
+        const statusLabel =
+          ans.points >= 45 ? 'Visionary' : ans.points >= 35 ? 'Proficient' : ans.points >= 25 ? 'Moderate' : 'Developing';
+
+        // Row background box
+        doc.setFillColor(248, 250, 252);
+        doc.setDrawColor(226, 232, 240);
+        doc.setLineWidth(0.3);
+        doc.roundedRect(margin, rowY, contentWidth, rowHeight, 1.8, 1.8, 'FD');
+
+        // Domain Name Text
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(8.5);
+        doc.setTextColor(15, 23, 42); // #0F172A
+        doc.text(ans.category, margin + 4, rowY + 7.2);
+
+        // Progress Bar Background
+        const barX = margin + 78;
+        const barW = 56;
+        const barH = 3.5;
+        const barY = rowY + 4;
+
+        doc.setFillColor(226, 232, 240); // #E2E8F0
+        doc.roundedRect(barX, barY, barW, barH, 1.5, 1.5, 'F');
+
+        // Progress Bar Fill
+        if (ans.points >= 40) {
+          doc.setFillColor(26, 58, 92); // #1A3A5C
+        } else if (ans.points >= 25) {
+          doc.setFillColor(184, 151, 74); // #B8974A
+        } else {
+          doc.setFillColor(225, 29, 72); // #E11D48
         }
-      }
+        const fillW = Math.max(2, barW * scorePercent);
+        doc.roundedRect(barX, barY, fillW, barH, 1.5, 1.5, 'F');
+
+        // Numeric Score
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(8.5);
+        doc.setTextColor(15, 23, 42);
+        doc.text(`${ans.points}/50`, margin + 144, rowY + 7.2, { align: 'right' });
+
+        // Status Label Pill
+        if (ans.points >= 40) {
+          doc.setTextColor(5, 150, 105); // #059669
+        } else if (ans.points >= 25) {
+          doc.setTextColor(184, 151, 74); // #B8974A
+        } else {
+          doc.setTextColor(225, 29, 72); // #E11D48
+        }
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7.5);
+        doc.text(statusLabel, rightX - 4, rowY + 7.2, { align: 'right' });
+
+        rowY += rowHeight + 2;
+      });
+
+      // ── Section 3: Pratibha's Strategic Diagnostic & Directives ──
+      const section3Y = rowY + 3;
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8.5);
+      doc.setTextColor(26, 58, 92);
+      doc.text("03. PRATIBHA'S STRATEGIC DIAGNOSTIC & DIRECTIVES", margin, section3Y);
+
+      const darkBoxY = section3Y + 3.5;
+      const darkBoxH = 68;
+
+      doc.setFillColor(15, 23, 42); // #0F172A
+      doc.setDrawColor(51, 65, 85); // #334155
+      doc.setLineWidth(0.4);
+      doc.roundedRect(margin, darkBoxY, contentWidth, darkBoxH, 2.5, 2.5, 'FD');
+
+      // Accent vertical gold line next to quote
+      doc.setFillColor(184, 151, 74);
+      doc.roundedRect(margin + 4, darkBoxY + 5, 1.2, 16, 0.6, 0.6, 'F');
+
+      // Diagnostic Title
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(7);
+      doc.setTextColor(184, 151, 74);
+      doc.text("EXECUTIVE DIAGNOSTIC ADVISORY", margin + 8, darkBoxY + 8);
+
+      // Diagnostic Quote
+      doc.setFont('helvetica', 'italic');
+      doc.setFontSize(7.8);
+      doc.setTextColor(241, 245, 249); // #F1F5F9
+      const quoteText = `"To transition from ${level.name} to the apex of industry benchmark, systematically upgrade your ${mainGrowthArea.category.toLowerCase()} architecture. High-impact leaders differ not by sheer effort, but through strategic narrative precision and influence positioning."`;
+      const splitQuote = doc.splitTextToSize(quoteText, contentWidth - 14);
+      doc.text(splitQuote, margin + 8, darkBoxY + 13.5);
+
+      // Two Action Directives Side-by-Side
+      const directiveW = (contentWidth - 12) / 2; // (182 - 12)/2 = 85 mm
+      const directiveH = 34;
+      const directiveY = darkBoxY + 28;
+
+      // Directive 1: Cognitive Leverage
+      doc.setFillColor(30, 41, 59); // #1E293B
+      doc.setDrawColor(51, 65, 85);
+      doc.roundedRect(margin + 4, directiveY, directiveW, directiveH, 2, 2, 'FD');
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(7.2);
+      doc.setTextColor(245, 158, 11); // #F59E0B
+      doc.text("PRIORITY 01: COGNITIVE LEVERAGE & AI", margin + 7.5, directiveY + 6);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(6.8);
+      doc.setTextColor(226, 232, 240);
+      const directive1Text = "Automate 20%+ of routine cognitive workflows using custom AI agents to free strategic space for high-leverage organizational decisions.";
+      const splitDir1 = doc.splitTextToSize(directive1Text, directiveW - 7);
+      doc.text(splitDir1, margin + 7.5, directiveY + 12);
+
+      // Directive 2: Narrative Authority
+      const directive2X = margin + 4 + directiveW + 4;
+      doc.setFillColor(30, 41, 59);
+      doc.setDrawColor(51, 65, 85);
+      doc.roundedRect(directive2X, directiveY, directiveW, directiveH, 2, 2, 'FD');
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(7.2);
+      doc.setTextColor(245, 158, 11);
+      doc.text("PRIORITY 02: NARRATIVE AUTHORITY", directive2X + 3.5, directiveY + 6);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(6.8);
+      doc.setTextColor(226, 232, 240);
+      const directive2Text = "Align your executive presence and market visibility to match your true capability and command senior industry positioning.";
+      const splitDir2 = doc.splitTextToSize(directive2Text, directiveW - 7);
+      doc.text(splitDir2, directive2X + 3.5, directiveY + 12);
+
+      // ── Section 4: Trust Seal & Official Footer ──
+      const footerY = 270;
+      doc.setDrawColor(226, 232, 240);
+      doc.setLineWidth(0.3);
+      doc.line(margin, footerY, rightX, footerY);
+
+      // Trust Badges
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(7);
+      doc.setTextColor(26, 58, 92);
+      doc.text("[✓] EXECUTIVE CERTIFIED", margin, footerY + 6);
+      doc.text("[⚡] AI INTELLIGENCE AUDITED", margin + 58, footerY + 6);
+      doc.text("[★] PERFORMANCE VERIFIED", margin + 122, footerY + 6);
+
+      // Confidential Notice
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(6.2);
+      doc.setTextColor(100, 116, 139);
+      doc.text("STRICTLY CONFIDENTIAL  •  ISSUED BY PRATIBHA TIWARI STRATEGIC ADVISORY  •  ALL RIGHTS RESERVED", margin, footerY + 12);
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(6.2);
+      doc.setTextColor(184, 151, 74);
+      doc.text("PRATIBHATIWARI.COM", rightX, footerY + 12, { align: 'right' });
 
       const dateStr = new Date().toISOString().split('T')[0];
-      pdf.save(`Career_Performance_Report_${dateStr}.pdf`);
+      doc.save(`Pratibha_Tiwari_Executive_Performance_Report_${dateStr}.pdf`);
     } catch (err: any) {
       console.error('PDF Generation Error:', err);
       alert('Unable to generate PDF report: ' + (err?.message || 'Please try again.'));
@@ -492,6 +736,7 @@ export default function CareerAssessment() {
               className="py-4"
             >
               <PremiumAssessmentWizard
+                selectedPackage={selectedPackage}
                 onCancel={() => setIsPremiumWizardOpen(false)}
                 onSubmit={(formData) => {
                   setPremiumFormData(formData);
@@ -516,7 +761,10 @@ export default function CareerAssessment() {
                 level={level}
                 onDownload={downloadReport}
                 onRetake={handleStart}
-                onStartPremium={() => setIsPremiumWizardOpen(true)}
+                onStartPremium={(pkg) => {
+                  if (pkg) setSelectedPackage(pkg);
+                  setIsPremiumWizardOpen(true);
+                }}
                 onHome={() => {
                   safeLocalStorage.removeItem('career_assessment_step');
                   safeLocalStorage.removeItem('career_assessment_answers');
@@ -525,91 +773,6 @@ export default function CareerAssessment() {
                 }}
                 isGeneratingPdf={isGeneratingPdf}
               />
-
-              {/* Hidden Report for PDF Capture - Solid High-Contrast Styling for html2canvas */}
-              <div data-pdf-wrapper="true" className="absolute top-0 left-[-9999px] pointer-events-none opacity-100 z-[-100]">
-                <div ref={reportRef} className="p-10 bg-white w-[800px] font-sans text-[#0F172A] box-border rounded-[24px] border border-[#CBD5E1]">
-                  {/* Header */}
-                  <div className="flex justify-between items-center border-b-2 border-[#B8995B] pb-6 mb-8">
-                    <div>
-                      <h1 className="text-3xl font-serif mb-1 text-[#0F172A] font-bold tracking-tight">Pratibha Tiwari</h1>
-                      <p className="text-[#B8995B] font-mono tracking-[0.25em] uppercase text-[11px] font-black">Strategic Performance Report</p>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-5xl font-serif text-[#0F172A] font-bold leading-none">{percentage}%</div>
-                      <div className="text-[10px] font-mono text-[#64748B] uppercase tracking-widest font-bold mt-1">Global Index</div>
-                    </div>
-                  </div>
-
-                  {/* Main Grid: Profile Snapshot + Domain Scores */}
-                  <div className="grid grid-cols-2 gap-8 mb-8">
-                    {/* Profile Snapshot */}
-                    <div>
-                      <h2 className="text-lg font-serif border-l-4 border-[#0F172A] pl-3 text-[#0F172A] font-bold mb-4">Profile Snapshot</h2>
-                      <div className="space-y-3">
-                        <div className="bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0]">
-                          <div className="text-[10px] font-mono text-[#64748B] uppercase mb-1 font-bold">Classification</div>
-                          <div className="text-lg font-serif font-bold text-[#0F172A] leading-snug">{level.name}</div>
-                        </div>
-                        <div className="bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0]">
-                          <div className="text-[10px] font-mono text-[#64748B] uppercase mb-1 font-bold">Top Strength</div>
-                          <div className="text-lg font-serif font-bold text-[#0F172A] leading-snug">{topStrength.category}</div>
-                        </div>
-                        <div className="bg-[#F8FAFC] p-4 rounded-xl border border-[#E2E8F0]">
-                          <div className="text-[10px] font-mono text-[#64748B] uppercase mb-1 font-bold">Growth Opportunity</div>
-                          <div className="text-lg font-serif font-bold text-[#E11D48] leading-snug">{mainGrowthArea.category}</div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Domain Scores */}
-                    <div>
-                      <h2 className="text-lg font-serif border-l-4 border-[#0F172A] pl-3 text-[#0F172A] font-bold mb-4">Domain Scores</h2>
-                      <div className="space-y-2.5 pt-1">
-                        {aggregatedAnswers.map((ans, i) => (
-                          <div key={i} className="flex items-center justify-between py-2 border-b border-[#E2E8F0]">
-                            <span className="text-xs font-semibold text-[#1E293B] truncate max-w-[210px]">{ans.category}</span>
-                            <div className="flex items-center space-x-3 shrink-0">
-                              <div className="w-24 h-2 bg-[#E2E8F0] rounded-full overflow-hidden">
-                                <div className="h-full bg-[#0F172A]" style={{ width: `${(ans.points / 50) * 100}%` }} />
-                              </div>
-                              <span className="text-[11px] font-mono font-bold text-[#475569] w-8 text-right">{ans.points}/50</span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Strategic Observation Box — Solid High Contrast */}
-                  <div className="bg-[#0F172A] p-7 rounded-2xl text-white mb-8 shadow-md">
-                    <h2 className="text-xl font-serif mb-2 italic text-[#F1F5F9] font-normal">Pratibha's Strategic Observation</h2>
-                    <p className="text-sm leading-relaxed text-[#F8FAFC] italic mb-5 font-normal">
-                      {`"To transition from ${level.name} to the next tier of executive influence, you must optimize your ${mainGrowthArea.category.toLowerCase()} architecture. High-impact leaders differ from high-performing managers not by effort, but by the precision of their influence."`}
-                    </p>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-[#1E293B] p-4 rounded-xl border border-[#334155]">
-                        <h4 className="font-bold text-[#F59E0B] mb-1 text-xs flex items-center"><Target size={14} className="mr-1.5 shrink-0" /> Priority 1</h4>
-                        <p className="text-xs text-[#F8FAFC] leading-normal font-normal">Automate at least 20% of your cognitive load using AI-driven agents or frameworks to free space for strategic execution.</p>
-                      </div>
-                      <div className="bg-[#1E293B] p-4 rounded-xl border border-[#334155]">
-                        <h4 className="font-bold text-[#F59E0B] mb-1 text-xs flex items-center"><Zap size={14} className="mr-1.5 shrink-0" /> Priority 2</h4>
-                        <p className="text-xs text-[#F8FAFC] leading-normal font-normal">Establish a continuous feedback mechanism to refine and measure your leadership brand footprint.</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Footer */}
-                  <div className="text-center border-t border-[#E2E8F0] pt-5">
-                    <p className="text-[#64748B] text-[10px] font-mono tracking-widest mb-3 uppercase font-bold">Private & Confidential Performance Data</p>
-                    <div className="flex justify-center space-x-10 text-[#0F172A]">
-                      <div className="flex items-center text-[11px] font-bold uppercase"><Award size={14} className="mr-1.5 text-[#B8995B]" /> Executive Certified</div>
-                      <div className="flex items-center text-[11px] font-bold uppercase"><CheckCircle2 size={14} className="mr-1.5 text-[#B8995B]" /> AI Integrated</div>
-                      <div className="flex items-center text-[11px] font-bold uppercase"><TrendingUp size={14} className="mr-1.5 text-[#B8995B]" /> Performance Audited</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </motion.div>
           )}
 
@@ -620,9 +783,14 @@ export default function CareerAssessment() {
       <DemoPaymentModal
         isOpen={isDemoPaymentOpen}
         onClose={() => setIsDemoPaymentOpen(false)}
+        formData={premiumFormData}
+        amount={selectedPackage?.price}
         userName={premiumFormData?.fullName}
         userEmail={premiumFormData?.email}
-        onPaymentSuccess={() => {
+        onPaymentSuccess={(finalData) => {
+          if (finalData) {
+            setPremiumFormData(finalData);
+          }
           setIsDemoPaymentOpen(false);
           setIsConfirmationOpen(true);
         }}

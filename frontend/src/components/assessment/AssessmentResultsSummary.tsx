@@ -151,7 +151,7 @@ interface ResultsProps {
   onDownload: () => void;
   onRetake: () => void;
   onHome: () => void;
-  onStartPremium?: () => void;
+  onStartPremium?: (pkg?: { id: 'report' | 'platinum'; price: string; title: string; priceNum: number }) => void;
   isGeneratingPdf: boolean;
 }
 
@@ -163,26 +163,6 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   "Career Confidence & Growth": <TrendingUp className="w-5 h-5" />,
 };
 
-function HeartPulse({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-      <path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27" />
-    </svg>
-  );
-}
-
 export default function AssessmentResultsSummary({
   answers,
   percentage,
@@ -193,6 +173,7 @@ export default function AssessmentResultsSummary({
   onStartPremium,
   isGeneratingPdf
 }: ResultsProps) {
+  const [selectedPkg, setSelectedPkg] = React.useState<'report' | 'platinum'>('report');
 
   // Sort categories by score to find strengths and growth areas
   const sortedAnswers = [...answers].sort((a, b) => b.points - a.points);
@@ -213,6 +194,25 @@ export default function AssessmentResultsSummary({
         return "Define a clear, future-ready roadmap. Break down your career direction into actionable steps and embrace continuous reinvention to overcome uncertainty.";
       default:
         return "Refine your narrative leadership to bridge the gap between current output and perceived strategic value.";
+    }
+  };
+
+  const handleStartSelectedPkg = (pkgId: 'report' | 'platinum') => {
+    if (!onStartPremium) return;
+    if (pkgId === 'report') {
+      onStartPremium({
+        id: 'report',
+        title: 'Premium AI Career Intelligence Report',
+        price: '$68.00',
+        priceNum: 68
+      });
+    } else {
+      onStartPremium({
+        id: 'platinum',
+        title: 'Platinum Package: Premium Report + 45-Min Live Coaching (ICF-PCC)',
+        price: '$98.00',
+        priceNum: 98
+      });
     }
   };
 
@@ -260,54 +260,169 @@ export default function AssessmentResultsSummary({
         </div>
       </div>
 
-      {/* PREMIUM ASSESSMENT UPGRADE CARD */}
+      {/* PREMIUM ASSESSMENT UPGRADE SECTION - 2 OPTIONS ($68 & $98) */}
       {onStartPremium && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="relative bg-gradient-to-br from-slate-900 via-primary to-slate-950 rounded-3xl sm:rounded-[44px] p-6 sm:p-12 text-white border-2 border-gold/40 shadow-2xl overflow-hidden"
         >
-          <div className="absolute top-0 right-0 w-80 h-80 bg-gold/15 rounded-full blur-3xl pointer-events-none" />
-          <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
-            <div className="space-y-4 max-w-2xl">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-gold/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="relative z-10 space-y-8">
+            <div className="text-center max-w-2xl mx-auto space-y-3">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-gold/20 text-gold rounded-full text-xs font-mono font-bold uppercase tracking-widest border border-gold/30">
-                <Sparkles size={14} /> AI Career Intelligence Blueprint — Paid
+                <Sparkles size={14} /> Executive Upgrade Options
               </div>
               <h3 className="text-2xl sm:text-4xl font-serif leading-tight">
-                Unlock Your Bespoke <span className="italic text-gold">AI Career Intelligence Report</span>
+                Accelerate Your Trajectory with <span className="italic text-gold">AI Career Intelligence</span>
               </h3>
               <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">
-                Take our Premium Strategic Discovery Questionnaire (12–15 mins). Upload your latest resume, outline your career direction, and receive an exhaustive custom blueprint prepared by AI and reviewed by human career strategists.
+                Complete our comprehensive discovery questionnaire (upload your resume and career vision). You will receive an exhaustive, world-class strategy report delivered straight to your WhatsApp and email.
               </p>
+            </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-                <div className="flex items-center gap-2 text-xs text-slate-200">
-                  <Clock size={16} className="text-gold" /> 12–15 Min Questionnaire
+            {/* Two Packages Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Option 1: $68 Premium Report */}
+              <div
+                onClick={() => setSelectedPkg('report')}
+                className={`relative bg-white/5 backdrop-blur-md rounded-2xl sm:rounded-3xl p-6 sm:p-8 border-2 transition-all cursor-pointer flex flex-col justify-between ${
+                  selectedPkg === 'report'
+                    ? 'border-gold shadow-xl shadow-gold/10 bg-white/10 scale-[1.01]'
+                    : 'border-white/10 hover:border-white/30'
+                }`}
+              >
+                <div>
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <span className="text-[10px] font-mono text-gold uppercase tracking-widest font-bold">Standard Blueprint</span>
+                      <h4 className="text-xl sm:text-2xl font-serif font-bold text-white mt-1">
+                        Premium Report Only
+                      </h4>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-3xl sm:text-4xl font-serif text-gold font-bold">$68</div>
+                      <div className="text-[10px] font-mono text-slate-400">One-time Investment</div>
+                    </div>
+                  </div>
+
+                  <p className="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
+                    Bespoke AI Career Intelligence Report crafted from your discovery questionnaire, resume audit, and market position analysis.
+                  </p>
+
+                  <ul className="space-y-3 text-xs text-slate-200 mb-6">
+                    <li className="flex items-center gap-2.5">
+                      <CheckCircle2 size={16} className="text-gold shrink-0" />
+                      <span>Exhaustive AI Career Intelligence Report (PDF)</span>
+                    </li>
+                    <li className="flex items-center gap-2.5">
+                      <CheckCircle2 size={16} className="text-gold shrink-0" />
+                      <span>Deep Resume & Positioning Gap Audit</span>
+                    </li>
+                    <li className="flex items-center gap-2.5">
+                      <CheckCircle2 size={16} className="text-gold shrink-0" />
+                      <span>Reviewed & Calibrated by Human Strategists</span>
+                    </li>
+                    <li className="flex items-center gap-2.5">
+                      <CheckCircle2 size={16} className="text-gold shrink-0" />
+                      <span>Direct WhatsApp & Email PDF Delivery</span>
+                    </li>
+                  </ul>
                 </div>
-                <div className="flex items-center gap-2 text-xs text-slate-200">
-                  <FileText size={16} className="text-gold" /> Deep Resume & Positioning Audit
+
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleStartSelectedPkg('report');
+                  }}
+                  className={`w-full py-4 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95 ${
+                    selectedPkg === 'report'
+                      ? 'bg-gradient-to-r from-gold via-amber-400 to-gold text-slate-950 shadow-lg shadow-gold/20'
+                      : 'bg-white/10 hover:bg-white/20 text-white'
+                  }`}
+                >
+                  Start $68 Questionnaire <ArrowRight size={16} />
+                </button>
+              </div>
+
+              {/* Option 2: $98 Platinum Package */}
+              <div
+                onClick={() => setSelectedPkg('platinum')}
+                className={`relative bg-gradient-to-b from-white/10 to-white/5 backdrop-blur-md rounded-2xl sm:rounded-3xl p-6 sm:p-8 border-2 transition-all cursor-pointer flex flex-col justify-between ${
+                  selectedPkg === 'platinum'
+                    ? 'border-gold shadow-2xl shadow-gold/20 bg-white/15 scale-[1.01]'
+                    : 'border-white/10 hover:border-gold/50'
+                }`}
+              >
+                <div className="absolute -top-3.5 right-6 bg-gradient-to-r from-gold to-amber-300 text-slate-950 px-3.5 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider shadow-md">
+                  Most Popular • Platinum
                 </div>
-                <div className="flex items-center gap-2 text-xs text-slate-200">
-                  <ShieldCheck size={16} className="text-gold" /> Reviewed by Human Strategist
+
+                <div>
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <span className="text-[10px] font-mono text-gold uppercase tracking-widest font-bold">Platinum Advisory</span>
+                      <h4 className="text-xl sm:text-2xl font-serif font-bold text-white mt-1">
+                        Report + Live Coaching
+                      </h4>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-3xl sm:text-4xl font-serif text-gold font-bold">$98</div>
+                      <div className="text-[10px] font-mono text-slate-400">Total Value $350+</div>
+                    </div>
+                  </div>
+
+                  <p className="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
+                    Full AI Intelligence Report PLUS a <strong>Live 45-Minute 1-on-1 Strategy & Coaching Session</strong> with ICF-PCC Coach Pratibha Tiwari.
+                  </p>
+
+                  <ul className="space-y-3 text-xs text-slate-200 mb-6">
+                    <li className="flex items-center gap-2.5">
+                      <CheckCircle2 size={16} className="text-gold shrink-0" />
+                      <span><strong>Everything in the $68 Premium Report</strong></span>
+                    </li>
+                    <li className="flex items-center gap-2.5">
+                      <CheckCircle2 size={16} className="text-gold shrink-0" />
+                      <span><strong>Live 45-Min 1-on-1 Coaching with Pratibha Tiwari (ICF-PCC)</strong></span>
+                    </li>
+                    <li className="flex items-center gap-2.5">
+                      <CheckCircle2 size={16} className="text-gold shrink-0" />
+                      <span>Personalized Executive Influence & Growth Roadmapping</span>
+                    </li>
+                    <li className="flex items-center gap-2.5">
+                      <CheckCircle2 size={16} className="text-gold shrink-0" />
+                      <span>Direct WhatsApp Calendar Booking & VIP Delivery</span>
+                    </li>
+                  </ul>
                 </div>
+
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleStartSelectedPkg('platinum');
+                  }}
+                  className={`w-full py-4 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95 ${
+                    selectedPkg === 'platinum'
+                      ? 'bg-gradient-to-r from-gold via-amber-400 to-gold text-slate-950 shadow-xl shadow-gold/25 font-bold'
+                      : 'bg-white/10 hover:bg-gold hover:text-slate-950 text-white'
+                  }`}
+                >
+                  Start $98 Platinum Questionnaire <ArrowRight size={16} />
+                </button>
               </div>
             </div>
 
-            <div className="w-full lg:w-auto shrink-0 flex flex-col items-center lg:items-end gap-3 border-t lg:border-t-0 lg:border-l border-white/10 pt-6 lg:pt-0 lg:pl-8">
-              <div className="text-center lg:text-right">
-                <div className="text-[10px] font-mono text-slate-400 uppercase tracking-widest">Premium Package</div>
-                <div className="text-3xl sm:text-4xl font-serif text-gold font-bold">$99.00 <span className="text-xs font-sans text-slate-400 font-normal">(Demo Gateway)</span></div>
+            <div className="flex flex-wrap items-center justify-center gap-6 text-[11px] font-mono text-slate-400 pt-2 border-t border-white/10">
+              <div className="flex items-center gap-1.5">
+                <Clock size={14} className="text-gold" /> Step 1: Take Questionnaire
               </div>
-
-              <button
-                onClick={onStartPremium}
-                className="w-full sm:w-auto bg-gradient-to-r from-gold via-amber-400 to-gold text-slate-950 font-bold px-8 py-4 sm:px-10 sm:py-5 rounded-full text-sm sm:text-base flex items-center justify-center gap-3 hover:scale-105 transition-all shadow-xl shadow-gold/20 active:scale-95 cursor-pointer"
-              >
-                Start Premium Assessment <ArrowRight size={18} />
-              </button>
-
-              <div className="text-[11px] font-mono text-slate-400">
-                Payment after questionnaire completion
+              <div className="flex items-center gap-1.5">
+                <Sparkles size={14} className="text-gold" /> Step 2: Scan QR & Upload Screenshot/UTR
+              </div>
+              <div className="flex items-center gap-1.5">
+                <ShieldCheck size={14} className="text-gold" /> Step 3: Direct WhatsApp Delivery
               </div>
             </div>
           </div>

@@ -22,6 +22,12 @@ import { safeLocalStorage } from '../../lib/storage-helper';
 interface PremiumAssessmentWizardProps {
   onCancel: () => void;
   onSubmit: (formData: any) => void;
+  selectedPackage?: {
+    id: 'report' | 'platinum';
+    title: string;
+    price: string;
+    priceNum: number;
+  };
 }
 
 const FOCUS_AREA_OPTIONS = [
@@ -54,13 +60,14 @@ const FEEDBACK_OPTIONS = [
   'Be completely honest'
 ];
 
-export default function PremiumAssessmentWizard({ onCancel, onSubmit }: PremiumAssessmentWizardProps) {
+export default function PremiumAssessmentWizard({ onCancel, onSubmit, selectedPackage }: PremiumAssessmentWizardProps) {
   const [currentSection, setCurrentSection] = useState<number>(1);
   const [errorMsg, setErrorMsg] = useState<string>('');
 
   // Form State
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
+  const [whatsapp, setWhatsapp] = useState('');
   const [cityCountry, setCityCountry] = useState('');
   const [linkedInUrl, setLinkedInUrl] = useState('');
   const [resumeFile, setResumeFile] = useState<File | null>(null);
@@ -100,6 +107,7 @@ export default function PremiumAssessmentWizard({ onCancel, onSubmit }: PremiumA
         const parsed = JSON.parse(saved);
         if (parsed.fullName) setFullName(parsed.fullName);
         if (parsed.email) setEmail(parsed.email);
+        if (parsed.whatsapp) setWhatsapp(parsed.whatsapp);
         if (parsed.cityCountry) setCityCountry(parsed.cityCountry);
         if (parsed.linkedInUrl) setLinkedInUrl(parsed.linkedInUrl);
         if (parsed.resumeFileName) setResumeFileName(parsed.resumeFileName);
@@ -204,6 +212,10 @@ export default function PremiumAssessmentWizard({ onCancel, onSubmit }: PremiumA
         setErrorMsg('Please enter a valid email address.');
         return false;
       }
+      if (!whatsapp.trim()) {
+        setErrorMsg('Please enter your WhatsApp number (required for direct PDF report delivery).');
+        return false;
+      }
       if (!cityCountry.trim()) {
         setErrorMsg('Please enter your current city & country.');
         return false;
@@ -269,6 +281,7 @@ export default function PremiumAssessmentWizard({ onCancel, onSubmit }: PremiumA
         onSubmit({
           fullName,
           email,
+          whatsapp,
           cityCountry,
           linkedInUrl,
           resumeFileName,
@@ -287,7 +300,10 @@ export default function PremiumAssessmentWizard({ onCancel, onSubmit }: PremiumA
           focusAreas,
           weeklyTime,
           oneCareerQuestion,
-          feedbackPreference
+          feedbackPreference,
+          packageId: selectedPackage?.id || 'report',
+          packagePrice: selectedPackage?.price || '$68.00',
+          packageTitle: selectedPackage?.title || 'Premium AI Career Intelligence Report'
         });
       }
     }
@@ -417,18 +433,31 @@ export default function PremiumAssessmentWizard({ onCancel, onSubmit }: PremiumA
 
                 <div>
                   <label className="block text-xs font-semibold text-primary mb-1.5 flex items-center gap-1.5">
+                    <span className="text-gold font-mono font-bold text-xs">WA</span> WhatsApp Number (for Report Delivery) *
+                  </label>
+                  <input
+                    type="tel"
+                    value={whatsapp}
+                    onChange={(e) => setWhatsapp(e.target.value)}
+                    placeholder="e.g. +91 98765 43210 or +1 555 123 4567"
+                    className="w-full p-3.5 rounded-2xl border border-gray-200 focus:border-gold focus:outline-none text-sm bg-white font-mono"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-primary mb-1.5 flex items-center gap-1.5">
                     <MapPin size={14} className="text-gold" /> Current City & Country *
                   </label>
                   <input
                     type="text"
                     value={cityCountry}
                     onChange={(e) => setCityCountry(e.target.value)}
-                    placeholder="e.g. London, UK"
+                    placeholder="e.g. London, UK / Mumbai, India"
                     className="w-full p-3.5 rounded-2xl border border-gray-200 focus:border-gold focus:outline-none text-sm bg-white"
                   />
                 </div>
 
-                <div>
+                <div className="sm:col-span-2">
                   <label className="block text-xs font-semibold text-primary mb-1.5 flex items-center gap-1.5">
                     <Linkedin size={14} className="text-gold" /> LinkedIn Profile URL
                   </label>
@@ -436,7 +465,7 @@ export default function PremiumAssessmentWizard({ onCancel, onSubmit }: PremiumA
                     type="url"
                     value={linkedInUrl}
                     onChange={(e) => setLinkedInUrl(e.target.value)}
-                    placeholder="https://linkedin.in/in/username"
+                    placeholder="https://linkedin.com/in/username"
                     className="w-full p-3.5 rounded-2xl border border-gray-200 focus:border-gold focus:outline-none text-sm bg-white"
                   />
                 </div>
