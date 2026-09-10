@@ -39,12 +39,7 @@ export const assessmentConfig: AssessmentSection[] = [
     type: "rating",
     questions: [
       "I believe my current profession will remain relevant in the next 5 years*",
-      "I clearly understand how AI is impacting my industry*",
-      "I regularly upgrade my professional skills*",
-      "I feel confident adapting to workplace changes and uncertainty*",
-      "I have a clear direction for my career growth*",
-      "My current skills are aligned with future market demands*",
-      "I understand which skills may become obsolete in my profession*"
+      "My current skills are aligned with future market demands*"
     ]
   },
   {
@@ -52,13 +47,8 @@ export const assessmentConfig: AssessmentSection[] = [
     description: "(All rated 1–5, Strongly Disagree → Strongly Agree)",
     type: "rating",
     questions: [
-      "I actively learn new technologies or tools relevant to my work*",
       "I use AI tools such as ChatGPT or automation tools in my work or learning*",
-      "I understand how AI can improve my productivity and efficiency*",
-      "I feel comfortable learning and using new digital tools*",
-      "I understand the difference between human skills and AI-driven tasks*",
-      "I believe AI can enhance my professional growth if used correctly*",
-      "I know which AI-related skills are valuable for my profession*"
+      "I understand how AI can improve my productivity and efficiency*"
     ]
   },
   {
@@ -67,23 +57,15 @@ export const assessmentConfig: AssessmentSection[] = [
     type: "rating",
     questions: [
       "My LinkedIn profile professionally represents my expertise and strengths*",
-      "I actively build and maintain my professional network*",
-      "I know how to position myself professionally in a competitive market*",
-      "I communicate my strengths and achievements confidently*",
-      "I am professionally visible enough to attract opportunities*",
-      "My resume/CV reflects my real value, strengths, and achievements*"
+      "I know how to position myself professionally in a competitive market*"
     ]
   },
   {
     category: "Human Skills & Leadership",
-    description: "(All rated on 5-point labeled scale: Strongly Disagree / Disagree / Neutral / Agree / Strongly Agree)",
+    description: "(All rated 1–5, Strongly Disagree → Strongly Agree)",
     type: "rating",
     questions: [
-      "My communication skills are one of my professional strengths*",
-      "I can confidently present ideas and express myself professionally*",
-      "I handle workplace pressure and uncertainty effectively*",
       "I have strong problem-solving and critical-thinking abilities*",
-      "I build trust and relationships effectively with others*",
       "I believe human skills will become more valuable in the AI era*"
     ]
   },
@@ -93,9 +75,7 @@ export const assessmentConfig: AssessmentSection[] = [
     type: "rating",
     questions: [
       "I feel professionally confident about my future*",
-      "I often feel stuck or uncertain about my next career step*",
-      "I know what actions I should take to stay future-ready professionally*",
-      "I am willing to continuously reinvent and evolve professionally*"
+      "I know what actions I should take to stay future-ready professionally*"
     ]
   },
   {
@@ -128,7 +108,6 @@ export const assessmentConfig: AssessmentSection[] = [
     options: ["Yes", "Maybe-Not sure", "No"],
     questions: [
       "Would you like a personalized roadmap to become more future-ready professionally?*",
-      "Would you be interested in joining a professional growth community focused on career sustainability in the AI era?*",
       "Would you like to receive invitations to future workshops, networking events, and AI career growth programs?*"
     ]
   }
@@ -490,7 +469,7 @@ export default function AssessmentResultsSummary({
       <div className="bg-white rounded-2xl sm:rounded-[40px] p-5 sm:p-10 border border-gray-100 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 sm:mb-10">
           <h3 className="text-xl sm:text-2xl font-serif text-primary">Domain Score Audit</h3>
-          <div className="text-[10px] sm:text-xs font-mono text-mist uppercase tracking-widest font-black">10 Performance Pillars</div>
+          <div className="text-[10px] sm:text-xs font-mono text-mist uppercase tracking-widest font-black">5 Core Strategic Pillars</div>
         </div>
         <div className="grid gap-4 sm:gap-6">
           {answers.map((ans, i) => (
