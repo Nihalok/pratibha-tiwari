@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "npx vite build frontend",
+  "buildCommand": "npx vite build --config frontend/vite.config.ts frontend",
   "outputDirectory": "frontend/dist",
   "functions": {
     "api/index.ts": {

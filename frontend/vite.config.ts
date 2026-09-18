@@ -79,10 +79,11 @@ export default defineConfig({
           motion: ['motion/react'],
           icons: ['lucide-react'],
           swiper: ['swiper'],
+          pdf: ['jspdf'],
         },
       },
     },
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 1600,
   },
   server: {
     // HMR is disabled in AI Studio via DISABLE_HMR env var.
