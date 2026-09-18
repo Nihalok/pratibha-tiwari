@@ -8,71 +8,80 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   ArrowRight,
   Sparkles,
-  Target,
-  Zap,
-  TrendingUp,
-  Award,
-  CheckCircle2,
-  ArrowLeft
+  ArrowLeft,
+  CheckSquare,
+  Square,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { jsPDF } from 'jspdf';
 import { safeLocalStorage } from '../lib/storage-helper';
-import AssessmentResultsSummary, { assessmentConfig } from '../components/assessment/AssessmentResultsSummary';
+import AssessmentResultsSummary, {
+  assessmentConfig,
+  getResultZone,
+  MAX_RAW_SCORE,
+  CATEGORY_MAX,
+  RATING_CATEGORIES,
+} from '../components/assessment/AssessmentResultsSummary';
 import PremiumAssessmentWizard from '../components/assessment/PremiumAssessmentWizard';
-import DemoPaymentModal from '../components/assessment/DemoPaymentModal';
 import PremiumConfirmationModal from '../components/assessment/PremiumConfirmationModal';
 import assessmentBg from '../assets/images/pratibha-tiwari-career-assessment.jpg';
 
 // ─── Flatten ALL questions from all sections ───────────────────────────────
 interface FlatQuestion {
   category: string;
+  sectionTitle: string;
+  sectionNumber: number;
   text: string;
-  type: 'rating' | 'open-text' | 'single-choice';
+  type: 'rating' | 'open-text' | 'single-choice' | 'short-answer' | 'multi-checkbox';
   options?: string[];
   sectionDescription?: string;
+  reverseScore?: boolean;
+  /** Global question index (1-based) for display */
+  displayIndex: number;
 }
 
-const ALL_QUESTIONS: FlatQuestion[] = assessmentConfig.flatMap(section =>
-  section.questions.map(q => ({
-    category: section.category,
-    text: q,
-    type: section.type,
-    options: section.options,
-    sectionDescription: section.description,
-  }))
-);
+const ALL_QUESTIONS: FlatQuestion[] = (() => {
+  let idx = 0;
+  return assessmentConfig.flatMap(section =>
+    section.questions.map(q => {
+      idx++;
+      return {
+        category: section.category,
+        sectionTitle: section.sectionTitle,
+        sectionNumber: section.sectionNumber,
+        text: q.text,
+        type: section.type,
+        options: section.options,
+        sectionDescription: section.description,
+        reverseScore: q.reverseScore,
+        displayIndex: idx,
+      };
+    })
+  );
+})();
 
-// Only rating questions count toward the numeric score
-const RATING_QUESTIONS = ALL_QUESTIONS.filter(q => q.type === 'rating');
+const TOTAL_QUESTIONS = ALL_QUESTIONS.length; // 42
 
 // ─── Answer shape ──────────────────────────────────────────────────────────
 interface Answer {
   category: string;
   text: string;
-  type: 'rating' | 'open-text' | 'single-choice';
-  points: number;       // 0 for non-rating
-  value: string | number; // raw value
+  type: 'rating' | 'open-text' | 'single-choice' | 'short-answer' | 'multi-checkbox';
+  /** Raw 1–5 points for rating (after reverse), 0 for others */
+  points: number;
+  value: string | number | string[];
 }
 
 export default function CareerAssessment() {
   const navigate = useNavigate();
 
-  const [step, setStep] = useState<number>(() => {
-    const saved = safeLocalStorage.getItem('career_assessment_step');
-    return saved ? parseInt(saved, 10) : -1;
-  });
+  // Always start at splash — never resume a stale in-progress session.
+  // This prevents old-format localStorage data from inflating scores.
+  const [step, setStep] = useState<number>(-1);
+  const [answers, setAnswers] = useState<Answer[]>([]);
+  const [isFinished, setIsFinished] = useState<boolean>(false);
 
-  const [answers, setAnswers] = useState<Answer[]>(() => {
-    const saved = safeLocalStorage.getItem('career_assessment_answers');
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  const [isFinished, setIsFinished] = useState<boolean>(() => {
-    return safeLocalStorage.getItem('career_assessment_finished') === 'true';
-  });
-
-  // Premium Assessment States
+  // Premium states
   const [selectedPackage, setSelectedPackage] = useState<{
     id: 'report' | 'platinum';
     title: string;
@@ -82,448 +91,516 @@ export default function CareerAssessment() {
     id: 'report',
     title: 'Premium AI Career Intelligence Report',
     price: '$68.00',
-    priceNum: 68
+    priceNum: 68,
   });
   const [isPremiumWizardOpen, setIsPremiumWizardOpen] = useState<boolean>(false);
   const [isDemoPaymentOpen, setIsDemoPaymentOpen] = useState<boolean>(false);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState<boolean>(false);
   const [premiumFormData, setPremiumFormData] = useState<any>(null);
 
-  // For open-text: hold the draft value while the user types
-  const [openTextDraft, setOpenTextDraft] = useState('');
+  // Drafts for text-based questions
+  const [textDraft, setTextDraft] = useState('');
+  // Draft for multi-checkbox
+  const [checkboxDraft, setCheckboxDraft] = useState<string[]>([]);
   const [bgLoaded, setBgLoaded] = useState(false);
-
-  useEffect(() => {
-    safeLocalStorage.setItem('career_assessment_step', step.toString());
-    safeLocalStorage.setItem('career_assessment_answers', JSON.stringify(answers));
-    safeLocalStorage.setItem('career_assessment_finished', isFinished.toString());
-  }, [step, answers, isFinished]);
-
-  // Reset draft whenever step changes
-  useEffect(() => {
-    if (step >= 0 && step < ALL_QUESTIONS.length) {
-      const existing = answers[step];
-      setOpenTextDraft(existing && ALL_QUESTIONS[step].type === 'open-text'
-        ? String(existing.value)
-        : '');
-    }
-  }, [step]);
 
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
-  // ── Score calculation (only rating questions) ──────────────────────────
-  const ratingAnswers = answers.filter(a => a.type === 'rating');
-  const totalPossiblePoints = RATING_QUESTIONS.length * 50; // max 5 * 10 = 50 per question
-  const currentTotalPoints = ratingAnswers.reduce((sum, ans) => sum + ans.points, 0);
-  const percentage = totalPossiblePoints > 0
-    ? Math.round((currentTotalPoints / totalPossiblePoints) * 100)
-    : 0;
+  // Clear any stale localStorage data on mount (old format used points up to 50).
+  useEffect(() => {
+    safeLocalStorage.removeItem('career_assessment_step');
+    safeLocalStorage.removeItem('career_assessment_answers');
+    safeLocalStorage.removeItem('career_assessment_finished');
+  }, []);
 
-  const getLevel = () => {
-    if (percentage < 40) return { name: 'Emerging Professional', color: 'text-rose-500', bg: 'bg-rose-50' };
-    if (percentage < 70) return { name: 'Strategic Manager', color: 'text-amber-500', bg: 'bg-amber-50' };
-    if (percentage < 90) return { name: 'Influential Leader', color: 'text-blue-500', bg: 'bg-blue-50' };
-    return { name: 'Visionary Executive', color: 'text-gold', bg: 'bg-gold/10' };
+  // Reset drafts when step changes
+  useEffect(() => {
+    if (step >= 0 && step < TOTAL_QUESTIONS) {
+      const q = ALL_QUESTIONS[step];
+      const existing = answers[step];
+      if (q.type === 'short-answer' || q.type === 'open-text') {
+        setTextDraft(existing ? String(existing.value) : '');
+      } else if (q.type === 'multi-checkbox') {
+        setCheckboxDraft(existing ? (existing.value as string[]) : []);
+      }
+    }
+  }, [step]);
+
+  // ── Score calculation ─────────────────────────────────────────────────────
+  const rawScore = answers.reduce((sum, a) => sum + a.points, 0);
+  const percentage = Math.round((rawScore / MAX_RAW_SCORE) * 100);
+
+  const zone = getResultZone(rawScore);
+
+  // Legacy "level" shape for PDF compatibility
+  const level = {
+    name: zone.name,
+    color: zone.color,
+    bg: zone.bg,
   };
 
-  // ── Navigation helpers ─────────────────────────────────────────────────
+  // ── Aggregate rating answers per category for results display ─────────────
+  const getAggregatedAnswers = () => {
+    const groups: Record<string, number> = {};
+    answers.filter(a => a.type === 'rating').forEach(ans => {
+      if (!groups[ans.category]) groups[ans.category] = 0;
+      groups[ans.category] += ans.points;
+    });
+
+    return RATING_CATEGORIES.map(cat => ({
+      category: cat,
+      points: groups[cat] ?? 0,
+      text: cat,
+    }));
+  };
+
+  const aggregatedAnswers = getAggregatedAnswers();
+  const sortedAgg = [...aggregatedAnswers].sort((a, b) => b.points - a.points);
+  const topStrength = sortedAgg[0] || { category: 'AI Readiness', points: 0 };
+  const mainGrowthArea = sortedAgg[sortedAgg.length - 1] || { category: 'Career Confidence & Growth', points: 0 };
+
+  // ── Navigation helpers ─────────────────────────────────────────────────────
   const handleStart = () => {
+    safeLocalStorage.removeItem('premium_career_assessment_draft');
     setStep(0);
     setAnswers([]);
     setIsFinished(false);
-    setOpenTextDraft('');
+    setTextDraft('');
+    setCheckboxDraft([]);
   };
 
   const pushAnswer = (ans: Answer) => {
     const newAnswers = [...answers.slice(0, step), ans];
     setAnswers(newAnswers);
-    if (step < ALL_QUESTIONS.length - 1) {
+    if (step < TOTAL_QUESTIONS - 1) {
       setStep(step + 1);
     } else {
       setIsFinished(true);
     }
   };
 
-  // Rating: immediate selection advances
+  // Rating: 1–5, reverse if flagged
   const handleRating = (rating: number) => {
     const q = ALL_QUESTIONS[step];
-    pushAnswer({ category: q.category, text: q.text, type: 'rating', points: rating * 10, value: rating });
+    const pts = q.reverseScore ? 6 - rating : rating;
+    pushAnswer({ category: q.category, text: q.text, type: 'rating', points: pts, value: rating });
   };
 
-  // Single-choice: immediate selection advances
+  // Single-choice: immediate advance
   const handleSingleChoice = (option: string) => {
     const q = ALL_QUESTIONS[step];
     pushAnswer({ category: q.category, text: q.text, type: 'single-choice', points: 0, value: option });
   };
 
-  // Open-text: user types, then clicks Next
-  const handleOpenTextNext = () => {
-    if (!openTextDraft.trim()) return;
+  // Short-answer: Next button
+  const handleShortAnswerNext = () => {
+    if (!textDraft.trim()) return;
     const q = ALL_QUESTIONS[step];
-    pushAnswer({ category: q.category, text: q.text, type: 'open-text', points: 0, value: openTextDraft.trim() });
+    pushAnswer({ category: q.category, text: q.text, type: 'short-answer', points: 0, value: textDraft.trim() });
+    setTextDraft('');
+  };
+
+  // Open-text: Next button
+  const handleOpenTextNext = () => {
+    if (!textDraft.trim()) return;
+    const q = ALL_QUESTIONS[step];
+    pushAnswer({ category: q.category, text: q.text, type: 'open-text', points: 0, value: textDraft.trim() });
+    setTextDraft('');
+  };
+
+  // Multi-checkbox: Next button
+  const handleCheckboxNext = () => {
+    if (checkboxDraft.length === 0) return;
+    const q = ALL_QUESTIONS[step];
+    pushAnswer({ category: q.category, text: q.text, type: 'multi-checkbox', points: 0, value: checkboxDraft });
+    setCheckboxDraft([]);
+  };
+
+  const toggleCheckbox = (option: string) => {
+    setCheckboxDraft(prev =>
+      prev.includes(option) ? prev.filter(o => o !== option) : [...prev, option]
+    );
   };
 
   const handleBack = () => {
     if (step > 0) {
       setStep(step - 1);
-      setAnswers(prev => prev.slice(0, step - 1 + 1));
+      setAnswers(prev => prev.slice(0, step));
     } else if (step === 0) {
       setStep(-1);
       setAnswers([]);
     }
   };
 
-  // ── Aggregate rating answers per category for results ─────────────────
-  const getAggregatedAnswers = () => {
-    const groups: Record<string, { sum: number; count: number }> = {};
-    answers.filter(a => a.type === 'rating').forEach(ans => {
-      if (!groups[ans.category]) groups[ans.category] = { sum: 0, count: 0 };
-      groups[ans.category].sum += ans.points;
-      groups[ans.category].count += 1;
-    });
+  const currentQ = step >= 0 && step < TOTAL_QUESTIONS ? ALL_QUESTIONS[step] : null;
+  const progress = step >= 0 ? Math.round(((step + 1) / TOTAL_QUESTIONS) * 100) : 0;
 
-    const ratingCategories = [
-      'Career Stability & Future Readiness',
-      'AI Readiness',
-      'Professional Visibility & Positioning',
-      'Human Skills & Leadership',
-      'Career Confidence & Growth',
-    ];
-
-    return ratingCategories.map(cat => {
-      const g = groups[cat] || { sum: 0, count: 1 };
-      const points = g.count > 0 ? Math.round(g.sum / g.count) : 0;
-      return { category: cat, points, text: cat };
-    });
+  // ── Single-choice button styles ────────────────────────────────────────────
+  const getChoiceStyle = (option: string) => {
+    const lower = option.toLowerCase();
+    if (lower === 'yes') return 'border-emerald-400 hover:bg-emerald-500 hover:text-white hover:border-emerald-500';
+    if (lower === 'no') return 'border-rose-400 hover:bg-rose-500 hover:text-white hover:border-rose-500';
+    if (lower.startsWith('maybe') || lower === 'not right now') return 'border-amber-400 hover:bg-amber-500 hover:text-white hover:border-amber-500';
+    return 'border-primary/20 hover:bg-secondary hover:text-white hover:border-secondary';
   };
 
-  const aggregatedAnswers = getAggregatedAnswers();
-  const level = getLevel();
+  // ── SECTION HEADER detection ───────────────────────────────────────────────
+  const isFirstOfSection = (stepIdx: number): boolean => {
+    if (stepIdx === 0) return true;
+    return ALL_QUESTIONS[stepIdx].sectionTitle !== ALL_QUESTIONS[stepIdx - 1].sectionTitle;
+  };
 
-  const sortedAggregated = [...aggregatedAnswers].sort((a, b) => b.points - a.points);
-  const topStrength = sortedAggregated[0] || { category: 'AI Readiness', points: 0 };
-  const mainGrowthArea = sortedAggregated[sortedAggregated.length - 1] || { category: 'Human Skills & Leadership', points: 0 };
-
-  // ── PDF download (Pure Native Vector jsPDF Engine for Zero Text Clipping & Razor Sharp Quality) ──
+  // ── PDF GENERATION ─────────────────────────────────────────────────────────
   const downloadReport = async () => {
     setIsGeneratingPdf(true);
-
     try {
-      const doc = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4',
-        compress: true,
-      });
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
 
-      const pageWidth = 210;
-      const pageHeight = 297;
+      const pageW = 210;
+      const pageH = 297;
       const margin = 14;
-      const contentWidth = pageWidth - (margin * 2); // 182 mm
-      const rightX = pageWidth - margin; // 196 mm
+      const cw = pageW - margin * 2; // 182 mm
+      const rx = pageW - margin;
 
-      // ── Outer Subtle Executive Border ──
-      doc.setDrawColor(226, 232, 240); // #E2E8F0
+      let y = 0; // dynamic Y pointer
+
+      const addPageIfNeeded = (neededH: number) => {
+        if (y + neededH > pageH - 20) {
+          doc.addPage();
+          y = 16;
+        }
+      };
+
+      // ── PAGE 1 HEADER ──────────────────────────────────────────────────────
+      // Outer border
+      doc.setDrawColor(226, 232, 240);
       doc.setLineWidth(0.35);
-      doc.roundedRect(8, 8, pageWidth - 16, pageHeight - 16, 3, 3, 'S');
+      doc.roundedRect(8, 8, pageW - 16, pageH - 16, 3, 3, 'S');
 
-      // ── Top Gold Luxury Accent Line ──
-      doc.setFillColor(184, 151, 74); // #B8974A
-      doc.roundedRect(margin, 14, contentWidth, 1.8, 0.9, 0.9, 'F');
+      // Gold top line
+      doc.setFillColor(184, 151, 74);
+      doc.roundedRect(margin, 14, cw, 1.8, 0.9, 0.9, 'F');
 
-      // ── Header Left: Brand & Report Title ──
+      y = 24;
+
+      // Brand name
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(20);
-      doc.setTextColor(26, 58, 92); // #1A3A5C
-      doc.text('PRATIBHA TIWARI', margin, 24);
+      doc.setTextColor(26, 58, 92);
+      doc.text('PRATIBHA TIWARI', margin, y);
 
+      // Sub-title
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(8.5);
-      doc.setTextColor(184, 151, 74); // #B8974A
-      doc.text('EXECUTIVE STRATEGIC PERFORMANCE REPORT', margin, 29);
+      doc.setTextColor(184, 151, 74);
+      doc.text('AI CAREER SUSTAINABILITY ASSESSMENT — FREE REPORT', margin, y + 5.5);
 
+      // Date
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(7.5);
-      doc.setTextColor(100, 116, 139); // #64748B
+      doc.setTextColor(100, 116, 139);
       const dateFormatted = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-      doc.text(`COHORT BENCHMARK: GLOBAL EXECUTIVE  |  DATE: ${dateFormatted}`, margin, 34);
+      doc.text(`ASSESSMENT DATE: ${dateFormatted}  |  TOTAL QUESTIONS: 42`, margin, y + 11);
 
-      // ── Header Right: Global Index Score Card ──
-      const badgeW = 46;
-      const badgeH = 22;
-      const badgeX = rightX - badgeW;
-      const badgeY = 17;
+      // Score badge (top-right)
+      const badgeW = 50;
+      const badgeH = 24;
+      const badgeX = rx - badgeW;
+      const badgeY = 15;
 
-      doc.setFillColor(15, 23, 42); // #0F172A
-      doc.setDrawColor(184, 151, 74); // #B8974A
+      doc.setFillColor(15, 23, 42);
+      doc.setDrawColor(184, 151, 74);
       doc.setLineWidth(0.4);
       doc.roundedRect(badgeX, badgeY, badgeW, badgeH, 2.5, 2.5, 'FD');
 
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(18);
       doc.setTextColor(255, 255, 255);
-      doc.text(`${percentage}%`, badgeX + (badgeW / 2), badgeY + 8, { align: 'center' });
+      doc.text(`${rawScore}/${MAX_RAW_SCORE}`, badgeX + badgeW / 2, badgeY + 9, { align: 'center' });
 
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(6.5);
-      doc.setTextColor(197, 168, 128); // #C5A880
-      doc.text('GLOBAL PERFORMANCE INDEX', badgeX + (badgeW / 2), badgeY + 13, { align: 'center' });
+      doc.setFontSize(6);
+      doc.setTextColor(197, 168, 128);
+      doc.text('AI SUSTAINABILITY SCORE', badgeX + badgeW / 2, badgeY + 14, { align: 'center' });
 
-      doc.setFillColor(30, 41, 59); // #1E293B
-      doc.roundedRect(badgeX + 4, badgeY + 15, badgeW - 8, 4.5, 2, 2, 'F');
+      doc.setFillColor(30, 41, 59);
+      doc.roundedRect(badgeX + 4, badgeY + 16, badgeW - 8, 5, 2, 2, 'F');
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(6.5);
+      doc.setFontSize(6);
       doc.setTextColor(248, 250, 252);
-      doc.text(level.name.toUpperCase(), badgeX + (badgeW / 2), badgeY + 18.2, { align: 'center' });
+      const zoneName = zone.name.toUpperCase();
+      doc.text(zoneName, badgeX + badgeW / 2, badgeY + 19.5, { align: 'center' });
 
-      // ── Divider ──
+      // Divider
+      y = 42;
       doc.setDrawColor(226, 232, 240);
       doc.setLineWidth(0.3);
-      doc.line(margin, 42, rightX, 42);
+      doc.line(margin, y, rx, y);
+      y += 8;
 
-      // ── Section 1: Executive Profile Snapshot (3 Cards) ──
+      // ── SECTION 1: RESULT ZONE ─────────────────────────────────────────────
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(8.5);
       doc.setTextColor(26, 58, 92);
-      doc.text('01. EXECUTIVE PROFILE SNAPSHOT', margin, 48);
+      doc.text('01. YOUR RESULT ZONE', margin, y);
+      y += 5;
 
-      const cardW = (contentWidth - 8) / 3; // (182 - 8)/3 = 58 mm
-      const cardH = 22;
-      const cardY = 51;
+      // Zone card
+      const zoneCardH = 28;
+      // Background color based on zone
+      let zR = 239, zG = 246, zB = 255; // blue default
+      if (rawScore <= 60) { zR = 255; zG = 241; zB = 242; }
+      else if (rawScore <= 90) { zR = 255; zG = 247; zB = 237; }
+      else if (rawScore > 120) { zR = 240; zG = 253; zB = 244; }
 
-      // Card 1: Classification Tier
-      doc.setFillColor(248, 250, 252);
+      doc.setFillColor(zR, zG, zB);
       doc.setDrawColor(226, 232, 240);
       doc.setLineWidth(0.3);
-      doc.roundedRect(margin, cardY, cardW, cardH, 2, 2, 'FD');
+      doc.roundedRect(margin, y, cw, zoneCardH, 2.5, 2.5, 'FD');
 
+      // Zone emoji text
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(6.5);
-      doc.setTextColor(100, 116, 139);
-      doc.text('CLASSIFICATION TIER', margin + 3.5, cardY + 5);
-
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(9.5);
-      doc.setTextColor(26, 58, 92);
-      doc.text(level.name, margin + 3.5, cardY + 11);
+      doc.setFontSize(9);
+      doc.setTextColor(15, 23, 42);
+      doc.text(`${zone.emoji}  ${zone.name}`, margin + 5, y + 8);
 
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(6.5);
+      doc.setFontSize(7);
       doc.setTextColor(100, 116, 139);
-      doc.text('Evaluated Leadership Benchmark', margin + 3.5, cardY + 17);
+      doc.text(`Score Range: ${zone.range}  |  Your Score: ${rawScore}/${MAX_RAW_SCORE}  (${percentage}%)`, margin + 5, y + 14);
 
-      // Card 2: Dominant Strength
-      const card2X = margin + cardW + 4;
-      doc.setFillColor(240, 253, 244); // #F0FDF4
-      doc.setDrawColor(187, 247, 208); // #BBF7D0
-      doc.roundedRect(card2X, cardY, cardW, cardH, 2, 2, 'FD');
+      const zoneDesc = doc.splitTextToSize(zone.description, cw - 10);
+      doc.setFont('helvetica', 'italic');
+      doc.setFontSize(7);
+      doc.setTextColor(60, 70, 90);
+      doc.text(zoneDesc, margin + 5, y + 20);
 
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(6.5);
-      doc.setTextColor(21, 128, 61); // #15803D
-      doc.text('DOMINANT STRENGTH', card2X + 3.5, cardY + 5);
+      y += zoneCardH + 8;
 
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(8.5);
-      doc.setTextColor(20, 83, 45); // #14532D
-      const strengthLines = doc.splitTextToSize(topStrength.category, cardW - 7);
-      doc.text(strengthLines, card2X + 3.5, cardY + 10);
-
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(6.5);
-      doc.setTextColor(22, 163, 74); // #16A34A
-      doc.text(`Score: ${topStrength.points}/50 Pts (Benchmark Lead)`, card2X + 3.5, cardY + 18);
-
-      // Card 3: Growth Accelerator
-      const card3X = card2X + cardW + 4;
-      doc.setFillColor(255, 241, 242); // #FFF1F2
-      doc.setDrawColor(254, 205, 211); // #FECDD3
-      doc.roundedRect(card3X, cardY, cardW, cardH, 2, 2, 'FD');
-
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(6.5);
-      doc.setTextColor(190, 18, 60); // #BE123C
-      doc.text('GROWTH ACCELERATOR', card3X + 3.5, cardY + 5);
-
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(8.5);
-      doc.setTextColor(159, 18, 57); // #9F1239
-      const growthLines = doc.splitTextToSize(mainGrowthArea.category, cardW - 7);
-      doc.text(growthLines, card3X + 3.5, cardY + 10);
-
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(6.5);
-      doc.setTextColor(225, 29, 72); // #E11D48
-      doc.text(`Score: ${mainGrowthArea.points}/50 Pts (Priority Focus)`, card3X + 3.5, cardY + 18);
-
-      // ── Section 2: Domain Performance Audit (5 Pillars) ──
-      const section2Y = 78;
+      // ── SECTION 2: DOMAIN SCORE AUDIT ─────────────────────────────────────
+      addPageIfNeeded(70);
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(8.5);
       doc.setTextColor(26, 58, 92);
-      doc.text('02. STRATEGIC DOMAIN AUDIT (5 PILLARS)', margin, section2Y);
-
-      let rowY = section2Y + 4;
-      const rowHeight = 11.5;
+      doc.text('02. DOMAIN SCORE AUDIT (5 PILLARS)', margin, y);
+      y += 5;
 
       aggregatedAnswers.forEach((ans) => {
-        const scorePercent = (ans.points / 50);
+        addPageIfNeeded(14);
+        const maxPts = CATEGORY_MAX[ans.category] ?? 30;
+        const pct = maxPts > 0 ? ans.points / maxPts : 0;
         const statusLabel =
-          ans.points >= 45 ? 'Visionary' : ans.points >= 35 ? 'Proficient' : ans.points >= 25 ? 'Moderate' : 'Developing';
+          pct >= 0.8 ? 'Excellent' : pct >= 0.6 ? 'Good' : pct >= 0.4 ? 'Moderate' : 'Needs Work';
 
-        // Row background box
+        const rowH = 12;
         doc.setFillColor(248, 250, 252);
         doc.setDrawColor(226, 232, 240);
         doc.setLineWidth(0.3);
-        doc.roundedRect(margin, rowY, contentWidth, rowHeight, 1.8, 1.8, 'FD');
+        doc.roundedRect(margin, y, cw, rowH, 1.8, 1.8, 'FD');
 
-        // Domain Name Text
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(8.5);
-        doc.setTextColor(15, 23, 42); // #0F172A
-        doc.text(ans.category, margin + 4, rowY + 7.2);
-
-        // Progress Bar Background
-        const barX = margin + 78;
-        const barW = 56;
-        const barH = 3.5;
-        const barY = rowY + 4;
-
-        doc.setFillColor(226, 232, 240); // #E2E8F0
-        doc.roundedRect(barX, barY, barW, barH, 1.5, 1.5, 'F');
-
-        // Progress Bar Fill
-        if (ans.points >= 40) {
-          doc.setFillColor(26, 58, 92); // #1A3A5C
-        } else if (ans.points >= 25) {
-          doc.setFillColor(184, 151, 74); // #B8974A
-        } else {
-          doc.setFillColor(225, 29, 72); // #E11D48
-        }
-        const fillW = Math.max(2, barW * scorePercent);
-        doc.roundedRect(barX, barY, fillW, barH, 1.5, 1.5, 'F');
-
-        // Numeric Score
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(8.5);
-        doc.setTextColor(15, 23, 42);
-        doc.text(`${ans.points}/50`, margin + 144, rowY + 7.2, { align: 'right' });
-
-        // Status Label Pill
-        if (ans.points >= 40) {
-          doc.setTextColor(5, 150, 105); // #059669
-        } else if (ans.points >= 25) {
-          doc.setTextColor(184, 151, 74); // #B8974A
-        } else {
-          doc.setTextColor(225, 29, 72); // #E11D48
-        }
+        // Category name
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(7.5);
-        doc.text(statusLabel, rightX - 4, rowY + 7.2, { align: 'right' });
+        doc.setTextColor(15, 23, 42);
+        const catLines = doc.splitTextToSize(ans.category, 72);
+        doc.text(catLines, margin + 3, y + 5);
 
-        rowY += rowHeight + 2;
+        // Bar
+        const barX = margin + 78;
+        const barW = 52;
+        const barH = 3;
+        const barY = y + 4;
+
+        doc.setFillColor(226, 232, 240);
+        doc.roundedRect(barX, barY, barW, barH, 1, 1, 'F');
+
+        if (pct >= 0.7) doc.setFillColor(26, 58, 92);
+        else if (pct >= 0.4) doc.setFillColor(184, 151, 74);
+        else doc.setFillColor(225, 29, 72);
+        const fillW = Math.max(2, barW * pct);
+        doc.roundedRect(barX, barY, fillW, barH, 1, 1, 'F');
+
+        // Score
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7.5);
+        doc.setTextColor(15, 23, 42);
+        doc.text(`${ans.points}/${maxPts}`, margin + 136, y + 6, { align: 'right' });
+
+        // Status
+        if (pct >= 0.7) doc.setTextColor(5, 150, 105);
+        else if (pct >= 0.4) doc.setTextColor(184, 151, 74);
+        else doc.setTextColor(225, 29, 72);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7);
+        doc.text(statusLabel, rx - 3, y + 6, { align: 'right' });
+
+        y += rowH + 2;
       });
 
-      // ── Section 3: Pratibha's Strategic Diagnostic & Directives ──
-      const section3Y = rowY + 3;
+      y += 4;
+
+      // ── SECTION 3: DIAGNOSTIC & DIRECTIVES ────────────────────────────────
+      addPageIfNeeded(80);
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(8.5);
       doc.setTextColor(26, 58, 92);
-      doc.text("03. PRATIBHA'S STRATEGIC DIAGNOSTIC & DIRECTIVES", margin, section3Y);
+      doc.text("03. PRATIBHA'S DIAGNOSTIC & PRIORITY DIRECTIVES", margin, y);
+      y += 4;
 
-      const darkBoxY = section3Y + 3.5;
-      const darkBoxH = 68;
-
-      doc.setFillColor(15, 23, 42); // #0F172A
-      doc.setDrawColor(51, 65, 85); // #334155
+      // Dark box
+      const darkBoxH = 72;
+      addPageIfNeeded(darkBoxH + 4);
+      doc.setFillColor(15, 23, 42);
+      doc.setDrawColor(51, 65, 85);
       doc.setLineWidth(0.4);
-      doc.roundedRect(margin, darkBoxY, contentWidth, darkBoxH, 2.5, 2.5, 'FD');
+      doc.roundedRect(margin, y, cw, darkBoxH, 2.5, 2.5, 'FD');
 
-      // Accent vertical gold line next to quote
+      // Gold accent bar
       doc.setFillColor(184, 151, 74);
-      doc.roundedRect(margin + 4, darkBoxY + 5, 1.2, 16, 0.6, 0.6, 'F');
+      doc.roundedRect(margin + 4, y + 5, 1.2, 18, 0.6, 0.6, 'F');
 
-      // Diagnostic Title
+      // Diagnostic title
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(7);
       doc.setTextColor(184, 151, 74);
-      doc.text("EXECUTIVE DIAGNOSTIC ADVISORY", margin + 8, darkBoxY + 8);
+      doc.text('EXECUTIVE DIAGNOSTIC ADVISORY', margin + 8, y + 8);
 
-      // Diagnostic Quote
+      // Diagnostic quote
+      const quoteText = `"To advance from the ${zone.name} to peak career sustainability, systematically strengthen your ${mainGrowthArea.category}. High-impact professionals differentiate not by effort alone but through strategic positioning, AI fluency, and continuous reinvention."`;
       doc.setFont('helvetica', 'italic');
-      doc.setFontSize(7.8);
-      doc.setTextColor(241, 245, 249); // #F1F5F9
-      const quoteText = `"To transition from ${level.name} to the apex of industry benchmark, systematically upgrade your ${mainGrowthArea.category.toLowerCase()} architecture. High-impact leaders differ not by sheer effort, but through strategic narrative precision and influence positioning."`;
-      const splitQuote = doc.splitTextToSize(quoteText, contentWidth - 14);
-      doc.text(splitQuote, margin + 8, darkBoxY + 13.5);
+      doc.setFontSize(7.5);
+      doc.setTextColor(241, 245, 249);
+      const splitQuote = doc.splitTextToSize(quoteText, cw - 14);
+      doc.text(splitQuote, margin + 8, y + 14);
 
-      // Two Action Directives Side-by-Side
-      const directiveW = (contentWidth - 12) / 2; // (182 - 12)/2 = 85 mm
-      const directiveH = 34;
-      const directiveY = darkBoxY + 28;
+      // Two directives
+      const dirW = (cw - 12) / 2;
+      const dirH = 32;
+      const dirY = y + 34;
 
-      // Directive 1: Cognitive Leverage
-      doc.setFillColor(30, 41, 59); // #1E293B
-      doc.setDrawColor(51, 65, 85);
-      doc.roundedRect(margin + 4, directiveY, directiveW, directiveH, 2, 2, 'FD');
-
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(7.2);
-      doc.setTextColor(245, 158, 11); // #F59E0B
-      doc.text("PRIORITY 01: COGNITIVE LEVERAGE & AI", margin + 7.5, directiveY + 6);
-
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(6.8);
-      doc.setTextColor(226, 232, 240);
-      const directive1Text = "Automate 20%+ of routine cognitive workflows using custom AI agents to free strategic space for high-leverage organizational decisions.";
-      const splitDir1 = doc.splitTextToSize(directive1Text, directiveW - 7);
-      doc.text(splitDir1, margin + 7.5, directiveY + 12);
-
-      // Directive 2: Narrative Authority
-      const directive2X = margin + 4 + directiveW + 4;
+      // Directive 1
       doc.setFillColor(30, 41, 59);
       doc.setDrawColor(51, 65, 85);
-      doc.roundedRect(directive2X, directiveY, directiveW, directiveH, 2, 2, 'FD');
-
+      doc.roundedRect(margin + 4, dirY, dirW, dirH, 2, 2, 'FD');
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(7.2);
+      doc.setFontSize(7);
       doc.setTextColor(245, 158, 11);
-      doc.text("PRIORITY 02: NARRATIVE AUTHORITY", directive2X + 3.5, directiveY + 6);
-
+      doc.text('PRIORITY 01: ACCELERATE AI READINESS', margin + 7, dirY + 6);
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(6.8);
+      doc.setFontSize(6.5);
       doc.setTextColor(226, 232, 240);
-      const directive2Text = "Align your executive presence and market visibility to match your true capability and command senior industry positioning.";
-      const splitDir2 = doc.splitTextToSize(directive2Text, directiveW - 7);
-      doc.text(splitDir2, directive2X + 3.5, directiveY + 12);
+      const d1 = doc.splitTextToSize(`Build daily habits around AI tools. Use ChatGPT and automation to handle 20%+ of your routine tasks. AI fluency is now a core career survival skill.`, dirW - 6);
+      doc.text(d1, margin + 7, dirY + 12);
 
-      // ── Section 4: Trust Seal & Official Footer ──
-      const footerY = 270;
+      // Directive 2
+      const dir2X = margin + 4 + dirW + 4;
+      doc.setFillColor(30, 41, 59);
+      doc.setDrawColor(51, 65, 85);
+      doc.roundedRect(dir2X, dirY, dirW, dirH, 2, 2, 'FD');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(7);
+      doc.setTextColor(245, 158, 11);
+      doc.text('PRIORITY 02: BUILD PROFESSIONAL VISIBILITY', dir2X + 3.5, dirY + 6);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(6.5);
+      doc.setTextColor(226, 232, 240);
+      const d2 = doc.splitTextToSize(`Optimize your LinkedIn profile, share your expertise publicly, and network intentionally. Visibility + AI readiness = unstoppable career sustainability.`, dirW - 6);
+      doc.text(d2, dir2X + 3.5, dirY + 12);
+
+      y += darkBoxH + 8;
+
+      // ── PAGE 2: SELF-REFLECTION & NEXT STEPS ───────────────────────────────
+      // Collect open-text and multi-checkbox answers
+      const openAnswers = answers.filter(a => a.type === 'open-text');
+      const checkboxAnswer = answers.find(a => a.type === 'multi-checkbox');
+      const nextStepsAnswers = answers.filter(a => a.category === 'Next Steps' && a.type === 'single-choice');
+
+      if (openAnswers.length > 0 || checkboxAnswer || nextStepsAnswers.length > 0) {
+        addPageIfNeeded(20);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(8.5);
+        doc.setTextColor(26, 58, 92);
+        doc.text('04. SELF-REFLECTION RESPONSES', margin, y);
+        y += 6;
+
+        openAnswers.forEach((ans, idx) => {
+          addPageIfNeeded(30);
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(7.5);
+          doc.setTextColor(26, 58, 92);
+          const qLines = doc.splitTextToSize(`Q${idx + 1}. ${ans.text}`, cw);
+          doc.text(qLines, margin, y);
+          y += qLines.length * 4 + 1;
+
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(7);
+          doc.setTextColor(60, 70, 90);
+          const aLines = doc.splitTextToSize(String(ans.value), cw - 6);
+          doc.text(aLines, margin + 3, y);
+          y += aLines.length * 3.5 + 5;
+        });
+
+        if (checkboxAnswer) {
+          addPageIfNeeded(20);
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(7.5);
+          doc.setTextColor(26, 58, 92);
+          doc.text('Support Areas Selected:', margin, y);
+          y += 5;
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(7);
+          doc.setTextColor(60, 70, 90);
+          const areas = (checkboxAnswer.value as string[]).join('  ·  ');
+          const areaLines = doc.splitTextToSize(areas, cw - 6);
+          doc.text(areaLines, margin + 3, y);
+          y += areaLines.length * 3.5 + 6;
+        }
+
+        if (nextStepsAnswers.length > 0) {
+          addPageIfNeeded(20);
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(8.5);
+          doc.setTextColor(26, 58, 92);
+          doc.text('05. NEXT STEPS PREFERENCES', margin, y);
+          y += 5;
+          nextStepsAnswers.forEach((ans) => {
+            addPageIfNeeded(10);
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(7);
+            doc.setTextColor(60, 70, 90);
+            const qLines = doc.splitTextToSize(`• ${ans.text}: ${ans.value}`, cw - 6);
+            doc.text(qLines, margin + 3, y);
+            y += qLines.length * 3.8 + 2;
+          });
+          y += 4;
+        }
+      }
+
+      // ── FOOTER (last page) ─────────────────────────────────────────────────
+      const footerY = pageH - 22;
       doc.setDrawColor(226, 232, 240);
       doc.setLineWidth(0.3);
-      doc.line(margin, footerY, rightX, footerY);
+      doc.line(margin, footerY, rx, footerY);
 
-      // Trust Badges
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(7);
       doc.setTextColor(26, 58, 92);
-      doc.text("[✓] EXECUTIVE CERTIFIED", margin, footerY + 6);
-      doc.text("[⚡] AI INTELLIGENCE AUDITED", margin + 58, footerY + 6);
-      doc.text("[★] PERFORMANCE VERIFIED", margin + 122, footerY + 6);
+      doc.text('[✓] AI SUSTAINABILITY CERTIFIED', margin, footerY + 6);
+      doc.text('[✦] TESTED BY LEADERS & PROFESSIONALS', margin + 68, footerY + 6);
+      doc.text('[★] 100% FREE REPORT', margin + 145, footerY + 6);
 
-      // Confidential Notice
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(6.2);
       doc.setTextColor(100, 116, 139);
-      doc.text("STRICTLY CONFIDENTIAL  •  ISSUED BY PRATIBHA TIWARI STRATEGIC ADVISORY  •  ALL RIGHTS RESERVED", margin, footerY + 12);
+      doc.text('ISSUED BY PRATIBHA TIWARI STRATEGIC ADVISORY  •  ALL RIGHTS RESERVED', margin, footerY + 12);
 
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(6.2);
       doc.setTextColor(184, 151, 74);
-      doc.text("PRATIBHATIWARI.COM", rightX, footerY + 12, { align: 'right' });
+      doc.text('PRATIBHATIWARI.COM', rx, footerY + 12, { align: 'right' });
 
       const dateStr = new Date().toISOString().split('T')[0];
-      doc.save(`Pratibha_Tiwari_Executive_Performance_Report_${dateStr}.pdf`);
+      doc.save(`AI_Career_Sustainability_Report_${dateStr}.pdf`);
     } catch (err: any) {
       console.error('PDF Generation Error:', err);
       alert('Unable to generate PDF report: ' + (err?.message || 'Please try again.'));
@@ -532,19 +609,7 @@ export default function CareerAssessment() {
     }
   };
 
-  // ── Current question ───────────────────────────────────────────────────
-  const currentQ = step >= 0 && step < ALL_QUESTIONS.length ? ALL_QUESTIONS[step] : null;
-  const progress = step >= 0 ? Math.round(((step + 1) / ALL_QUESTIONS.length) * 100) : 0;
-
-  // ── Single-choice button styles per option ─────────────────────────────
-  const getChoiceStyle = (option: string) => {
-    const lower = option.toLowerCase();
-    if (lower === 'yes') return 'border-emerald-400 hover:bg-emerald-500 hover:text-white hover:border-emerald-500 hover:shadow-emerald-200';
-    if (lower === 'no') return 'border-rose-400 hover:bg-rose-500 hover:text-white hover:border-rose-500 hover:shadow-rose-200';
-    if (lower.startsWith('maybe')) return 'border-amber-400 hover:bg-amber-500 hover:text-white hover:border-amber-500 hover:shadow-amber-200';
-    return 'border-primary/20 hover:bg-secondary hover:text-white hover:border-secondary hover:shadow-secondary/20';
-  };
-
+  // ─── RENDER ─────────────────────────────────────────────────────────────────
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -573,7 +638,7 @@ export default function CareerAssessment() {
       <div className="max-w-4xl mx-auto relative z-10">
         <AnimatePresence mode="wait">
 
-          {/* ── Splash screen ── */}
+          {/* ── Splash Screen ── */}
           {step === -1 && (
             <motion.div
               key="splash"
@@ -582,37 +647,75 @@ export default function CareerAssessment() {
               exit={{ opacity: 0, y: -20 }}
               className="text-center space-y-6 sm:space-y-10 py-6 sm:py-12 px-2"
             >
+              {/* Badge */}
               <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 sm:px-4 sm:py-2 bg-secondary/10 text-secondary rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-widest">
-                <Sparkles size={14} /> <span>Premium Assessment</span>
+                <Sparkles size={14} /> <span>Free AI Sustainability Test</span>
               </div>
+
+              {/* Main Headline */}
               <h1 className="text-3xl sm:text-5xl md:text-7xl font-serif text-primary leading-tight">
-                Benchmark Your <br />
-                <span className="italic text-secondary">Influence Architecture</span>
+                Is Your Career Safe
+                <br />
+                <span className="italic text-secondary">in the AI Era?</span>
               </h1>
+
+              {/* Sub-headline */}
               <p className="text-base sm:text-xl text-mist max-w-2xl mx-auto leading-relaxed">
-                A high-precision evaluation of your leadership, AI integration, and communication clarity.
-                Used by global executives to identify invisible plateaus.
+                Discover how future-proof your career truly is. Take the AI Sustainability Test — a
+                precision diagnostic trusted by Leaders, Professionals &amp; Entrepreneurs worldwide.
               </p>
-              <div className="pt-4 sm:pt-8">
+
+              {/* Trust line */}
+              <p className="inline-flex items-center gap-2 text-xs sm:text-sm text-secondary font-semibold uppercase tracking-widest">
+                <Sparkles size={13} />
+                Tested &amp; Trusted by Leaders, Professionals &amp; Entrepreneurs
+                <Sparkles size={13} />
+              </p>
+
+              {/* CTA Buttons */}
+              <div className="pt-2 sm:pt-6 space-y-4">
+                {/* Free Test */}
                 <button
                   onClick={handleStart}
                   className="bg-primary text-white px-8 py-4 sm:px-12 sm:py-6 rounded-full font-bold text-base sm:text-lg shadow-2xl hover:bg-secondary hover:scale-105 transition-all flex items-center mx-auto cursor-pointer"
                 >
-                  Initiate Assessment <ArrowRight className="ml-2 sm:ml-3" size={18} />
+                  Take the Free Test <ArrowRight className="ml-2 sm:ml-3" size={18} />
                 </button>
-                <p className="mt-4 sm:mt-6 text-xs sm:text-sm text-mist font-mono">ESTIMATED TIME: 5 MINUTES</p>
+                <p className="text-xs sm:text-sm text-mist font-mono">ESTIMATED TIME: 5 MINUTES &nbsp;·&nbsp; 100% FREE &nbsp;·&nbsp; 42 QUESTIONS</p>
+
+                {/* Divider */}
+                <div className="flex items-center gap-4 max-w-xs mx-auto pt-2">
+                  <div className="flex-1 h-px bg-primary/10" />
+                  <span className="text-[10px] font-mono text-mist uppercase tracking-widest">or</span>
+                  <div className="flex-1 h-px bg-primary/10" />
+                </div>
+
+                {/* Premium — navigates to dedicated page */}
+                <div className="relative inline-block">
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-gold to-amber-400 text-slate-900 text-[10px] font-mono font-bold uppercase tracking-wider px-3 py-0.5 rounded-full shadow-md whitespace-nowrap">
+                    ✦ Premium Access
+                  </span>
+                  <button
+                    onClick={() => navigate('/assessment/premium')}
+                    className="mt-2 bg-gradient-to-r from-gold via-amber-400 to-gold text-slate-900 px-8 py-4 sm:px-12 sm:py-5 rounded-full font-bold text-base sm:text-lg shadow-xl hover:shadow-gold/30 hover:scale-105 transition-all flex items-center mx-auto cursor-pointer border-2 border-amber-300"
+                  >
+                    <Sparkles className="mr-2 sm:mr-3" size={18} />
+                    Explore Premium Options
+                  </button>
+                </div>
+                <p className="text-[10px] sm:text-xs text-mist font-mono">PERSONALIZED AI CAREER REPORT &nbsp;·&nbsp; DELIVERED TO WHATSAPP & EMAIL</p>
               </div>
             </motion.div>
           )}
 
-          {/* ── Question screen ── */}
+          {/* ── Question Screen ── */}
           {step >= 0 && !isFinished && currentQ && (
             <motion.div
               key={`question-${step}`}
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -30 }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
               className="bg-white/80 backdrop-blur-xl p-5 sm:p-8 md:p-16 rounded-3xl sm:rounded-[48px] shadow-[0_40px_80px_-20px_rgba(26,58,92,0.15)] border border-white/20 relative overflow-hidden"
             >
               {/* Progress bar */}
@@ -626,7 +729,16 @@ export default function CareerAssessment() {
               </div>
 
               <div className="relative z-10">
-                {/* Header */}
+                {/* Section banner (first Q of each section) */}
+                {isFirstOfSection(step) && (
+                  <div className="mb-5 px-3 py-2 bg-primary/5 rounded-xl border border-primary/10 inline-block">
+                    <span className="text-[9px] sm:text-[10px] font-mono font-bold text-primary uppercase tracking-widest">
+                      {currentQ.sectionTitle}
+                    </span>
+                  </div>
+                )}
+
+                {/* Header row */}
                 <div className="flex justify-between items-center mb-6 sm:mb-10">
                   <div className="space-y-1 flex-1 mr-2 sm:mr-4 min-w-0">
                     <div className="text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.2em] sm:tracking-[0.3em] text-secondary font-bold truncate">
@@ -639,51 +751,85 @@ export default function CareerAssessment() {
                     )}
                   </div>
                   <div className="text-xl sm:text-2xl font-serif text-primary italic shrink-0">
-                    {step + 1}<span className="text-xs align-top pt-1">{`/${ALL_QUESTIONS.length}`}</span>
+                    {currentQ.displayIndex}<span className="text-xs align-top pt-1">/{TOTAL_QUESTIONS}</span>
                   </div>
                 </div>
 
                 {/* Question text */}
-                <h2 className="text-lg sm:text-2xl md:text-3xl font-serif text-primary mb-6 sm:mb-10 leading-snug sm:leading-tight">
-                  {currentQ.text.replace('*', '')}
+                <h2 className="text-lg sm:text-2xl md:text-3xl font-serif text-primary mb-2 sm:mb-4 leading-snug sm:leading-tight">
+                  {currentQ.text}
                 </h2>
 
-                {/* ── Rating ── */}
-                {currentQ.type === 'rating' && (
-                  <div className="flex justify-between items-start gap-1 sm:gap-2 md:gap-4 py-4 w-full">
-                    {[
-                      { val: 1, label: 'Strongly\nDisagree' },
-                      { val: 2, label: 'Disagree' },
-                      { val: 3, label: 'Neutral' },
-                      { val: 4, label: 'Agree' },
-                      { val: 5, label: 'Strongly\nAgree' },
-                    ].map(({ val, label }) => (
-                      <button
-                        key={val}
-                        onClick={() => handleRating(val)}
-                        className="flex flex-col items-center group/btn flex-1 focus:outline-none cursor-pointer"
-                      >
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full border-2 border-primary/10 bg-white/70 flex items-center justify-center text-sm sm:text-lg md:text-xl font-bold text-primary transition-all duration-300 group-hover/btn:border-secondary group-hover/btn:bg-secondary group-hover/btn:text-white group-hover/btn:scale-110 group-hover/btn:shadow-lg group-hover/btn:shadow-secondary/20 active:scale-95 shrink-0">
-                          {val}
-                        </div>
-                        <div className="h-8 sm:h-10 mt-2 flex items-start justify-center">
-                          <span className="text-[8px] sm:text-[10px] md:text-xs font-semibold text-mist text-center leading-tight opacity-70 group-hover/btn:opacity-100 group-hover/btn:text-primary transition-all duration-300 max-w-[55px] sm:max-w-[70px] whitespace-pre-line">
-                            {label}
-                          </span>
-                        </div>
-                      </button>
-                    ))}
+                {/* Reverse-score note */}
+                {currentQ.reverseScore && (
+                  <p className="text-xs text-rose-500 font-mono mb-6 sm:mb-8">
+                    ⚠ Note: A lower score here is better (reverse-scored question)
+                  </p>
+                )}
+
+                {/* ── SHORT ANSWER ── */}
+                {currentQ.type === 'short-answer' && (
+                  <div className="space-y-4 mt-4">
+                    <input
+                      type={currentQ.text.toLowerCase().includes('email') ? 'email' : currentQ.text.toLowerCase().includes('mobile') ? 'tel' : 'text'}
+                      className="w-full p-4 rounded-2xl border-2 border-primary/10 bg-white/60 text-primary placeholder:text-mist/50 focus:outline-none focus:border-secondary transition-colors text-base"
+                      placeholder={`Enter your ${currentQ.text.toLowerCase()}…`}
+                      value={textDraft}
+                      onChange={e => setTextDraft(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') handleShortAnswerNext(); }}
+                    />
+                    <button
+                      onClick={handleShortAnswerNext}
+                      disabled={!textDraft.trim()}
+                      className="bg-primary text-white px-10 py-4 rounded-full font-bold flex items-center gap-2 hover:bg-secondary transition-all disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 cursor-pointer"
+                    >
+                      Continue <ArrowRight size={18} />
+                    </button>
                   </div>
                 )}
 
-                {/* ── Single-choice (Yes/No/Maybe + other lists) ── */}
+                {/* ── RATING ── */}
+                {currentQ.type === 'rating' && (
+                  <div className="space-y-4 mt-6">
+                    <div className="flex justify-between items-start gap-1 sm:gap-2 md:gap-4 py-4 w-full">
+                      {[
+                        { val: 1, label: 'Strongly\nDisagree' },
+                        { val: 2, label: 'Disagree' },
+                        { val: 3, label: 'Neutral' },
+                        { val: 4, label: 'Agree' },
+                        { val: 5, label: 'Strongly\nAgree' },
+                      ].map(({ val, label }) => (
+                        <button
+                          key={val}
+                          onClick={() => handleRating(val)}
+                          className="flex flex-col items-center group/btn flex-1 focus:outline-none cursor-pointer"
+                        >
+                          <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full border-2 border-primary/10 bg-white/70 flex items-center justify-center text-sm sm:text-lg md:text-xl font-bold text-primary transition-all duration-300 group-hover/btn:border-secondary group-hover/btn:bg-secondary group-hover/btn:text-white group-hover/btn:scale-110 group-hover/btn:shadow-lg group-hover/btn:shadow-secondary/20 active:scale-95 shrink-0">
+                            {val}
+                          </div>
+                          <div className="h-8 sm:h-10 mt-2 flex items-start justify-center">
+                            <span className="text-[8px] sm:text-[10px] md:text-xs font-semibold text-mist text-center leading-tight opacity-70 group-hover/btn:opacity-100 group-hover/btn:text-primary transition-all duration-300 max-w-[55px] sm:max-w-[70px] whitespace-pre-line">
+                              {label}
+                            </span>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                    <div className="flex justify-between text-[9px] sm:text-[10px] font-mono text-mist px-1">
+                      <span>1 = Strongly Disagree</span>
+                      <span>5 = Strongly Agree</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* ── SINGLE CHOICE ── */}
                 {currentQ.type === 'single-choice' && currentQ.options && (
-                  <div className={`grid gap-3 ${currentQ.options.length <= 3 ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2'}`}>
+                  <div className={`grid gap-3 mt-4 ${currentQ.options.length <= 3 ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2'}`}>
                     {currentQ.options.map(option => (
                       <button
                         key={option}
                         onClick={() => handleSingleChoice(option)}
-                        className={`px-6 py-4 rounded-2xl border-2 bg-white/60 text-primary font-semibold text-sm md:text-base transition-all duration-250 hover:scale-[1.03] hover:shadow-lg active:scale-95 ${getChoiceStyle(option)}`}
+                        className={`px-6 py-4 rounded-2xl border-2 bg-white/60 text-primary font-semibold text-sm md:text-base transition-all duration-250 hover:scale-[1.03] hover:shadow-lg active:scale-95 cursor-pointer ${getChoiceStyle(option)}`}
                       >
                         {option}
                       </button>
@@ -691,21 +837,56 @@ export default function CareerAssessment() {
                   </div>
                 )}
 
-                {/* ── Open-text ── */}
+                {/* ── OPEN TEXT ── */}
                 {currentQ.type === 'open-text' && (
-                  <div className="space-y-4">
+                  <div className="space-y-4 mt-4">
                     <textarea
                       className="w-full min-h-[160px] p-5 rounded-2xl border-2 border-primary/10 bg-white/60 text-primary placeholder:text-mist/50 focus:outline-none focus:border-secondary transition-colors resize-none text-base leading-relaxed"
                       placeholder="Share your thoughts here…"
-                      value={openTextDraft}
-                      onChange={e => setOpenTextDraft(e.target.value)}
+                      value={textDraft}
+                      onChange={e => setTextDraft(e.target.value)}
                     />
                     <button
                       onClick={handleOpenTextNext}
-                      disabled={!openTextDraft.trim()}
-                      className="bg-primary text-white px-10 py-4 rounded-full font-bold flex items-center gap-2 hover:bg-secondary transition-all disabled:opacity-40 disabled:cursor-not-allowed active:scale-95"
+                      disabled={!textDraft.trim()}
+                      className="bg-primary text-white px-10 py-4 rounded-full font-bold flex items-center gap-2 hover:bg-secondary transition-all disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 cursor-pointer"
                     >
                       Continue <ArrowRight size={18} />
+                    </button>
+                  </div>
+                )}
+
+                {/* ── MULTI-CHECKBOX ── */}
+                {currentQ.type === 'multi-checkbox' && currentQ.options && (
+                  <div className="space-y-4 mt-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                      {currentQ.options.map(option => {
+                        const checked = checkboxDraft.includes(option);
+                        return (
+                          <button
+                            key={option}
+                            onClick={() => toggleCheckbox(option)}
+                            className={`flex items-center gap-3 px-4 py-3 rounded-2xl border-2 text-sm font-semibold text-left transition-all duration-200 cursor-pointer active:scale-95 ${
+                              checked
+                                ? 'border-secondary bg-secondary/10 text-secondary shadow-md'
+                                : 'border-primary/10 bg-white/60 text-primary hover:border-secondary/40 hover:bg-secondary/5'
+                            }`}
+                          >
+                            {checked
+                              ? <CheckSquare size={18} className="text-secondary shrink-0" />
+                              : <Square size={18} className="text-mist/50 shrink-0" />
+                            }
+                            {option}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <button
+                      onClick={handleCheckboxNext}
+                      disabled={checkboxDraft.length === 0}
+                      className="bg-primary text-white px-10 py-4 rounded-full font-bold flex items-center gap-2 hover:bg-secondary transition-all disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 cursor-pointer"
+                    >
+                      Continue ({checkboxDraft.length} selected) <ArrowRight size={18} />
                     </button>
                   </div>
                 )}
@@ -714,41 +895,20 @@ export default function CareerAssessment() {
                 <div className="flex justify-between items-center mt-10 pt-6 border-t border-primary/5">
                   <button
                     onClick={handleBack}
-                    className="text-sm font-medium text-mist hover:text-primary flex items-center gap-2 transition-colors"
+                    className="text-sm font-medium text-mist hover:text-primary flex items-center gap-2 transition-colors cursor-pointer"
                   >
                     <ArrowLeft size={16} /> Back
                   </button>
                   <span className="text-xs font-mono text-mist">
-                    Progress: {progress}%
+                    Q{currentQ.displayIndex} of {TOTAL_QUESTIONS} &nbsp;·&nbsp; {progress}% complete
                   </span>
                 </div>
               </div>
             </motion.div>
           )}
 
-          {/* ── Premium Assessment Wizard Screen ── */}
-          {isPremiumWizardOpen && (
-            <motion.div
-              key="premium-wizard"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="py-4"
-            >
-              <PremiumAssessmentWizard
-                selectedPackage={selectedPackage}
-                onCancel={() => setIsPremiumWizardOpen(false)}
-                onSubmit={(formData) => {
-                  setPremiumFormData(formData);
-                  setIsPremiumWizardOpen(false);
-                  setIsDemoPaymentOpen(true);
-                }}
-              />
-            </motion.div>
-          )}
-
-          {/* ── Results screen ── */}
-          {isFinished && !isPremiumWizardOpen && (
+          {/* ── Results Screen ── */}
+          {isFinished && (
             <motion.div
               key="results"
               initial={{ opacity: 0, scale: 0.95 }}
@@ -757,14 +917,12 @@ export default function CareerAssessment() {
             >
               <AssessmentResultsSummary
                 answers={aggregatedAnswers}
+                rawScore={rawScore}
                 percentage={percentage}
                 level={level}
                 onDownload={downloadReport}
                 onRetake={handleStart}
-                onStartPremium={(pkg) => {
-                  if (pkg) setSelectedPackage(pkg);
-                  setIsPremiumWizardOpen(true);
-                }}
+                onStartPremium={() => navigate('/assessment/premium')}
                 onHome={() => {
                   safeLocalStorage.removeItem('career_assessment_step');
                   safeLocalStorage.removeItem('career_assessment_answers');
@@ -778,23 +936,6 @@ export default function CareerAssessment() {
 
         </AnimatePresence>
       </div>
-
-      {/* Demo Payment Gateway Modal */}
-      <DemoPaymentModal
-        isOpen={isDemoPaymentOpen}
-        onClose={() => setIsDemoPaymentOpen(false)}
-        formData={premiumFormData}
-        amount={selectedPackage?.price}
-        userName={premiumFormData?.fullName}
-        userEmail={premiumFormData?.email}
-        onPaymentSuccess={(finalData) => {
-          if (finalData) {
-            setPremiumFormData(finalData);
-          }
-          setIsDemoPaymentOpen(false);
-          setIsConfirmationOpen(true);
-        }}
-      />
 
       {/* Premium Confirmation Modal */}
       <PremiumConfirmationModal

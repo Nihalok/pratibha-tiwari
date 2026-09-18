@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Sparkles,
@@ -15,13 +15,16 @@ import {
   Mail,
   MapPin,
   Linkedin,
-  X
+  X,
+  RotateCcw
 } from 'lucide-react';
 import { safeLocalStorage } from '../../lib/storage-helper';
+import CountryPhoneInput, { validateFullPhone } from '../common/CountryPhoneInput';
 
 interface PremiumAssessmentWizardProps {
   onCancel: () => void;
   onSubmit: (formData: any) => void;
+  sessionId?: string;
   selectedPackage?: {
     id: 'report' | 'platinum';
     title: string;
@@ -60,9 +63,29 @@ const FEEDBACK_OPTIONS = [
   'Be completely honest'
 ];
 
-export default function PremiumAssessmentWizard({ onCancel, onSubmit, selectedPackage }: PremiumAssessmentWizardProps) {
+export default function PremiumAssessmentWizard({
+  onCancel,
+  onSubmit,
+  sessionId,
+  selectedPackage
+}: PremiumAssessmentWizardProps) {
   const [currentSection, setCurrentSection] = useState<number>(1);
   const [errorMsg, setErrorMsg] = useState<string>('');
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Stop Lenis smooth-scroll engine so background page doesn't scroll while modal is open.
+  // Also lock body as a fallback for non-Lenis environments.
+  useEffect(() => {
+    const lenis = (window as any).lenis;
+    if (lenis) lenis.stop();
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+    return () => {
+      if (lenis) lenis.start();
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+    };
+  }, []);
 
   // Form State
   const [fullName, setFullName] = useState('');
@@ -74,6 +97,29 @@ export default function PremiumAssessmentWizard({ onCancel, onSubmit, selectedPa
   const [resumeFileName, setResumeFileName] = useState<string>('');
   const [coverLetterFile, setCoverLetterFile] = useState<File | null>(null);
   const [coverLetterFileName, setCoverLetterFileName] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+  // Auto-prefill candidate details from Stripe payment session
+  useEffect(() => {
+    if (sessionId) {
+      fetch(`/api/assessment/payment-status/${sessionId}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            if (data.customerName && data.customerName !== 'Valued Candidate') {
+              setFullName(data.customerName);
+            }
+            if (data.customerEmail && data.customerEmail !== 'candidate@example.com') {
+              setEmail(data.customerEmail);
+            }
+            if (data.customerWhatsapp) {
+              setWhatsapp(data.customerWhatsapp);
+            }
+          }
+        })
+        .catch(err => console.error('[Prefill Error]', err));
+    }
+  }, [sessionId]);
 
   const [currentRoleDescription, setCurrentRoleDescription] = useState('');
   const [workEnergyGiving, setWorkEnergyGiving] = useState('');
@@ -99,6 +145,39 @@ export default function PremiumAssessmentWizard({ onCancel, onSubmit, selectedPa
   const [consentAccurate, setConsentAccurate] = useState<boolean>(false);
   const [consentAiHuman, setConsentAiHuman] = useState<boolean>(false);
 
+  // Reset/Clear Form handler
+  const handleResetForm = () => {
+    safeLocalStorage.removeItem('premium_career_assessment_draft');
+    setFullName('');
+    setEmail('');
+    setWhatsapp('');
+    setCityCountry('');
+    setLinkedInUrl('');
+    setResumeFile(null);
+    setResumeFileName('');
+    setCoverLetterFile(null);
+    setCoverLetterFileName('');
+    setCurrentRoleDescription('');
+    setWorkEnergyGiving('');
+    setWorkEnergyDraining('');
+    setThreeYearVision('');
+    setSingleBiggestObstacle('');
+    setWhySolvingImportantNow('');
+    setHowUsingAi('');
+    setAiWorries('');
+    setAiEnhancementAreas('');
+    setColleaguePerception('');
+    setDesiredReputation('');
+    setFocusAreas([]);
+    setWeeklyTime('');
+    setOneCareerQuestion('');
+    setFeedbackPreference('');
+    setConsentAccurate(false);
+    setConsentAiHuman(false);
+    setCurrentSection(1);
+    setErrorMsg('');
+  };
+
   // Restore saved state from localStorage if available
   useEffect(() => {
     try {
@@ -110,8 +189,7 @@ export default function PremiumAssessmentWizard({ onCancel, onSubmit, selectedPa
         if (parsed.whatsapp) setWhatsapp(parsed.whatsapp);
         if (parsed.cityCountry) setCityCountry(parsed.cityCountry);
         if (parsed.linkedInUrl) setLinkedInUrl(parsed.linkedInUrl);
-        if (parsed.resumeFileName) setResumeFileName(parsed.resumeFileName);
-        if (parsed.coverLetterFileName) setCoverLetterFileName(parsed.coverLetterFileName);
+        // Do NOT restore ghost PDF filenames if no File object exists in memory
         if (parsed.currentRoleDescription) setCurrentRoleDescription(parsed.currentRoleDescription);
         if (parsed.workEnergyGiving) setWorkEnergyGiving(parsed.workEnergyGiving);
         if (parsed.workEnergyDraining) setWorkEnergyDraining(parsed.workEnergyDraining);
@@ -137,10 +215,9 @@ export default function PremiumAssessmentWizard({ onCancel, onSubmit, selectedPa
       const draft = {
         fullName,
         email,
+        whatsapp,
         cityCountry,
         linkedInUrl,
-        resumeFileName,
-        coverLetterFileName,
         currentRoleDescription,
         workEnergyGiving,
         workEnergyDraining,
@@ -162,7 +239,7 @@ export default function PremiumAssessmentWizard({ onCancel, onSubmit, selectedPa
 
     return () => clearTimeout(timer);
   }, [
-    fullName, email, cityCountry, linkedInUrl, resumeFileName, coverLetterFileName,
+    fullName, email, whatsapp, cityCountry, linkedInUrl,
     currentRoleDescription, workEnergyGiving, workEnergyDraining,
     threeYearVision, singleBiggestObstacle, whySolvingImportantNow,
     howUsingAi, aiWorries, aiEnhancementAreas, colleaguePerception, desiredReputation,
@@ -200,28 +277,37 @@ export default function PremiumAssessmentWizard({ onCancel, onSubmit, selectedPa
     }
   };
 
+  // ── Validation helpers ────────────────────────────────────────────────────
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  const linkedInRegex = /^https?:\/\/(www\.)?linkedin\.com\/(in|pub|company)\/[\w\-%.]+\/?$/i;
+
   const validateCurrentSection = (): boolean => {
     setErrorMsg('');
 
     if (currentSection === 1) {
-      if (!fullName.trim()) {
-        setErrorMsg('Please enter your full name.');
+      if (!fullName.trim() || fullName.trim().length < 2) {
+        setErrorMsg('Please enter your full name (at least 2 characters).');
         return false;
       }
-      if (!email.trim() || !email.includes('@')) {
-        setErrorMsg('Please enter a valid email address.');
+      if (!emailRegex.test(email.trim())) {
+        setErrorMsg('Please enter a valid email address (e.g. name@domain.com).');
         return false;
       }
-      if (!whatsapp.trim()) {
-        setErrorMsg('Please enter your WhatsApp number (required for direct PDF report delivery).');
+      const phoneValidation = validateFullPhone(whatsapp);
+      if (!phoneValidation.isValid) {
+        setErrorMsg(phoneValidation.errorMsg || 'Please enter a valid WhatsApp/mobile number.');
         return false;
       }
       if (!cityCountry.trim()) {
-        setErrorMsg('Please enter your current city & country.');
+        setErrorMsg('Please enter your current city & country (e.g. Mumbai, India).');
+        return false;
+      }
+      if (linkedInUrl.trim() && !linkedInRegex.test(linkedInUrl.trim())) {
+        setErrorMsg('LinkedIn URL must be a valid profile link (e.g. https://linkedin.com/in/yourname).');
         return false;
       }
       if (!resumeFile && !resumeFileName) {
-        setErrorMsg('Please upload your latest Resume (PDF).');
+        setErrorMsg('Please upload your latest Resume (PDF) — required for the report.');
         return false;
       }
     } else if (currentSection === 2) {
@@ -271,14 +357,17 @@ export default function PremiumAssessmentWizard({ onCancel, onSubmit, selectedPa
     return true;
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (validateCurrentSection()) {
       if (currentSection < 7) {
         setCurrentSection(currentSection + 1);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Scroll the overlay container (parent of this card) to top
+        const overlay = scrollRef.current?.closest('.modal-scroll-area') as HTMLElement | null;
+        if (overlay) overlay.scrollTo({ top: 0, behavior: 'smooth' });
+        else window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
-        // Form finished -> proceed to payment modal!
-        onSubmit({
+        // Form finished -> submit responses to backend and show completion!
+        const payload = {
           fullName,
           email,
           whatsapp,
@@ -304,7 +393,27 @@ export default function PremiumAssessmentWizard({ onCancel, onSubmit, selectedPa
           packageId: selectedPackage?.id || 'report',
           packagePrice: selectedPackage?.price || '$68.00',
           packageTitle: selectedPackage?.title || 'Premium AI Career Intelligence Report'
-        });
+        };
+
+        setIsSubmitting(true);
+        if (sessionId) {
+          try {
+            await fetch('/api/assessment/submit', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                sessionId,
+                formData: payload
+              })
+            });
+          } catch (err) {
+            console.error('[Submit Backend Error]', err);
+          }
+        }
+        // Clean draft upon submission
+        safeLocalStorage.removeItem('premium_career_assessment_draft');
+        setIsSubmitting(false);
+        onSubmit(payload);
       }
     }
   };
@@ -313,14 +422,20 @@ export default function PremiumAssessmentWizard({ onCancel, onSubmit, selectedPa
     if (currentSection > 1) {
       setCurrentSection(currentSection - 1);
       setErrorMsg('');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const overlay = scrollRef.current?.closest('.modal-scroll-area') as HTMLElement | null;
+      if (overlay) overlay.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       onCancel();
     }
   };
 
   return (
-    <div className="bg-white/90 backdrop-blur-xl p-5 sm:p-10 md:p-14 rounded-3xl sm:rounded-[48px] shadow-[0_40px_80px_-20px_rgba(26,58,92,0.15)] border border-gold/20 relative overflow-hidden">
+    <div
+      ref={scrollRef}
+      onWheel={(e) => e.stopPropagation()}
+      onTouchMove={(e) => e.stopPropagation()}
+      className="bg-white/95 backdrop-blur-xl p-5 sm:p-10 md:p-14 rounded-3xl sm:rounded-[48px] shadow-[0_40px_80px_-20px_rgba(26,58,92,0.15)] border border-gold/20 relative"
+    >
       {/* Header Info */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-100 pb-6 mb-8 gap-4">
         <div>
@@ -335,12 +450,23 @@ export default function PremiumAssessmentWizard({ onCancel, onSubmit, selectedPa
           </p>
         </div>
 
-        <button
-          onClick={onCancel}
-          className="text-xs font-semibold text-mist hover:text-rose-500 transition-colors flex items-center gap-1 cursor-pointer self-end sm:self-auto"
-        >
-          <X size={16} /> Exit Blueprint
-        </button>
+        <div className="flex items-center gap-3 self-end sm:self-auto">
+          <button
+            type="button"
+            onClick={handleResetForm}
+            className="text-xs font-semibold text-amber-700 hover:text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer"
+            title="Clear all saved draft inputs and start fresh"
+          >
+            <RotateCcw size={14} /> Start Fresh / Reset
+          </button>
+          <button
+            type="button"
+            onClick={onCancel}
+            className="text-xs font-semibold text-mist hover:text-rose-500 transition-colors flex items-center gap-1 cursor-pointer"
+          >
+            <X size={16} /> Exit Blueprint
+          </button>
+        </div>
       </div>
 
       {/* Stepper Progress Bar */}
@@ -435,12 +561,10 @@ export default function PremiumAssessmentWizard({ onCancel, onSubmit, selectedPa
                   <label className="block text-xs font-semibold text-primary mb-1.5 flex items-center gap-1.5">
                     <span className="text-gold font-mono font-bold text-xs">WA</span> WhatsApp Number (for Report Delivery) *
                   </label>
-                  <input
-                    type="tel"
+                  <CountryPhoneInput
                     value={whatsapp}
-                    onChange={(e) => setWhatsapp(e.target.value)}
-                    placeholder="e.g. +91 98765 43210 or +1 555 123 4567"
-                    className="w-full p-3.5 rounded-2xl border border-gray-200 focus:border-gold focus:outline-none text-sm bg-white font-mono"
+                    onChange={setWhatsapp}
+                    placeholder="e.g. 98765 43210"
                   />
                 </div>
 
@@ -867,15 +991,21 @@ export default function PremiumAssessmentWizard({ onCancel, onSubmit, selectedPa
         <button
           type="button"
           onClick={handleNext}
-          className="bg-primary text-white px-8 py-3.5 rounded-full font-bold text-xs sm:text-sm flex items-center gap-2 hover:bg-secondary transition-all shadow-xl active:scale-95 cursor-pointer"
+          disabled={isSubmitting}
+          className="bg-primary text-white px-8 py-3.5 rounded-full font-bold text-xs sm:text-sm flex items-center gap-2 hover:bg-secondary transition-all shadow-xl active:scale-95 cursor-pointer disabled:opacity-50"
         >
           {currentSection < 7 ? (
             <>
               Next Section <ArrowRight size={16} />
             </>
+          ) : isSubmitting ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <span>Submitting Assessment...</span>
+            </>
           ) : (
             <>
-              Proceed to Demo Payment & Download Report <Sparkles size={16} />
+              Submit Assessment <Sparkles size={16} />
             </>
           )}
         </button>

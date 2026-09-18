@@ -12,6 +12,8 @@ import { errorHandler } from './middleware/errorMiddleware.js';
 import adminRoutes from './routes/adminRoutes.js';
 import contentRoutes from './routes/contentRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
+import assessmentRoutes from './routes/assessmentRoutes.js';
+import { handleStripeWebhook } from './controllers/assessmentController.js';
 import dbCheck from './middleware/dbCheck.js';
 
 const app = express();
@@ -25,6 +27,10 @@ app.use(helmet({
   crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
 }));
 app.use(morgan('dev'));
+
+// STRIPE WEBHOOK: Must use raw body parser before express.json()
+app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), handleStripeWebhook);
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
@@ -95,6 +101,7 @@ app.use('/api/admin', adminRoutes);
 
 // Protected Data Routes (Need DB check)
 app.use('/api', dbCheck);
+app.use('/api/assessment', assessmentRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api', contentRoutes);
 

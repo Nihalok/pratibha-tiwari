@@ -24,6 +24,8 @@ import Insights from './pages/Insights';
 import BlogPost from './pages/BlogPost';
 import Contact from './pages/Contact';
 import CareerAssessment from './pages/CareerAssessment';
+import PremiumAssessment from './pages/PremiumAssessment';
+import PaymentSuccess from './pages/PaymentSuccess';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 
@@ -90,6 +92,8 @@ function AnimatedRoutes() {
         <Route path="/insights/:slug" element={<BlogPost />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/career-assessment" element={<CareerAssessment />} />
+        <Route path="/assessment/premium" element={<PremiumAssessment />} />
+        <Route path="/assessment/payment-success" element={<PaymentSuccess />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<Terms />} />
         {/* /pwt-portal and /pwt-portal/* → AdminLayout handles auth check + redirect to login */}

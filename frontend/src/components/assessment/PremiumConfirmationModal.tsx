@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import {
   CheckCircle2,
@@ -30,6 +30,19 @@ export default function PremiumConfirmationModal({
 }: PremiumConfirmationModalProps) {
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
+  useEffect(() => {
+    if (isOpen) {
+      (window as any).lenis?.stop();
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      (window as any).lenis?.start();
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const pkgTitle = formData?.packageTitle || (formData?.packageId === 'platinum' ? 'Platinum Package: Report + 45-Min Live Coaching (ICF-PCC)' : 'Premium AI Career Intelligence Report');
@@ -53,7 +66,6 @@ export default function PremiumConfirmationModal({
       const margin = 14;
       const contentWidth = pageWidth - margin * 2; // 182mm
 
-      // Background canvas
       doc.setFillColor(248, 250, 252);
       doc.rect(0, 0, pageWidth, pageHeight, 'F');
 
@@ -344,30 +356,32 @@ export default function PremiumConfirmationModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/85 backdrop-blur-md overflow-hidden">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 15 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="relative w-full max-w-2xl max-h-[92vh] flex flex-col bg-white rounded-3xl sm:rounded-[36px] shadow-2xl overflow-hidden border border-white/20 my-auto"
-      >
-        {/* Top Celebration Header */}
-        <div className="bg-gradient-to-r from-primary via-slate-900 to-primary p-5 sm:p-7 text-white text-center relative overflow-hidden shrink-0">
-          <div className="absolute inset-0 bg-gold/10 mix-blend-overlay pointer-events-none" />
-          
-          <div className="w-12 h-12 sm:w-14 sm:h-14 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-2.5 border border-emerald-400/30 shadow-lg shadow-emerald-500/20">
-            <CheckCircle2 size={30} />
+    <div className="fixed inset-0 z-[200] bg-slate-900/60 backdrop-blur-md flex flex-col">
+      <div className="flex-1 overflow-y-auto overscroll-contain modal-scroll-area">
+        <div className="min-h-full flex items-center justify-center p-3 sm:p-6 py-10">
+          <motion.div
+            onWheel={(e) => e.stopPropagation()}
+            onTouchMove={(e) => e.stopPropagation()}
+            initial={{ opacity: 0, scale: 0.95, y: 15 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            className="relative w-full max-w-2xl flex flex-col bg-white rounded-3xl sm:rounded-[36px] shadow-2xl overflow-hidden border border-slate-200 my-auto"
+          >
+        {/* Top Google Pay Light Celebration Header */}
+        <div className="bg-gradient-to-b from-emerald-50/80 via-white to-white p-5 sm:p-7 text-center border-b border-slate-100 relative overflow-hidden shrink-0">
+          <div className="w-14 h-14 bg-emerald-500 text-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg shadow-emerald-500/25 ring-4 ring-emerald-100">
+            <CheckCircle2 size={32} className="stroke-[2.5]" />
           </div>
 
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-gold/20 text-gold rounded-full text-[10px] sm:text-xs font-mono font-bold uppercase tracking-widest mb-1.5">
-            <Sparkles size={12} /> Enrollment Confirmed
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-100/90 text-emerald-800 rounded-full text-[10px] sm:text-xs font-mono font-bold uppercase tracking-widest mb-2 border border-emerald-200/80">
+            <Sparkles size={12} className="text-emerald-600" /> Enrollment Confirmed
           </div>
 
-          <h2 className="text-xl sm:text-2xl font-serif leading-tight">
+          <h2 className="text-xl sm:text-2xl font-serif text-slate-900 font-bold leading-tight">
             {pkgTitle}
           </h2>
 
-          <div className="mt-3 bg-white/10 backdrop-blur-sm border border-white/10 rounded-2xl p-3 text-xs sm:text-sm text-slate-200 leading-relaxed font-sans max-w-lg mx-auto">
-            Your responses and payment verification proof have been submitted to Pratibha Tiwari. Your personalized, world-class Career Intelligence Report will be delivered directly to your <strong className="text-emerald-300">WhatsApp</strong> and <strong className="text-emerald-300">Email</strong> within 2–3 business days.
+          <div className="mt-3 bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5 text-xs sm:text-sm text-slate-700 leading-relaxed font-sans max-w-lg mx-auto shadow-xs">
+            Your responses and payment verification proof have been submitted to Pratibha Tiwari. Your personalized, world-class Career Intelligence Report will be delivered directly to your <strong className="text-emerald-700 font-bold">WhatsApp</strong> and <strong className="text-emerald-700 font-bold">Email</strong> within 2–3 business days.
           </div>
         </div>
 
@@ -468,7 +482,8 @@ export default function PremiumConfirmationModal({
           </button>
         </div>
       </motion.div>
+        </div>
+      </div>
     </div>
   );
 }
-

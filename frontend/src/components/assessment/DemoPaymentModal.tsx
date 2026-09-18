@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   X,
@@ -16,6 +16,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { safeLocalStorage } from '../../lib/storage-helper';
+import CountryPhoneInput, { validateFullPhone } from '../common/CountryPhoneInput';
 
 interface DemoPaymentModalProps {
   isOpen: boolean;
@@ -50,6 +51,19 @@ export default function DemoPaymentModal({
   const [errorMsg, setErrorMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useEffect(() => {
+    if (isOpen) {
+      (window as any).lenis?.stop();
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      (window as any).lenis?.start();
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const upiId = 'pratibhatiwari@icici';
@@ -77,8 +91,9 @@ export default function DemoPaymentModal({
     e.preventDefault();
     setErrorMsg('');
 
-    if (!whatsapp.trim()) {
-      setErrorMsg('Please provide your WhatsApp number so Pratibha can send your report.');
+    const phoneVal = validateFullPhone(whatsapp);
+    if (!phoneVal.isValid) {
+      setErrorMsg(phoneVal.errorMsg || 'Please provide your WhatsApp number so Pratibha can send your report.');
       return;
     }
 
@@ -152,14 +167,18 @@ Coaching Notes / Slot Preference: ${coachingNotes.trim() || 'N/A'}
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/85 backdrop-blur-md overflow-hidden">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          className="relative w-full max-w-2xl max-h-[92vh] flex flex-col bg-white rounded-3xl sm:rounded-[36px] shadow-2xl border border-white/20 overflow-hidden my-auto"
-        >
+      <div className="fixed inset-0 z-[200] bg-slate-950/85 backdrop-blur-md flex flex-col">
+        <div className="flex-1 overflow-y-auto overscroll-contain modal-scroll-area">
+          <div className="min-h-full flex items-center justify-center p-3 sm:p-6 py-10">
+            <motion.div
+              onWheel={(e) => e.stopPropagation()}
+              onTouchMove={(e) => e.stopPropagation()}
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="relative w-full max-w-2xl flex flex-col bg-white rounded-3xl sm:rounded-[36px] shadow-2xl border border-white/20 overflow-hidden my-auto"
+            >"
           {/* Header Banner */}
           <div className="bg-gradient-to-r from-primary via-slate-900 to-primary p-5 sm:p-7 text-white relative overflow-hidden shrink-0">
             <div className="absolute top-0 right-0 w-64 h-64 bg-gold/15 rounded-full blur-3xl pointer-events-none" />
@@ -327,13 +346,10 @@ Coaching Notes / Slot Preference: ${coachingNotes.trim() || 'N/A'}
                     <label className="text-xs font-semibold text-slate-700 mb-1 block">
                       WhatsApp Number (for Direct PDF Report Delivery) *
                     </label>
-                    <input
-                      type="tel"
+                    <CountryPhoneInput
                       value={whatsapp}
-                      onChange={(e) => setWhatsapp(e.target.value)}
-                      required
-                      placeholder="+91 98765 43210 or +1 555 0192"
-                      className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-gold focus:outline-none text-sm font-mono text-slate-900 bg-white"
+                      onChange={setWhatsapp}
+                      placeholder="e.g. 98765 43210"
                     />
                     <span className="text-[10px] text-slate-500 mt-1 block font-mono">
                       Pratibha will personally deliver your bespoke report here.
@@ -448,8 +464,9 @@ Coaching Notes / Slot Preference: ${coachingNotes.trim() || 'N/A'}
             </div>
           </div>
         </motion.div>
+          </div>
+        </div>
       </div>
     </AnimatePresence>
   );
 }
-
