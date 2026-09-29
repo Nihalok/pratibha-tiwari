@@ -47,7 +47,7 @@ export default function Contact() {
     email: '',
     phone: '',
     country: '',
-    inquiryType: 'Individual Coaching',
+    inquiryType: 'Executive Coaching',
     message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -56,12 +56,40 @@ export default function Contact() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
     setError('');
+
+    // 1. Name Validation
+    if (!formData.name.trim() || formData.name.trim().length < 2) {
+      setError('Please enter your full name (minimum 2 characters).');
+      return;
+    }
+
+    // 2. Email Validation
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(formData.email.trim())) {
+      setError('Please enter a valid email address (e.g. name@example.com).');
+      return;
+    }
+
+    // 3. Phone / WhatsApp Validation
+    const phoneDigits = localPhone.replace(/\D/g, '');
+    if (!phoneDigits || phoneDigits.length < 6 || phoneDigits.length > 15) {
+      setError('Please enter a valid phone or WhatsApp number (6 to 15 digits).');
+      return;
+    }
+
+    // 4. Message Validation
+    if (!formData.message.trim() || formData.message.trim().length < 5) {
+      setError('Please share a brief message or context about your inquiry (minimum 5 characters).');
+      return;
+    }
+
+    setIsSubmitting(true);
 
     try {
       const payload = {
         ...formData,
+        phone: `${selectedCountry.code} ${localPhone.trim()}`,
         country: selectedCountry.name
       };
 
@@ -73,7 +101,7 @@ export default function Contact() {
 
       if (response.ok) {
         setIsSuccess(true);
-        setFormData({ name: '', email: '', phone: '', country: '', inquiryType: 'Individual Coaching', message: '' });
+        setFormData({ name: '', email: '', phone: '', country: '', inquiryType: 'Executive Coaching', message: '' });
         setSelectedCountry(countryCodes[0]);
         setLocalPhone('');
       } else {
@@ -86,6 +114,7 @@ export default function Contact() {
       setIsSubmitting(false);
     }
   };
+
 
   return (
     <motion.div

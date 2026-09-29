@@ -11,6 +11,7 @@ import {
   ArrowLeft,
   CheckSquare,
   Square,
+  AlertCircle,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { jsPDF } from 'jspdf';
@@ -89,7 +90,7 @@ export default function CareerAssessment() {
     priceNum: number;
   }>({
     id: 'report',
-    title: 'Premium AI Career Intelligence Report',
+    title: 'Executive Career Intelligence & Strategy Report',
     price: '$68.00',
     priceNum: 68,
   });
@@ -100,6 +101,7 @@ export default function CareerAssessment() {
 
   // Drafts for text-based questions
   const [textDraft, setTextDraft] = useState('');
+  const [inputError, setInputError] = useState('');
   // Draft for multi-checkbox
   const [checkboxDraft, setCheckboxDraft] = useState<string[]>([]);
   const [bgLoaded, setBgLoaded] = useState(false);
@@ -115,6 +117,7 @@ export default function CareerAssessment() {
 
   // Reset drafts when step changes
   useEffect(() => {
+    setInputError('');
     if (step >= 0 && step < TOTAL_QUESTIONS) {
       const q = ALL_QUESTIONS[step];
       const existing = answers[step];
@@ -125,6 +128,31 @@ export default function CareerAssessment() {
       }
     }
   }, [step]);
+
+  // Validation helper for free assessment basic info
+  const validateShortAnswer = (questionText: string, value: string): string => {
+    const qLower = questionText.toLowerCase();
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return 'This field is required. Please provide a response to proceed.';
+    }
+    if (qLower.includes('email')) {
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(trimmed)) {
+        return 'Please enter a valid email address (e.g. name@company.com).';
+      }
+    } else if (qLower.includes('mobile') || qLower.includes('phone') || qLower.includes('number')) {
+      const digitsOnly = trimmed.replace(/\D/g, '');
+      if (digitsOnly.length < 7 || digitsOnly.length > 15) {
+        return 'Please enter a valid mobile number (7 to 15 digits).';
+      }
+    } else if (qLower.includes('name')) {
+      if (trimmed.length < 2) {
+        return 'Please enter your full name (minimum 2 characters).';
+      }
+    }
+    return '';
+  };
 
   // ── Score calculation ─────────────────────────────────────────────────────
   const rawScore = answers.reduce((sum, a) => sum + a.points, 0);
@@ -166,12 +194,14 @@ export default function CareerAssessment() {
     setAnswers([]);
     setIsFinished(false);
     setTextDraft('');
+    setInputError('');
     setCheckboxDraft([]);
   };
 
   const pushAnswer = (ans: Answer) => {
     const newAnswers = [...answers.slice(0, step), ans];
     setAnswers(newAnswers);
+    setInputError('');
     if (step < TOTAL_QUESTIONS - 1) {
       setStep(step + 1);
     } else {
@@ -192,13 +222,19 @@ export default function CareerAssessment() {
     pushAnswer({ category: q.category, text: q.text, type: 'single-choice', points: 0, value: option });
   };
 
-  // Short-answer: Next button
+  // Short-answer: Next button with validation
   const handleShortAnswerNext = () => {
-    if (!textDraft.trim()) return;
     const q = ALL_QUESTIONS[step];
+    const error = validateShortAnswer(q.text, textDraft);
+    if (error) {
+      setInputError(error);
+      return;
+    }
+    setInputError('');
     pushAnswer({ category: q.category, text: q.text, type: 'short-answer', points: 0, value: textDraft.trim() });
     setTextDraft('');
   };
+
 
   // Open-text: Next button
   const handleOpenTextNext = () => {
@@ -293,7 +329,7 @@ export default function CareerAssessment() {
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(8.5);
       doc.setTextColor(184, 151, 74);
-      doc.text('AI CAREER SUSTAINABILITY ASSESSMENT — FREE REPORT', margin, y + 5.5);
+      doc.text('EXECUTIVE CAREER SUSTAINABILITY ASSESSMENT — SCORECARD', margin, y + 5.5);
 
       // Date
       doc.setFont('helvetica', 'normal');
@@ -703,7 +739,7 @@ export default function CareerAssessment() {
                     Explore Premium Options
                   </button>
                 </div>
-                <p className="text-[10px] sm:text-xs text-mist font-mono">PERSONALIZED AI CAREER REPORT &nbsp;·&nbsp; DELIVERED TO WHATSAPP & EMAIL</p>
+                <p className="text-[10px] sm:text-xs text-mist font-mono">BESPOKE EXECUTIVE REPORT &nbsp;·&nbsp; DELIVERED TO WHATSAPP & EMAIL WITHIN 10 WORKING DAYS</p>
               </div>
             </motion.div>
           )}
@@ -770,14 +806,31 @@ export default function CareerAssessment() {
                 {/* ── SHORT ANSWER ── */}
                 {currentQ.type === 'short-answer' && (
                   <div className="space-y-4 mt-4">
-                    <input
-                      type={currentQ.text.toLowerCase().includes('email') ? 'email' : currentQ.text.toLowerCase().includes('mobile') ? 'tel' : 'text'}
-                      className="w-full p-4 rounded-2xl border-2 border-primary/10 bg-white/60 text-primary placeholder:text-mist/50 focus:outline-none focus:border-secondary transition-colors text-base"
-                      placeholder={`Enter your ${currentQ.text.toLowerCase()}…`}
-                      value={textDraft}
-                      onChange={e => setTextDraft(e.target.value)}
-                      onKeyDown={e => { if (e.key === 'Enter') handleShortAnswerNext(); }}
-                    />
+                    <div>
+                      <input
+                        type={currentQ.text.toLowerCase().includes('email') ? 'email' : currentQ.text.toLowerCase().includes('mobile') || currentQ.text.toLowerCase().includes('phone') ? 'tel' : 'text'}
+                        className={`w-full p-4 rounded-2xl border-2 bg-white/60 text-primary placeholder:text-mist/50 focus:outline-none transition-colors text-base ${
+                          inputError ? 'border-rose-500 focus:border-rose-600 bg-rose-50/20' : 'border-primary/10 focus:border-secondary'
+                        }`}
+                        placeholder={`Enter your ${currentQ.text.toLowerCase()}…`}
+                        value={textDraft}
+                        onChange={e => {
+                          setTextDraft(e.target.value);
+                          if (inputError) setInputError('');
+                        }}
+                        onKeyDown={e => { if (e.key === 'Enter') handleShortAnswerNext(); }}
+                      />
+                      {inputError && (
+                        <motion.p
+                          initial={{ opacity: 0, y: -4 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="text-rose-600 text-xs font-semibold mt-2 flex items-center gap-1.5"
+                        >
+                          <AlertCircle size={14} className="shrink-0" />
+                          <span>{inputError}</span>
+                        </motion.p>
+                      )}
+                    </div>
                     <button
                       onClick={handleShortAnswerNext}
                       disabled={!textDraft.trim()}
@@ -787,6 +840,7 @@ export default function CareerAssessment() {
                     </button>
                   </div>
                 )}
+
 
                 {/* ── RATING ── */}
                 {currentQ.type === 'rating' && (

@@ -95,8 +95,10 @@ export default function PremiumAssessmentWizard({
   const [linkedInUrl, setLinkedInUrl] = useState('');
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [resumeFileName, setResumeFileName] = useState<string>('');
+  const [resumeDataUrl, setResumeDataUrl] = useState<string>('');
   const [coverLetterFile, setCoverLetterFile] = useState<File | null>(null);
   const [coverLetterFileName, setCoverLetterFileName] = useState<string>('');
+  const [coverLetterDataUrl, setCoverLetterDataUrl] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   // Auto-prefill candidate details from Stripe payment session
@@ -155,8 +157,10 @@ export default function PremiumAssessmentWizard({
     setLinkedInUrl('');
     setResumeFile(null);
     setResumeFileName('');
+    setResumeDataUrl('');
     setCoverLetterFile(null);
     setCoverLetterFileName('');
+    setCoverLetterDataUrl('');
     setCurrentRoleDescription('');
     setWorkEnergyGiving('');
     setWorkEnergyDraining('');
@@ -266,6 +270,11 @@ export default function PremiumAssessmentWizard({
       setResumeFile(file);
       setResumeFileName(file.name);
       setErrorMsg('');
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setResumeDataUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -274,6 +283,11 @@ export default function PremiumAssessmentWizard({
       const file = e.target.files[0];
       setCoverLetterFile(file);
       setCoverLetterFileName(file.name);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCoverLetterDataUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -374,7 +388,9 @@ export default function PremiumAssessmentWizard({
           cityCountry,
           linkedInUrl,
           resumeFileName,
+          resumeDataUrl,
           coverLetterFileName,
+          coverLetterDataUrl,
           currentRoleDescription,
           workEnergyGiving,
           workEnergyDraining,
@@ -392,7 +408,7 @@ export default function PremiumAssessmentWizard({
           feedbackPreference,
           packageId: selectedPackage?.id || 'report',
           packagePrice: selectedPackage?.price || '$68.00',
-          packageTitle: selectedPackage?.title || 'Premium AI Career Intelligence Report'
+          packageTitle: selectedPackage?.title || 'Executive Career Intelligence Report'
         };
 
         setIsSubmitting(true);
@@ -440,11 +456,12 @@ export default function PremiumAssessmentWizard({
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-100 pb-6 mb-8 gap-4">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-gold/10 text-gold-dark rounded-full text-xs font-mono font-bold uppercase tracking-widest mb-2">
-            <Sparkles size={14} /> AI Career Intelligence Blueprint
+            <Sparkles size={14} /> Executive Career Intelligence Blueprint
           </div>
           <h2 className="text-2xl sm:text-4xl font-serif text-primary font-bold">
-            Premium Strategic Discovery Questionnaire
+            Strategic Discovery Questionnaire
           </h2>
+
           <p className="text-mist text-xs sm:text-sm mt-1 flex items-center gap-2 font-mono">
             <Clock size={14} /> Estimated completion time: 12–15 minutes
           </p>
@@ -969,7 +986,7 @@ export default function PremiumAssessmentWizard({
                     className="mt-0.5 rounded text-gold focus:ring-gold"
                   />
                   <span>
-                    I understand AI may assist in drafting the report, and all recommendations will be reviewed by a human career strategist.
+                    I understand that my strategic report will be personally evaluated, calibrated, and prepared by Coach Pratibha Tiwari & executive strategists within 10 working days.
                   </span>
                 </label>
               </div>

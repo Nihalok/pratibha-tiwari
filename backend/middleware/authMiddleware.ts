@@ -9,12 +9,15 @@ interface AuthRequest extends Request {
 export const protect = async (req: AuthRequest, res: Response, next: NextFunction) => {
   let token;
 
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
-  ) {
-    token = req.headers.authorization.split(' ')[1];
-  } else if (req.cookies.token) {
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer')) {
+    const rawToken = authHeader.split(' ')[1];
+    if (rawToken && rawToken !== 'null' && rawToken !== 'undefined' && rawToken.trim() !== '') {
+      token = rawToken.trim();
+    }
+  }
+
+  if (!token && req.cookies && req.cookies.token) {
     token = req.cookies.token;
   }
 

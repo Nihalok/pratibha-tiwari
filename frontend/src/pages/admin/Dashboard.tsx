@@ -4,14 +4,21 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { FileText, MessageSquare, Star, Clock, Activity as ActivityIcon, ArrowRight } from 'lucide-react';
+import { FileText, MessageSquare, Star, Clock, Activity as ActivityIcon, ArrowRight, Users, DollarSign, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ADMIN_ROUTES } from '../../config/admin';
 import { motion, AnimatePresence } from 'motion/react';
 import { Activity } from '../../types';
 
 export default function Dashboard() {
-  const [counts, setCounts] = useState({ posts: 0, messages: 0, testimonials: 0 });
+  const [counts, setCounts] = useState({
+    posts: 0,
+    messages: 0,
+    testimonials: 0,
+    totalEnrolled: 0,
+    totalRevenue: 0,
+    pendingPayments: 0
+  });
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -24,7 +31,10 @@ export default function Dashboard() {
         setCounts({
           posts: stats.postCount || 0,
           messages: stats.unreadMessages || 0,
-          testimonials: stats.testimonialCount || 0
+          testimonials: stats.testimonialCount || 0,
+          totalEnrolled: stats.totalEnrolled || 0,
+          totalRevenue: stats.totalRevenue || 0,
+          pendingPayments: stats.pendingPayments || 0
         });
         setActivities(stats.recentActivities || []);
       }
@@ -54,8 +64,8 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchData();
-    // Poll for updates every 30 seconds since we lost real-time Firebase
-    const interval = setInterval(fetchData, 30000);
+    // Poll for updates every 15 seconds
+    const interval = setInterval(fetchData, 15000);
     return () => clearInterval(interval);
   }, []);
 
@@ -64,6 +74,7 @@ export default function Dashboard() {
       case 'post': return <FileText size={14} />;
       case 'testimonial': return <Star size={14} />;
       case 'message': return <MessageSquare size={14} />;
+      case 'assessment': return <ShieldCheck size={14} />;
       default: return <ActivityIcon size={14} />;
     }
   };
@@ -73,14 +84,16 @@ export default function Dashboard() {
       case 'post': return 'bg-blue-500/10 text-blue-600';
       case 'testimonial': return 'bg-amber-500/10 text-amber-600';
       case 'message': return 'bg-rose-500/10 text-rose-600';
+      case 'assessment': return 'bg-emerald-500/10 text-emerald-600';
       default: return 'bg-gray-500/10 text-gray-600';
     }
   };
 
   const stats = [
-    { name: 'Total Posts', value: counts.posts, icon: <FileText />, color: 'bg-blue-500' },
-    { name: 'Unread Messages', value: counts.messages, icon: <MessageSquare />, color: 'bg-rose-500' },
-    { name: 'Testimonials', value: counts.testimonials, icon: <Star />, color: 'bg-amber-500' },
+    { name: 'Enrolled Candidates', value: counts.totalEnrolled, icon: <ShieldCheck />, color: 'bg-emerald-600', link: ADMIN_ROUTES.leadsAndEnroll },
+    { name: 'Total Revenue', value: `$${counts.totalRevenue.toFixed(2)}`, icon: <DollarSign />, color: 'bg-amber-500', link: ADMIN_ROUTES.leadsAndEnroll },
+    { name: 'Unread Messages', value: counts.messages, icon: <MessageSquare />, color: 'bg-rose-500', link: ADMIN_ROUTES.messages },
+    { name: 'Total Posts', value: counts.posts, icon: <FileText />, color: 'bg-blue-500', link: ADMIN_ROUTES.posts },
   ];
 
   return (
@@ -92,15 +105,21 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {stats.map((stat) => (
-          <div key={stat.name} className="bg-white p-5 sm:p-8 rounded-2xl sm:rounded-[32px] border border-gray-100 shadow-xs flex items-center space-x-4 sm:space-x-6">
-            <div className={`p-3.5 sm:p-4 rounded-xl sm:rounded-2xl text-white ${stat.color} shrink-0`}>{stat.icon}</div>
+          <Link
+            key={stat.name}
+            to={stat.link}
+            className="bg-white p-5 sm:p-6 rounded-2xl sm:rounded-[28px] border border-gray-100 shadow-xs hover:shadow-md transition-all flex items-center space-x-4 group"
+          >
+            <div className={`p-3.5 sm:p-4 rounded-xl sm:rounded-2xl text-white ${stat.color} shrink-0 group-hover:scale-105 transition-transform`}>
+              {stat.icon}
+            </div>
             <div>
               <div className="text-xl sm:text-2xl font-bold text-primary">{stat.value}</div>
               <div className="text-xs sm:text-sm text-gray-500">{stat.name}</div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
 
@@ -165,6 +184,10 @@ export default function Dashboard() {
             <div className="absolute top-0 right-0 w-64 h-64 bg-secondary/20 blur-[100px] rounded-full translate-x-1/2 -translate-y-1/2 pointer-events-none" />
             <h3 className="text-lg sm:text-xl font-serif italic relative z-10">Strategic Shortcuts</h3>
             <div className="grid gap-3 sm:gap-4 relative z-10">
+              <Link to={ADMIN_ROUTES.leadsAndEnroll} className="bg-white/10 hover:bg-white/20 p-4 sm:p-5 rounded-2xl border border-white/10 transition-all flex items-center justify-between text-xs sm:text-sm group">
+                <span>Leads &amp; Enrollments Portal</span>
+                <Users className="text-secondary group-hover:scale-110 transition-transform shrink-0" size={18} />
+              </Link>
               <Link to={ADMIN_ROUTES.posts} className="bg-white/10 hover:bg-white/20 p-4 sm:p-5 rounded-2xl border border-white/10 transition-all flex items-center justify-between text-xs sm:text-sm group">
                 <span>Draft New Insights Post</span>
                 <FileText className="text-secondary group-hover:scale-110 transition-transform shrink-0" size={18} />
@@ -184,3 +207,4 @@ export default function Dashboard() {
     </div>
   );
 }
+

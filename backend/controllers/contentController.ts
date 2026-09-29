@@ -2,6 +2,7 @@ import Post from '../models/Post.js';
 import Message from '../models/Message.js';
 import Testimonial from '../models/Testimonial.js';
 import Activity from '../models/Activity.js';
+import AssessmentPayment from '../models/AssessmentPayment.js';
 import { Request, Response, NextFunction } from 'express';
 import asyncHandler from '../middleware/asyncHandler.js';
 import { uploadImage } from '../utils/imageUploader.js';
@@ -514,12 +515,16 @@ export const logClientActivity = asyncHandler(async (req: Request, res: Response
 
 // Dashboard Stats
 export const getDashboardStats = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-  const [postCount, unreadMessages, testimonialCount, recentActivities] = await Promise.all([
+  const [postCount, unreadMessages, testimonialCount, recentActivities, paidAssessments, pendingAssessments] = await Promise.all([
     Post.countDocuments(),
     Message.countDocuments({ status: 'unread' }),
     Testimonial.countDocuments(),
     Activity.find().sort({ timestamp: -1 }).limit(10).lean(),
+    AssessmentPayment.find({ paymentStatus: 'paid' }).lean(),
+    AssessmentPayment.countDocuments({ paymentStatus: 'pending' })
   ]);
+
+  const totalRevenue = paidAssessments.reduce((sum, a) => sum + (a.amount || 0), 0);
 
   res.status(200).json({
     success: true,
@@ -527,6 +532,9 @@ export const getDashboardStats = asyncHandler(async (req: Request, res: Response
       postCount,
       unreadMessages,
       testimonialCount,
+      totalEnrolled: paidAssessments.length,
+      pendingPayments: pendingAssessments,
+      totalRevenue,
       recentActivities
     }
   });

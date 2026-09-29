@@ -45,10 +45,10 @@ export default function PremiumConfirmationModal({
 
   if (!isOpen) return null;
 
-  const pkgTitle = formData?.packageTitle || (formData?.packageId === 'platinum' ? 'Platinum Package: Report + 45-Min Live Coaching (ICF-PCC)' : 'Premium AI Career Intelligence Report');
+  const pkgTitle = formData?.packageTitle || (formData?.packageId === 'platinum' ? 'Platinum Package: Report + 45-Min Live Coaching (ICF-PCC)' : 'Executive Career Intelligence & Strategy Report');
   const pkgPrice = formData?.packagePrice || (formData?.packageId === 'platinum' ? '$98.00' : '$68.00');
   const isPlatinum = formData?.packageId === 'platinum' || pkgPrice === '$98.00' || pkgPrice === '$98';
-  const orderId = formData?.orderId || `AI-EXEC-${Math.floor(100000 + Math.random() * 900000)}`;
+  const orderId = formData?.orderId || `EXEC-STRAT-${Math.floor(100000 + Math.random() * 900000)}`;
   const whatsappNum = formData?.whatsapp || 'Provided during submission';
 
   const downloadSummaryPdf = async () => {
@@ -91,7 +91,7 @@ export default function PremiumConfirmationModal({
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(255, 255, 255);
       doc.setFontSize(11);
-      doc.text('AI CAREER INTELLIGENCE & LEADERSHIP BLUEPRINT', margin + 8, margin + 20);
+      doc.text('EXECUTIVE CAREER INTELLIGENCE & LEADERSHIP BLUEPRINT', margin + 8, margin + 20);
 
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(203, 213, 225);
@@ -128,11 +128,12 @@ export default function PremiumConfirmationModal({
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(15, 23, 42);
       doc.setFontSize(8);
-      const noticeText = `Your assessment has been queued for human strategic review by Pratibha Tiwari. Your bespoke, world-class report will be prepared and delivered directly to your WhatsApp (${whatsappNum}) and email within 2–3 business days.`;
+      const noticeText = `Your assessment has been queued for strategic review by Pratibha Tiwari. Your bespoke, world-class report will be prepared and delivered directly to your WhatsApp (${whatsappNum}) and email within 10 working days.`;
       const splitNotice = doc.splitTextToSize(noticeText, contentWidth - 12);
       doc.text(splitNotice, margin + 6, currentY + 11.5);
 
       currentY += 24;
+
 
       // Section: Candidate Profile & Enrolled Tier
       doc.setFillColor(255, 255, 255);
@@ -381,7 +382,7 @@ export default function PremiumConfirmationModal({
           </h2>
 
           <div className="mt-3 bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5 text-xs sm:text-sm text-slate-700 leading-relaxed font-sans max-w-lg mx-auto shadow-xs">
-            Your responses and payment verification proof have been submitted to Pratibha Tiwari. Your personalized, world-class Career Intelligence Report will be delivered directly to your <strong className="text-emerald-700 font-bold">WhatsApp</strong> and <strong className="text-emerald-700 font-bold">Email</strong> within 2–3 business days.
+            Your responses and payment verification proof have been submitted to Pratibha Tiwari. Your personalized Executive Career Intelligence Report will be delivered directly to your <strong className="text-emerald-700 font-bold">WhatsApp</strong> and <strong className="text-emerald-700 font-bold">Email</strong> within <strong className="text-slate-900 font-bold">10 working days</strong>.
           </div>
         </div>
 
@@ -417,7 +418,7 @@ export default function PremiumConfirmationModal({
                 <span className="text-amber-800 uppercase font-mono font-bold tracking-wider text-[10px] block flex items-center gap-1">
                   <Clock size={12} /> Delivery Timeline
                 </span>
-                <span className="font-bold text-amber-900 text-xs">Within 2–3 Business Days</span>
+                <span className="font-bold text-amber-900 text-xs">Within 10 Working Days</span>
               </div>
             </div>
 
@@ -441,19 +442,31 @@ export default function PremiumConfirmationModal({
               </div>
             )}
 
-            {isPlatinum && (
-              <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 text-xs text-amber-900 flex items-start gap-2">
-                <Award className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                <span>
-                  <strong>Platinum Privilege:</strong> Pratibha Tiwari will reach out directly on WhatsApp ({whatsappNum}) with calendar invites to schedule your live 45-minute 1-on-1 strategic coaching session.
+            {/* Calendly Booking Card */}
+            <div className="bg-blue-50/80 border border-blue-200 rounded-2xl p-4 text-xs text-blue-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+              <div className="space-y-1">
+                <span className="font-bold text-blue-900 text-sm flex items-center gap-1.5">
+                  <Award className="w-4 h-4 text-amber-600 shrink-0" /> Schedule Your Strategy Session
                 </span>
+                <p className="text-slate-600 text-xs leading-relaxed">
+                  Book your live 1-on-1 strategic session with Pratibha Tiwari via our official calendar link.
+                </p>
               </div>
-            )}
+              <a
+                href="https://calendly.com/dsdtrainings/30min"
+                target="_blank"
+                rel="noreferrer"
+                className="px-4 py-2 bg-primary hover:bg-slate-900 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 whitespace-nowrap transition-all shadow-sm shrink-0"
+              >
+                <span>Open Calendly</span>
+                <span className="text-gold">→</span>
+              </a>
+            </div>
 
             <div className="bg-white p-3 rounded-xl border border-slate-200 text-xs text-slate-600 flex items-start gap-2">
               <ShieldCheck className="w-4 h-4 text-gold shrink-0 mt-0.5" />
               <span>
-                All responses have been logged and securely dispatched to the admin portal. Pratibha Tiwari and the strategy team will audit your blueprint and deliver the executive report directly.
+                All responses have been logged and securely dispatched. Pratibha Tiwari and the strategy team will audit your blueprint and deliver the executive report directly within 10 working days.
               </span>
             </div>
           </div>
@@ -466,14 +479,16 @@ export default function PremiumConfirmationModal({
             disabled={isGeneratingPdf}
             className="flex-1 bg-slate-900 text-white px-5 py-3.5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 hover:bg-slate-800 transition-all shadow-md cursor-pointer active:scale-95 disabled:opacity-50"
           >
-            <Download size={16} /> {isGeneratingPdf ? 'Generating PDF...' : 'Download Executive Receipt PDF'}
+            <Download size={16} /> {isGeneratingPdf ? 'Generating PDF...' : 'Download Receipt PDF'}
           </button>
-          <button
-            onClick={onClose}
-            className="flex-1 bg-slate-100 text-slate-800 px-5 py-3.5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 hover:bg-slate-200 transition-all cursor-pointer active:scale-95"
+          <a
+            href="https://calendly.com/dsdtrainings/30min"
+            target="_blank"
+            rel="noreferrer"
+            className="flex-1 bg-emerald-600 text-white px-5 py-3.5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 hover:bg-emerald-700 transition-all shadow-md cursor-pointer active:scale-95"
           >
-            <ArrowLeft size={16} /> Review Answers
-          </button>
+            <span>Book Calendar Slot</span>
+          </a>
           <button
             onClick={onHome}
             className="flex-1 bg-gold text-slate-950 px-5 py-3.5 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 hover:bg-amber-400 transition-all shadow-md cursor-pointer active:scale-95"
@@ -487,3 +502,4 @@ export default function PremiumConfirmationModal({
     </div>
   );
 }
+

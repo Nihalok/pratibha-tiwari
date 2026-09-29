@@ -39,7 +39,7 @@ export default function DemoPaymentModal({
 }: DemoPaymentModalProps) {
   const pkgPrice = formData?.packagePrice || amount || '$68.00';
   const isPlatinum = formData?.packageId === 'platinum' || pkgPrice === '$98.00' || pkgPrice === '$98';
-  const pkgTitle = formData?.packageTitle || (isPlatinum ? 'Platinum Package: Report + 45-Min Live Coaching' : 'Premium AI Career Intelligence Report');
+  const pkgTitle = formData?.packageTitle || (isPlatinum ? 'Platinum Package: Report + 45-Min Live Coaching' : 'Executive Career Intelligence & Strategy Report');
 
   // Form State
   const [whatsapp, setWhatsapp] = useState(formData?.whatsapp || '');
@@ -132,16 +132,33 @@ Payment Proof Attached: ${screenshotFile ? 'YES (Screenshot Provided)' : 'NO'}
 
 === CAREER DISCOVERY RESPONSES ===
 LinkedIn: ${formData?.linkedInUrl || 'N/A'}
+Resume / Uploads: ${formData?.resumeFileName || (screenshotFile ? screenshotFile.name : 'N/A')}
 Current Role: ${formData?.currentRoleDescription || 'N/A'}
+Energy-Giving Activities: ${formData?.workEnergyGiving || 'N/A'}
+Energy-Draining Activities: ${formData?.workEnergyDraining || 'N/A'}
 Three Year Vision: ${formData?.threeYearVision || 'N/A'}
 Biggest Obstacle: ${formData?.singleBiggestObstacle || 'N/A'}
+Why Solving Now: ${formData?.whySolvingImportantNow || 'N/A'}
+AI / Tech Usage: ${formData?.howUsingAi || 'N/A'}
 AI Concerns: ${formData?.aiWorries || 'N/A'}
+AI Enhancement Areas: ${formData?.aiEnhancementAreas || 'N/A'}
+Colleague Perception: ${formData?.colleaguePerception || 'N/A'}
+Desired Reputation: ${formData?.desiredReputation || 'N/A'}
 Focus Areas: ${(formData?.focusAreas || []).join(', ')}
-Weekly Time: ${formData?.weeklyTime || 'N/A'}
-Career Question: ${formData?.oneCareerQuestion || 'N/A'}
+Weekly Time Commitment: ${formData?.weeklyTime || 'N/A'}
+Candidate's Career Question for Pratibha: ${formData?.oneCareerQuestion || 'N/A'}
+Feedback Preference: ${formData?.feedbackPreference || 'N/A'}
 Coaching Notes / Slot Preference: ${coachingNotes.trim() || 'N/A'}
       `.trim();
 
+      // Register assessment & payment record in database for Leads & Enrollments hub
+      await fetch('/api/assessment/offline-submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(submissionPayload)
+      });
+
+      // Also log inquiry in content messages
       await fetch('/api/content/messages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -155,7 +172,6 @@ Coaching Notes / Slot Preference: ${coachingNotes.trim() || 'N/A'}
         })
       });
     } catch (_err) {
-      // Non-blocking fallback to local storage
       console.warn('Backend notification logged locally:', _err);
     }
 
@@ -196,7 +212,7 @@ Coaching Notes / Slot Preference: ${coachingNotes.trim() || 'N/A'}
 
             <h3 className="text-2xl sm:text-3xl font-serif">{pkgTitle}</h3>
             <p className="text-slate-300 text-xs sm:text-sm mt-1">
-              Complete payment below and submit proof. Pratibha will review your assessment and send your bespoke report directly to WhatsApp.
+              Complete payment below and submit proof. Pratibha will review your assessment and send your bespoke report directly to Email and WhatsApp within 10 working days.
             </p>
 
             <div className="mt-4 flex justify-between items-end border-t border-white/10 pt-3">
@@ -209,7 +225,7 @@ Coaching Notes / Slot Preference: ${coachingNotes.trim() || 'N/A'}
               <div className="text-right">
                 <div className="text-xs text-slate-300 font-medium">Delivery Mode</div>
                 <div className="text-xs font-mono text-emerald-400 flex items-center justify-end gap-1">
-                  <Smartphone size={13} /> Direct WhatsApp Delivery
+                  <Smartphone size={13} /> Email & WhatsApp Delivery
                 </div>
               </div>
             </div>
@@ -459,7 +475,7 @@ Coaching Notes / Slot Preference: ${coachingNotes.trim() || 'N/A'}
                 <ShieldCheck size={14} className="text-gold" /> Encrypted & Audited
               </div>
               <div className="flex items-center gap-1.5">
-                <Clock size={14} className="text-gold" /> Response in 2–3 Days
+                <Clock size={14} className="text-gold" /> Delivered within 10 working days
               </div>
             </div>
           </div>

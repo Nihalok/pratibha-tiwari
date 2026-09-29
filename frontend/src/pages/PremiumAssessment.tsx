@@ -23,24 +23,26 @@ import {
 } from 'lucide-react';
 import PremiumAssessmentWizard from '../components/assessment/PremiumAssessmentWizard';
 import PremiumConfirmationModal from '../components/assessment/PremiumConfirmationModal';
+import StripeQrModal from '../components/assessment/StripeQrModal';
+import { QrCode } from 'lucide-react';
 import assessmentBg from '../assets/images/pratibha-tiwari-career-assessment.jpg';
 
 const PACKAGES = [
   {
     id: 'report' as const,
     badge: 'Standard Blueprint',
-    title: 'Premium Report Only',
+    title: 'Executive Report Only',
     price: '$68',
     priceNum: 68,
     priceLabel: 'One-time Investment',
-    tagline: 'Get an exhaustive, bespoke AI Career Intelligence Report built around your unique profile.',
+    tagline: 'Get an exhaustive, bespoke Executive Career Intelligence Report built around your unique profile.',
     features: [
-      'Exhaustive AI Career Intelligence Report (PDF)',
+      'Exhaustive Executive Career Intelligence Report (PDF)',
       'Deep Resume & Positioning Gap Audit',
-      'AI Readiness & Career Sustainability Score',
+      'Career Sustainability & Leadership Score',
       'Personalized Growth Roadmap',
       'Reviewed & Calibrated by Human Strategists',
-      'Direct WhatsApp & Email PDF Delivery',
+      'Direct WhatsApp & Email Delivery within 10 Working Days',
     ],
     color: 'border-primary/20 hover:border-primary',
     badge2: null,
@@ -52,19 +54,20 @@ const PACKAGES = [
     price: '$98',
     priceNum: 98,
     priceLabel: 'Total Value $350+',
-    tagline: 'Everything in the Premium Report PLUS a live 45-min 1-on-1 strategy session with ICF-PCC Coach Pratibha Tiwari.',
+    tagline: 'Everything in the Executive Report PLUS a live 45-min 1-on-1 strategy session with ICF-PCC Coach Pratibha Tiwari.',
     features: [
-      'Everything in the $68 Premium Report',
+      'Everything in the $68 Executive Report',
       'Live 45-Min 1-on-1 Coaching with Pratibha Tiwari (ICF-PCC)',
       'Personalized Executive Influence & Growth Roadmapping',
-      'AI Tools Implementation Strategy',
+      'Leadership & Modern Tools Implementation Strategy',
       'LinkedIn & Personal Brand Optimization Guidance',
-      'Direct WhatsApp Calendar Booking & VIP Delivery',
+      'Delivery within 10 Working Days + Direct Calendly Invite',
     ],
     color: 'border-gold/40 hover:border-gold',
     badge2: 'Most Popular',
   },
 ];
+
 
 export default function PremiumAssessment() {
   const navigate = useNavigate();
@@ -76,11 +79,16 @@ export default function PremiumAssessment() {
   const [bgLoaded, setBgLoaded] = useState(false);
   const [selectedPkg, setSelectedPkg] = useState<typeof PACKAGES[0]>(PACKAGES[0]);
   const [isWizardOpen, setIsWizardOpen] = useState(false);
-  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [formData, setFormData] = useState<any>(null);
 
+  // Stripe QR modal states
+  const [isQrOpen, setIsQrOpen] = useState(false);
+  const [qrCheckoutUrl, setQrCheckoutUrl] = useState('');
+  const [qrSessionId, setQrSessionId] = useState('');
+
   const [loadingPackageId, setLoadingPackageId] = useState<string | null>(null);
+  const [loadingQrId, setLoadingQrId] = useState<string | null>(null);
   const [isCheckingAccess, setIsCheckingAccess] = useState(false);
   const [verifiedSessionId, setVerifiedSessionId] = useState<string | null>(null);
   const [accessError, setAccessError] = useState<string | null>(null);
@@ -109,7 +117,7 @@ export default function PremiumAssessment() {
     }
   }, [sessionIdFromUrl]);
 
-  // 2. Trigger Stripe Hosted Checkout
+  // 2. Trigger Stripe Hosted Checkout (Direct)
   const handleStartPayment = async (pkg: typeof PACKAGES[0]) => {
     setSelectedPkg(pkg);
     setLoadingPackageId(pkg.id);
@@ -140,6 +148,46 @@ export default function PremiumAssessment() {
       setLoadingPackageId(null);
     }
   };
+
+  // 3. Trigger Stripe QR Modal for Mobile Scan
+  const handleStartQrPayment = async (pkg: typeof PACKAGES[0]) => {
+    setSelectedPkg(pkg);
+    setLoadingQrId(pkg.id);
+    setAccessError(null);
+
+    try {
+      const res = await fetch('/api/assessment/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          packageId: pkg.id,
+          packageTitle: pkg.title
+        })
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success && data.url && data.sessionId) {
+        setQrCheckoutUrl(data.url);
+        setQrSessionId(data.sessionId);
+        setIsQrOpen(true);
+      } else {
+        setAccessError(data.message || 'Unable to initialize Stripe QR session.');
+      }
+    } catch (err) {
+      console.error('[QR Checkout Error]', err);
+      setAccessError('Network error initializing Stripe QR session.');
+    } finally {
+      setLoadingQrId(null);
+    }
+  };
+
+  const handleQrVerifiedSuccess = (sessionId: string) => {
+    setIsQrOpen(false);
+    setVerifiedSessionId(sessionId);
+    setIsWizardOpen(true);
+  };
+
 
   return (
     <div className="min-h-screen bg-white pt-24 sm:pt-32 pb-16 sm:pb-24 px-3 sm:px-6 overflow-hidden relative">
@@ -217,12 +265,12 @@ export default function PremiumAssessment() {
               </div>
 
               <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif text-primary leading-tight">
-                Unlock Your <span className="italic text-secondary">AI Career</span>
+                Unlock Your <span className="italic text-secondary">Executive Career</span>
                 <br />Intelligence Report
               </h1>
 
               <p className="text-base sm:text-lg text-mist max-w-2xl mx-auto leading-relaxed">
-                Complete payment securely via Stripe. Once confirmed, unlock your strategic questionnaire and receive your executive blueprint within 10 days.
+                Complete payment securely via Stripe. Once confirmed, unlock your strategic questionnaire and receive your executive blueprint within 10 working days.
               </p>
 
               {/* Trust row */}
@@ -230,9 +278,10 @@ export default function PremiumAssessment() {
                 <span className="flex items-center gap-1.5"><Lock size={13} className="text-gold" /> 256-Bit Encrypted Stripe Payment</span>
                 <span className="flex items-center gap-1.5"><Clock size={13} className="text-gold" /> Step 1: Secure Payment</span>
                 <span className="flex items-center gap-1.5"><Sparkles size={13} className="text-gold" /> Step 2: Fill Questionnaire</span>
-                <span className="flex items-center gap-1.5"><ShieldCheck size={13} className="text-gold" /> Step 3: Report Delivery within 10 Days</span>
+                <span className="flex items-center gap-1.5"><ShieldCheck size={13} className="text-gold" /> Step 3: Delivery within 10 Working Days &amp; Calendar Booking</span>
               </div>
             </motion.div>
+
 
             {/* Package Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
@@ -275,34 +324,65 @@ export default function PremiumAssessment() {
                     ))}
                   </ul>
 
-                  {/* CTA Button */}
-                  <button
-                    onClick={() => handleStartPayment(pkg)}
-                    disabled={loadingPackageId !== null}
-                    className={`w-full mt-6 py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg active:scale-98 ${
-                      pkg.badge2
-                        ? 'bg-gradient-to-r from-gold via-amber-400 to-gold text-slate-950 hover:shadow-gold/30'
-                        : 'bg-primary text-white hover:bg-slate-900 shadow-primary/20'
-                    } ${loadingPackageId !== null && loadingPackageId !== pkg.id ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  >
-                    {loadingPackageId === pkg.id ? (
-                      <>
-                        <Loader2 size={18} className="animate-spin" />
-                        <span>Connecting to Stripe...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>Pay {pkg.price} & Start Premium Assessment</span>
-                        <ArrowRight size={16} />
-                      </>
-                    )}
-                  </button>
+                  {/* CTA Buttons (Direct Stripe + Scan QR) */}
+                  <div className="mt-6 space-y-2.5">
+                    <button
+                      onClick={() => handleStartPayment(pkg)}
+                      disabled={loadingPackageId !== null || loadingQrId !== null}
+                      className={`w-full py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg active:scale-98 ${
+                        pkg.badge2
+                          ? 'bg-gradient-to-r from-gold via-amber-400 to-gold text-slate-950 hover:shadow-gold/30'
+                          : 'bg-primary text-white hover:bg-slate-900 shadow-primary/20'
+                      } ${(loadingPackageId !== null && loadingPackageId !== pkg.id) || (loadingQrId !== null && loadingQrId !== pkg.id) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    >
+                      {loadingPackageId === pkg.id ? (
+                        <>
+                          <Loader2 size={18} className="animate-spin" />
+                          <span>Connecting to Stripe...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>Pay {pkg.price} &amp; Start Assessment</span>
+                          <ArrowRight size={16} />
+                        </>
+                      )}
+                    </button>
+
+                    <button
+                      onClick={() => handleStartQrPayment(pkg)}
+                      disabled={loadingPackageId !== null || loadingQrId !== null}
+                      className="w-full py-3 px-4 rounded-2xl font-semibold text-xs text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs active:scale-98"
+                    >
+                      {loadingQrId === pkg.id ? (
+                        <>
+                          <Loader2 size={14} className="animate-spin text-gold" />
+                          <span>Generating QR...</span>
+                        </>
+                      ) : (
+                        <>
+                          <QrCode size={15} className="text-secondary" />
+                          <span>Scan QR Code to Pay on Mobile</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </motion.div>
               ))}
             </div>
           </>
         )}
       </div>
+
+      {/* Stripe QR Modal */}
+      <StripeQrModal
+        isOpen={isQrOpen}
+        checkoutUrl={qrCheckoutUrl}
+        sessionId={qrSessionId}
+        packageTitle={selectedPkg.title}
+        packagePrice={selectedPkg.price}
+        onSuccess={handleQrVerifiedSuccess}
+        onClose={() => setIsQrOpen(false)}
+      />
 
       {/* Wizard Modal — covers navbar, only form scrolls */}
       {isWizardOpen && selectedPkg && (
@@ -340,3 +420,4 @@ export default function PremiumAssessment() {
     </div>
   );
 }
+

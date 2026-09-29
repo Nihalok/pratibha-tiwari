@@ -33,7 +33,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 1500);
 
-      const response = await fetch('/api/admin/profile', { signal: controller.signal });
+      const headers: Record<string, string> = {};
+      const token = localStorage.getItem('token');
+      if (token && token !== 'null' && token !== 'undefined') {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const response = await fetch('/api/admin/profile', { 
+        signal: controller.signal,
+        credentials: 'include',
+        headers
+      });
       clearTimeout(timeoutId);
       const contentType = response.headers.get('content-type');
       
@@ -62,6 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const response = await fetch('/api/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ email, password })
       });
 
@@ -77,7 +88,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (response.ok) {
         setUser(data.admin);
         setIsAdmin(true);
-        // Token is handled via HTTP-only cookie by the backend
+        if (data.token) {
+          localStorage.setItem('token', data.token);
+        }
         return true;
       }
       
@@ -95,6 +108,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         await fetch('/api/admin/logout', { method: 'GET', credentials: 'include' });
       } catch (_e) {}
     }
+    localStorage.removeItem('token');
     setUser(null);
     setIsAdmin(false);
 

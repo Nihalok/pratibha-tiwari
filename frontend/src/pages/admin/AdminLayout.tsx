@@ -12,9 +12,9 @@ import Dashboard from './Dashboard';
 import Posts from './Posts';
 import Messages from './Messages';
 import Testimonials from './Testimonials';
-import Assessments from './Assessments';
+import LeadsAndEnroll from './LeadsAndEnroll';
 import { ADMIN_PREFIX, ADMIN_ROUTES } from '../../config/admin';
-import { ClipboardList } from 'lucide-react';
+import { ClipboardList, Users, CreditCard } from 'lucide-react';
 
 export default function AdminLayout() {
   const { user, isAdmin, loading, logout } = useAuth();
@@ -41,11 +41,12 @@ export default function AdminLayout() {
 
   const sidebarLinks = [
     { name: 'Dashboard', href: ADMIN_ROUTES.base, icon: <LayoutDashboard size={20} /> },
-    { name: 'Assessments', href: ADMIN_ROUTES.assessments, icon: <ClipboardList size={20} /> },
+    { name: 'Leads & Enroll', href: ADMIN_ROUTES.leadsAndEnroll, icon: <Users size={20} /> },
     { name: 'Blog Posts', href: ADMIN_ROUTES.posts, icon: <FileText size={20} /> },
     { name: 'Messages', href: ADMIN_ROUTES.messages, icon: <MessageSquare size={20} /> },
     { name: 'Testimonials', href: ADMIN_ROUTES.testimonials, icon: <Star size={20} /> },
   ];
+
 
   const handleLogout = async () => {
     setIsMobileMenuOpen(false);
@@ -202,7 +203,10 @@ export default function AdminLayout() {
         <Routes>
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
-          <Route path="assessments" element={<Assessments />} />
+          <Route path="leads-and-enroll" element={<LeadsAndEnroll />} />
+          <Route path="leads" element={<LeadsAndEnroll />} />
+          <Route path="enrollments" element={<LeadsAndEnroll />} />
+          <Route path="assessments" element={<LeadsAndEnroll />} />
           <Route path="posts" element={<Posts />} />
           <Route path="messages" element={<Messages />} />
           <Route path="testimonials" element={<Testimonials />} />
@@ -211,3 +215,4 @@ export default function AdminLayout() {
     </motion.div>
   );
 }
+

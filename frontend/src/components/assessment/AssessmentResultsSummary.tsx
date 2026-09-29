@@ -366,9 +366,9 @@ export default function AssessmentResultsSummary({
   const handleStartSelectedPkg = (pkgId: 'report' | 'platinum') => {
     if (!onStartPremium) return;
     if (pkgId === 'report') {
-      onStartPremium({ id: 'report', title: 'Premium AI Career Intelligence Report', price: '$68.00', priceNum: 68 });
+      onStartPremium({ id: 'report', title: 'Executive Career Intelligence & Strategy Report', price: '$68.00', priceNum: 68 });
     } else {
-      onStartPremium({ id: 'platinum', title: 'Platinum Package: Premium Report + 45-Min Live Coaching (ICF-PCC)', price: '$98.00', priceNum: 98 });
+      onStartPremium({ id: 'platinum', title: 'Platinum Package: Executive Report + 45-Min Live Coaching (ICF-PCC)', price: '$98.00', priceNum: 98 });
     }
   };
 
@@ -385,7 +385,7 @@ export default function AssessmentResultsSummary({
           <span>{zone.name}</span>
         </div>
 
-        <h2 className="text-base sm:text-xl font-serif italic text-secondary mb-4 sm:mb-6">AI Career Sustainability Score</h2>
+        <h2 className="text-base sm:text-xl font-serif italic text-secondary mb-4 sm:mb-6">Executive Career Sustainability Score</h2>
 
         <div className="text-6xl sm:text-8xl md:text-9xl font-serif mb-2 leading-none">
           {rawScore}<span className="text-xl sm:text-3xl ml-1 font-mono opacity-60">/{MAX_RAW_SCORE}</span>
@@ -470,7 +470,7 @@ export default function AssessmentResultsSummary({
                 <Sparkles size={14} /> Unlock Your Full Career Report
               </div>
               <h3 className="text-2xl sm:text-4xl font-serif leading-tight">
-                Get a Personalized <span className="italic text-gold">AI Career Roadmap</span>
+                Get a Personalized <span className="italic text-gold">Executive Career Roadmap</span>
               </h3>
               <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">
                 Complete our discovery questionnaire (upload your resume & career vision) to receive an exhaustive, world-class strategy report delivered to your WhatsApp and email.
@@ -499,10 +499,10 @@ export default function AssessmentResultsSummary({
                     </div>
                   </div>
                   <p className="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
-                    Bespoke AI Career Intelligence Report crafted from your discovery questionnaire, resume audit, and market position analysis.
+                    Bespoke Executive Career Intelligence Report crafted from your strategic questionnaire, resume audit, and positioning analysis. Delivered within 10 working days.
                   </p>
                   <ul className="space-y-3 text-xs text-slate-200 mb-6">
-                    {['Exhaustive AI Career Intelligence Report (PDF)', 'Deep Resume & Positioning Gap Audit', 'Reviewed & Calibrated by Human Strategists', 'Direct WhatsApp & Email PDF Delivery'].map(item => (
+                    {['Exhaustive Executive Career Intelligence Report (PDF)', 'Deep Resume & Positioning Gap Audit', 'Reviewed & Calibrated by Human Strategists', 'Direct WhatsApp & Email Delivery within 10 Working Days'].map(item => (
                       <li key={item} className="flex items-center gap-2.5">
                         <CheckCircle2 size={16} className="text-gold shrink-0" />
                         <span>{item}</span>
@@ -547,14 +547,14 @@ export default function AssessmentResultsSummary({
                     </div>
                   </div>
                   <p className="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
-                    Full AI Intelligence Report PLUS a <strong>Live 45-Minute 1-on-1 Strategy & Coaching Session</strong> with ICF-PCC Coach Pratibha Tiwari.
+                    Full Executive Career Report PLUS a <strong>Live 45-Minute 1-on-1 Strategy &amp; Coaching Session</strong> with ICF-PCC Coach Pratibha Tiwari.
                   </p>
                   <ul className="space-y-3 text-xs text-slate-200 mb-6">
                     {[
-                      'Everything in the $68 Premium Report',
+                      'Everything in the $68 Executive Report',
                       'Live 45-Min 1-on-1 Coaching with Pratibha Tiwari (ICF-PCC)',
                       'Personalized Executive Influence & Growth Roadmapping',
-                      'Direct WhatsApp Calendar Booking & VIP Delivery',
+                      'Direct WhatsApp & Email Delivery within 10 Working Days + Calendly Invite',
                     ].map((item) => (
                       <li key={item} className="flex items-center gap-2.5">
                         <CheckCircle2 size={16} className="text-gold shrink-0" />
@@ -578,12 +578,13 @@ export default function AssessmentResultsSummary({
             </div>
 
             <div className="flex flex-wrap items-center justify-center gap-6 text-[11px] font-mono text-slate-400 pt-2 border-t border-white/10">
-              <div className="flex items-center gap-1.5"><Clock size={14} className="text-gold" /> Step 1: Take Questionnaire</div>
-              <div className="flex items-center gap-1.5"><Sparkles size={14} className="text-gold" /> Step 2: Scan QR & Upload Screenshot/UTR</div>
-              <div className="flex items-center gap-1.5"><ShieldCheck size={14} className="text-gold" /> Step 3: Direct WhatsApp Delivery</div>
+              <div className="flex items-center gap-1.5"><Clock size={14} className="text-gold" /> Step 1: Complete Strategic Questionnaire</div>
+              <div className="flex items-center gap-1.5"><Sparkles size={14} className="text-gold" /> Step 2: Verified Stripe Payment</div>
+              <div className="flex items-center gap-1.5"><ShieldCheck size={14} className="text-gold" /> Step 3: Executive Delivery within 10 Working Days &amp; Calendar Booking</div>
             </div>
           </div>
         </motion.div>
+
       )}
 
       {/* Strength & Growth Cards */}
